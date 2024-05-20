@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import navbarLogo from "../../public/Navbar_Logo.png";
 import InputSearch from "./InputSearch";
 import navbarBtnLogo from "../../public/Navbar_Button_Icon.svg";
@@ -8,12 +8,10 @@ import BellSvg from "./svg/BellSvg";
 import UserSvg from "./svg/UserSvg";
 import { Link } from "react-router-dom";
 
-const Navbar = () => {
-  const [isLogin, setIsLogin] = useState(true);
-
+const Navbar = ({ isNotification, isAccount, isHistory, isLogin }) => {
   return (
-    <header className="flex justify-between py-4 px-28 items-center">
-      <div className="flex md:ps-10 gap-10 ">
+    <nav className="flex justify-between py-4 px-2 xl:px-28 md:items-center">
+      <div className="flex flex-1 flex-col md:flex-row md:ps-10 gap-3 md:gap-10 ">
         <Link to="/">
           <img src={navbarLogo} alt="navbar logo" width={98} height={53} />
         </Link>
@@ -23,23 +21,23 @@ const Navbar = () => {
         {isLogin ? (
           <NavbarItems>
             <Link to="/history">
-              <ListSvg isActive={false} />
+              <ListSvg isActive={isHistory} />
             </Link>
             <Link to="/notification">
-              <BellSvg isActive={false} />
+              <BellSvg isActive={isNotification} />
             </Link>
             <Link to="/account">
-              <UserSvg isActive={false} />
+              <UserSvg isActive={isAccount} />
             </Link>
           </NavbarItems>
         ) : (
-          <button className="bg-[#7126B5] py-4 px-5 rounded-2xl text-white flex gap-2 items-center hover:opacity-80 transition-all">
+          <button className="bg-[#7126B5] py-3 px-4 rounded-xl text-white flex gap-2 items-center hover:opacity-80 transition-all">
             <img src={navbarBtnLogo} alt="button icon" width={20} height={20} />
             Masuk
           </button>
         )}
       </div>
-    </header>
+    </nav>
   );
 };
 

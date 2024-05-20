@@ -15,10 +15,10 @@ const InputSearch = () => {
         <input
           type="text"
           placeholder="Cari di sini ..."
-          className="px-6 py-4 bg-slate-200 rounded-3xl cursor-pointer w-96"
+          className="px-6 py-4 bg-slate-200 rounded-3xl cursor-pointer w-full md:w-96"
           ref={searchRef}
         />
-        <button className="absolute right-0 end-8">
+        <button className="absolute right-0 end-4 md:end-8">
           <img src={searchIcon} alt="input icon" width={24} height={24} />
         </button>
       </div>
