@@ -33,15 +33,15 @@ const Login = () => {
             </h1>
             <label
               htmlFor="email"
-              className="block mb-2 text-sm font-medium text-black"
+              className="block mb-2 text-xs font-normal text-black"
             >
-              Your email
+              Email/No Telepon
             </label>
             <input
               type="email"
               name="email"
               id="email"
-              className="bg-gray-50 border border-gray-300 font-bold text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
+              className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
               placeholder="Contoh: johndoe@gmail.com"
               value={login.email}
               onChange={(e) => setLogin({ ...login, email: e.target.value })}
@@ -52,9 +52,12 @@ const Login = () => {
           <div>
             <label
               htmlFor="password"
-              className="block mb-2 text-sm font-medium text-black"
+              className="flex justify-between mb-2 text-xs text-black"
             >
-              Password
+              <p className="font-normal">Password</p>
+              <Link to="/reset-password" className="text-[#7126B5] font-medium">
+                Lupa Kata Sandi
+              </Link>
             </label>
             <input
               type="password"
