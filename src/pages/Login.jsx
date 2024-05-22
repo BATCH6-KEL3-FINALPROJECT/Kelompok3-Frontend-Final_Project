@@ -46,7 +46,7 @@ const Login = () => {
 
     if (!user) {
       setIsSuccess(false);
-      setMessage("Alamat email tidak terdaftar!");
+      setMessage("Email atau Nomor tidak terdaftar!");
       setErrors({ email: true, password: false });
     } else if (user.password !== login.password) {
       setIsSuccess(false);
@@ -107,7 +107,7 @@ const Login = () => {
               Email/No Telepon
             </label>
             <input
-              type="email"
+              type="text"
               name="email"
               id="email"
               className={`bg-gray-50 border ${

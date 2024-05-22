@@ -88,7 +88,7 @@ const Reset = () => {
           <div>
             <h1 className="text-xl font-bold mb-5 leading-tight tracking-tight flex gap-3 text-black md:text-2xl">
               <Link
-                to="/"
+                to="/login"
                 className="bg-[#7126B5] rounded-full p-1 text-white hover:bg-[#7126B5]/90"
               >
                 <IoMdArrowRoundBack />
