@@ -1,9 +1,12 @@
 import React from "react";
+import Beranda from "../components/Beranda";
+import Navbar from "../components/Navbar";
 
 const Home = () => {
   return (
-    <div className="relative flex flex-col gap-4 min-h-screen text-3xl text-violet-600">
-      Home
+    <div>
+      <Navbar />
+      <Beranda />
     </div>
   );
 };
