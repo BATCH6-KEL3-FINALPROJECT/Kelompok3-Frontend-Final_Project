@@ -15,7 +15,7 @@ const Navbar = ({ isNotification, isAccount, isHistory, isLogin }) => {
         <Link to="/">
           <img src={navbarLogo} alt="navbar logo" width={98} height={53} />
         </Link>
-        <InputSearch />
+        <InputSearch placeholder="Cari disini....." />
       </div>
       <div>
         {isLogin ? (

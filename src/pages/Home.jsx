@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { IoMdCheckmarkCircle } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
+import Beranda from "../components/Beranda";
 import Navbar from "../components/Navbar";
 
 const Home = () => {
@@ -55,6 +56,7 @@ const Home = () => {
           </button>
         </div>
       </div>
+      <Beranda />
     </>
   );
 };
