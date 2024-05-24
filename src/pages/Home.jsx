@@ -16,11 +16,14 @@ const Home = () => {
     setIsLoggedOut(true);
   };
 
-  const handleTest = async (event) => {
-    setIsLogin(!isLogin);
-  };
-
   useEffect(() => {
+    const checkToken = cookies.get("token");
+    if (checkToken) {
+      setIsLogin(true);
+    } else {
+      setIsLogin(false);
+    }
+
     if (isLoggedOut) {
       const timer = setTimeout(() => {
         navigate("/login");
@@ -54,9 +57,6 @@ const Home = () => {
             className="bg-violet-600 p-2 rounded-lg"
           >
             Logout
-          </button>
-          <button onClick={handleTest} className="bg-violet-600 p-2 rounded-lg">
-            Change Login
           </button>
         </div>
       </div>
