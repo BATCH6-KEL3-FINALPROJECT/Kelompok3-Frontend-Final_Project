@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { IoMdCheckmarkCircle } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
+import Navbar from "../components/Navbar";
 
 const Home = () => {
   const [isLoggedOut, setIsLoggedOut] = useState(false);
@@ -24,6 +25,7 @@ const Home = () => {
 
   return (
     <div className="relative flex flex-col gap-4 min-h-screen text-3xl text-violet-600">
+      <Navbar isLogin={false} />
       {isLoggedOut && (
         <>
           <div className="fixed inset-0 bg-black opacity-50 z-40"></div>
