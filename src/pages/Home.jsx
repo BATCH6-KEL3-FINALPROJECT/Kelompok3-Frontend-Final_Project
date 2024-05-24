@@ -32,7 +32,8 @@ const Home = () => {
   return (
     <>
       <Navbar isLogin={isLogin} />
-      <div className="relative flex flex-col gap-4 min-h-screen text-3xl text-white">
+      <Beranda />
+      <div className="relative flex flex-col gap-4 text-3xl text-white">
         {isLoggedOut && (
           <>
             <div className="fixed inset-0 bg-black opacity-50 z-40"></div>
@@ -44,7 +45,10 @@ const Home = () => {
             </div>
           </>
         )}
-        <div className="flex gap-5 justify-center">
+        <h1 className="text-violet-600 text-center">
+          Ini Hanya Testing Sementara
+        </h1>
+        <div className="flex gap-5 justify-center pb-6">
           <button
             onClick={handleLogout}
             className="bg-violet-600 p-2 rounded-lg"
@@ -56,7 +60,6 @@ const Home = () => {
           </button>
         </div>
       </div>
-      <Beranda />
     </>
   );
 };

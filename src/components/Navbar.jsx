@@ -1,7 +1,5 @@
 import React from "react";
-import navbarLogo from "../../public/Navbar_Logo.png";
 import InputSearch from "./InputSearch";
-import navbarBtnLogo from "../../public/Navbar_Button_Icon.svg";
 import NavbarItems from "./NavbarItems";
 import ListSvg from "./svg/ListSvg";
 import BellSvg from "./svg/BellSvg";
@@ -13,7 +11,12 @@ const Navbar = ({ isNotification, isAccount, isHistory, isLogin }) => {
     <nav className="flex justify-between py-4 px-2 xl:px-28 md:items-center">
       <div className="flex flex-1 flex-col md:flex-row md:ps-10 gap-3 md:gap-10 ">
         <Link to="/">
-          <img src={navbarLogo} alt="navbar logo" width={98} height={53} />
+          <img
+            src="/Navbar_Logo.png"
+            alt="navbar logo"
+            width={98}
+            height={53}
+          />
         </Link>
         <InputSearch placeholder="Cari disini....." />
       </div>
@@ -35,7 +38,12 @@ const Navbar = ({ isNotification, isAccount, isHistory, isLogin }) => {
             to="/login"
             className="bg-[#7126B5] py-3 px-4 rounded-xl text-white flex gap-2 items-center hover:opacity-80 transition-all"
           >
-            <img src={navbarBtnLogo} alt="button icon" width={20} height={20} />
+            <img
+              src="/Navbar_Button_Icon.svg"
+              alt="button icon"
+              width={20}
+              height={20}
+            />
             Masuk
           </Link>
         )}
