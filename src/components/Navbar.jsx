@@ -31,10 +31,13 @@ const Navbar = ({ isNotification, isAccount, isHistory, isLogin }) => {
             </Link>
           </NavbarItems>
         ) : (
-          <button className="bg-[#7126B5] py-3 px-4 rounded-xl text-white flex gap-2 items-center hover:opacity-80 transition-all">
+          <Link
+            to="/login"
+            className="bg-[#7126B5] py-3 px-4 rounded-xl text-white flex gap-2 items-center hover:opacity-80 transition-all"
+          >
             <img src={navbarBtnLogo} alt="button icon" width={20} height={20} />
             Masuk
-          </button>
+          </Link>
         )}
       </div>
     </nav>
