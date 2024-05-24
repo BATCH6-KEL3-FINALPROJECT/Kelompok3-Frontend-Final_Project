@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { IoMdArrowRoundBack, IoMdCheckmarkCircle } from "react-icons/io";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
+import useSend from "../hooks/useSend";
+import Cookies from "universal-cookie";
 
 const Login = () => {
+  const { loading, error, statusCode, sendData } = useSend();
   const [isSuccess, setIsSuccess] = useState(null);
   const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -16,19 +19,7 @@ const Login = () => {
     password: false,
   });
   const navigate = useNavigate();
-
-  const dummyUsers = [
-    { email: "user1@gmail.com", password: "password123A" },
-    { email: "user2@gmail.com", password: "password123B" },
-    { email: "user3@gmail.com", password: "password123C" },
-    { email: "user4@gmail.com", password: "password123D" },
-    { email: "user5@gmail.com", password: "password123E" },
-    { email: "user6@gmail.com", password: "password123F" },
-    { email: "user7@gmail.com", password: "password123G" },
-    { email: "user8@gmail.com", password: "password123H" },
-    { email: "user9@gmail.com", password: "password123I" },
-    { email: "user10@gmail.com", password: "password123J" },
-  ];
+  const cookies = new Cookies();
 
   useEffect(() => {
     if (isSuccess) {
@@ -41,22 +32,35 @@ const Login = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    const user = dummyUsers.find((u) => u.email === login.email);
-
-    if (!user) {
-      setIsSuccess(false);
-      setMessage("Email atau Nomor tidak terdaftar!");
-      setErrors({ email: true, password: false });
-    } else if (user.password !== login.password) {
-      setIsSuccess(false);
-      setMessage("Maaf, kata sandi salah!");
-      setErrors({ email: false, password: true });
-    } else {
-      setIsSuccess(true);
-      setMessage("Login berhasil!");
-      setErrors({ email: false, password: false });
+    try {
+      const response = await sendData("/api/v1/auth/login", "POST", login);
+      if (response && response.token) {
+        cookies.set("token", response.token, {
+          path: "/",
+          expires: new Date(Date.now() + 604800000),
+        });
+        setIsSuccess(true);
+        setMessage("Login berhasil!");
+        setErrors({ email: false, password: false });
+      }
+      if (statusCode === 400) {
+        setIsSuccess(false);
+        setMessage("Email atau Nomor tidak terdaftar!");
+        setErrors({ email: true, password: false });
+      }
+    } catch (error) {
+      console.log(error);
     }
+
+    // if (!user) {
+    //   setIsSuccess(false);
+    //   setMessage("Email atau Nomor tidak terdaftar!");
+    //   setErrors({ email: true, password: false });
+    // } else if (user.password !== login.password) {
+    //   setIsSuccess(false);
+    //   setMessage("Maaf, kata sandi salah!");
+    //   setErrors({ email: false, password: true });
+    // }
   };
 
   const handleChange = (e) => {
