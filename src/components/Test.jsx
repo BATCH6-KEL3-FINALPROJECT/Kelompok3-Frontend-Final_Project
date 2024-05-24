@@ -89,6 +89,7 @@ const Test = () => {
         Destinasi Favorit
       </h2>
       <div className="flex flex-col items-center">
+        {/* Destinasi favorit */}
         <div className="flex flex-wrap gap-5 mx-auto p-5 ml-3">
           {["Semua", "Asia", "Amerika", "Australia", "Eropa", "Afrika"].map(
             (text) => (
@@ -115,6 +116,7 @@ const Test = () => {
               }}
               ref={destinationsRef}
             >
+              {/* btn Input Seach */}
               <div className="flex items-center mb-4">
                 <InputSearch
                   placeholder="Masukan Kota atau Negara"
@@ -123,6 +125,7 @@ const Test = () => {
                   onReset={resetSearchInput}
                 />
               </div>
+              {/* btn clear semua pencarian */}
               <div className="flex justify-between items-center mb-4">
                 <span className="font-semibold">Pencarian Terkini</span>
                 <button
@@ -132,7 +135,7 @@ const Test = () => {
                   Hapus
                 </button>
               </div>
-
+              {/* hapus per kota */}
               {filteredDestinations.map((city) => (
                 <div
                   key={city}
@@ -152,6 +155,7 @@ const Test = () => {
           </div>
         )}
       </div>
+      {/* Card Destinasin Favorite */}
       <div className="container mx-auto p-4 ml-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           <DestinasiCard

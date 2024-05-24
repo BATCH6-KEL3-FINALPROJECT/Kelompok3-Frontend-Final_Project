@@ -223,7 +223,7 @@ function Beranda() {
                       id="return"
                       value={returnDate}
                       onChange={(date) => setReturnDate(date)}
-                      disabled={!sliderChecked} // input tanggal akan dinonaktifkan jika slider tidak aktif
+                      disabled={!sliderChecked} 
                       className="w-36 h-10 border border-gray-300 rounded px-2 focus:outline-none"
                     />
                   </div>

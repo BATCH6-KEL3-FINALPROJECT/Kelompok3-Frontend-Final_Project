@@ -104,7 +104,7 @@ function Passenger({ onChange }) {
             </button>
             {showPassenger && (
               <div
-                className="absolute top-full mt-2 w-full bg-white border border-gray-300 rounded shadow-lg p-4 gap-5 z-10"
+                className="absolute top-full mt-2 w-full bg-white border border-gray-300 rounded shadow-lg p-4 gap-5"
                 style={{
                   width: "400px",
                   display: "flex",
@@ -196,7 +196,10 @@ function Passenger({ onChange }) {
                   type="button"
                   onClick={handleFinishInput}
                   className="mt-2 bg-[#7126B5] hover:bg-[#7126B5] text-white font-semibold py-2 px-4 rounded btn-finish"
-                  style={{ marginLeft: "auto" }}
+                  style={{
+                    marginLeft: "auto",
+                    borderRadius: "20px",
+                  }}
                 >
                   Selesai
                 </button>
