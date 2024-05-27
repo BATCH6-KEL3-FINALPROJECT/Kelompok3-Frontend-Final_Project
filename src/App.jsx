@@ -4,6 +4,9 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Reset from "./pages/Reset";
 import Register from "./pages/Register";
+import Riwayat from "./pages/Riwayat";
+import Notifikasi from "./pages/Notifikasi";
+import Akun from "./pages/Akun";
 import Otp from "./pages/Otp";
 
 function App() {
@@ -14,6 +17,9 @@ function App() {
         <Route path="/login" element={<Login />}></Route>
         <Route path="/reset-password" element={<Reset />}></Route>
         <Route path="/register" element={<Register />}></Route>
+        <Route path="/riwayat-pesanan" element={<Riwayat />}></Route>
+        <Route path="/notifikasi" element={<Notifikasi />}></Route>
+        <Route path="/akun" element={<Akun />}></Route>
         <Route path="/register/OTP" element={<Otp />}></Route>
         <Route
           path="*"

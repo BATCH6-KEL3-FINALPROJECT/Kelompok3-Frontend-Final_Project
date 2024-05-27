@@ -6,7 +6,13 @@ import BellSvg from "./svg/BellSvg";
 import UserSvg from "./svg/UserSvg";
 import { Link } from "react-router-dom";
 
-const Navbar = ({ isNotification, isAccount, isHistory, isLogin }) => {
+const Navbar = ({
+  isNotification,
+  isAccount,
+  isHistory,
+  isLogin,
+  isSearch,
+}) => {
   return (
     <nav className="flex justify-between py-4 px-2 xl:px-28 md:items-center">
       <div className="flex flex-1 flex-col md:flex-row md:ps-10 gap-3 md:gap-10 ">
@@ -18,18 +24,20 @@ const Navbar = ({ isNotification, isAccount, isHistory, isLogin }) => {
             height={53}
           />
         </Link>
-        <InputSearch placeholder="Cari disini....." />
+        {isSearch && (
+          <InputSearch placeholder="Cari disini....." isSearch={isSearch} />
+        )}
       </div>
       <div>
         {isLogin ? (
           <NavbarItems>
-            <Link to="/history">
+            <Link to="/riwayat-pesanan">
               <ListSvg isActive={isHistory} />
             </Link>
-            <Link to="/notification">
+            <Link to="/notifikasi">
               <BellSvg isActive={isNotification} />
             </Link>
-            <Link to="/account">
+            <Link to="/akun">
               <UserSvg isActive={isAccount} />
             </Link>
           </NavbarItems>

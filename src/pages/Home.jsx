@@ -34,7 +34,7 @@ const Home = () => {
 
   return (
     <>
-      <Navbar isLogin={isLogin} />
+      <Navbar isLogin={isLogin} isSearch={true} />
       <Beranda />
       <div className="relative flex flex-col gap-4 text-3xl text-white">
         {isLoggedOut && (
