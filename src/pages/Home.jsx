@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import Beranda from "../components/Beranda";
 import Navbar from "../components/Navbar";
+import Filter from "../components/Filter";
 
 const Home = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -59,6 +60,7 @@ const Home = () => {
             Logout
           </button>
         </div>
+        <Filter />
       </div>
     </>
   );
