@@ -27,7 +27,9 @@ const Login = () => {
     if (checkToken) {
       navigate("/");
     }
+  }, []);
 
+  useEffect(() => {
     if (isSuccess) {
       const timer = setTimeout(() => {
         navigate("/");
@@ -139,7 +141,7 @@ const Login = () => {
               Email/No Telepon
             </label>
             <input
-              type="email"
+              type="text"
               name="email"
               id="email"
               className={`bg-gray-50 border ${

@@ -35,7 +35,9 @@ const Akun = () => {
       setIsLogin(false);
       navigate("/");
     }
+  }, []);
 
+  useEffect(() => {
     if (isLoggedOut) {
       const timer = setTimeout(() => {
         navigate("/login");
