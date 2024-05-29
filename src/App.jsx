@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Reset from "./pages/Reset";
 import Register from "./pages/Register";
 import Otp from "./pages/Otp";
+import Checkout from "./pages/Checkout";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/reset-password" element={<Reset />}></Route>
         <Route path="/register" element={<Register />}></Route>
         <Route path="/register/OTP" element={<Otp />}></Route>
+        <Route path="/checkout" element={<Checkout />}></Route>
         <Route
           path="*"
           element={
