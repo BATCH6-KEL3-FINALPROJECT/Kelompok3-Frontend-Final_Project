@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  IoIosNotifications,
-  IoMdSearch,
-  IoMdArrowRoundBack,
-} from "react-icons/io";
+import { IoMdSearch, IoMdArrowRoundBack } from "react-icons/io";
 import { BiFilterAlt } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import Cookies from "universal-cookie";
 import Navbar from "../components/Navbar";
+import NotificationItemSkeleton from "../components/NotificationItemSkeleton";
+import NotificationItem from "../components/NotificationItem";
 
 const Notifikasi = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const cookies = new Cookies();
 
@@ -23,6 +22,12 @@ const Notifikasi = () => {
       setIsLogin(false);
       navigate("/");
     }
+
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
   }, [navigate]);
 
   return (
@@ -46,7 +51,30 @@ const Notifikasi = () => {
             </button>
           </div>
         </div>
-        <div></div>
+        <div>
+          {loading ? (
+            <>
+              <NotificationItemSkeleton />
+              <NotificationItemSkeleton />
+            </> 
+          ) : (
+            <>
+              <NotificationItem
+                title="Promosi"
+                date="20 Maret, 14:04"
+                message="Dapatkan Potongan 50% Tiket!"
+                extraMessage="Syarat dan Ketentuan berlaku!"
+                iconColor="bg-[#73CA5C]"
+              />
+              <NotificationItem
+                title="Notifikasi"
+                date="5 Maret, 14:04"
+                message="Terdapat perubahan pada jadwal penerbangan kode booking 45GT6. Cek jadwal perjalanan Anda disini!"
+                iconColor="bg-[#FA2C5A]"
+              />
+            </>
+          )}
+        </div>
       </div>
     </>
   );
