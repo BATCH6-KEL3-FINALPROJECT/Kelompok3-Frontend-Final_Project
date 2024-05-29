@@ -23,6 +23,11 @@ const Login = () => {
   const cookies = new Cookies();
 
   useEffect(() => {
+    const checkToken = cookies.get("token");
+    if (checkToken) {
+      navigate("/");
+    }
+
     if (isSuccess) {
       const timer = setTimeout(() => {
         navigate("/");
@@ -43,25 +48,24 @@ const Login = () => {
         setIsSuccess(true);
         setMessage("Login berhasil!");
         setErrors({ email: false, password: false });
-      }
-      if (statusCode === 400) {
+      } else {
         setIsSuccess(false);
-        setMessage("Email atau Nomor tidak terdaftar!");
-        setErrors({ email: true, password: false });
+        if (error == null) {
+          setMessage("Terjadi Kesalahan Ketika Login!");
+        } else {
+          setMessage(`${error}`);
+        }
+        if (statusCode === 401) {
+          setErrors({ email: false, password: true });
+        } else if (statusCode === 404) {
+          setErrors({ email: true, password: false });
+        } else {
+          setErrors({ email: true, password: true });
+        }
       }
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log(err);
     }
-
-    // if (!user) {
-    //   setIsSuccess(false);
-    //   setMessage("Email atau Nomor tidak terdaftar!");
-    //   setErrors({ email: true, password: false });
-    // } else if (user.password !== login.password) {
-    //   setIsSuccess(false);
-    //   setMessage("Maaf, kata sandi salah!");
-    //   setErrors({ email: false, password: true });
-    // }
   };
 
   const handleChange = (e) => {
@@ -135,7 +139,7 @@ const Login = () => {
               Email/No Telepon
             </label>
             <input
-              type="text"
+              type="email"
               name="email"
               id="email"
               className={`bg-gray-50 border ${
@@ -189,9 +193,12 @@ const Login = () => {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 1.25 }}
             type="submit"
-            className="w-full text-white bg-[#7126B5] hover:bg-[#7126B5]/90 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            disabled={loading}
+            className={`w-full text-white bg-[#7126B5] hover:bg-[#7126B5]/90 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center ${
+              loading ? "cursor-not-allowed" : ""
+            }`}
           >
-            Masuk
+            {loading ? "Loading..." : "Masuk"}{" "}
           </motion.button>
           <motion.p
             initial={{ opacity: 0, x: 75 }}

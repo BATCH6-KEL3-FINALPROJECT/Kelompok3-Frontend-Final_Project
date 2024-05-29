@@ -2,13 +2,13 @@ import { useState } from "react";
 import axios from "axios";
 
 const useSend = () => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [statusCode, setStatusCode] = useState(null);
 
   const sendData = async (url, method, body = null, token = null) => {
     const BASE_URL = "http://airline.azkazk11.my.id";
-    let data;
+    let data = null;
 
     try {
       setLoading(true);
@@ -26,15 +26,17 @@ const useSend = () => {
         data: body,
         headers,
       });
-      data = await response.data;
+
+      data = response.data;
       setStatusCode(response.status);
     } catch (error) {
-      setError(error);
-      setStatusCode(error.response.status);
+      setError(error.response.data.message);
+      setStatusCode(error.response);
     } finally {
       setLoading(false);
-      return data;
     }
+
+    return data;
   };
 
   return { loading, error, statusCode, sendData };

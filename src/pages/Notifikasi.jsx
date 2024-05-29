@@ -7,10 +7,11 @@ import Cookies from "universal-cookie";
 import Navbar from "../components/Navbar";
 import NotificationItemSkeleton from "../components/NotificationItemSkeleton";
 import NotificationItem from "../components/NotificationItem";
+import { motion } from "framer-motion";
 
 const Notifikasi = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const cookies = new Cookies();
 
@@ -24,7 +25,7 @@ const Notifikasi = () => {
     }
 
     const timer = setTimeout(() => {
-      setLoading(false);
+      setIsLoading(false);
     }, 3000);
 
     return () => clearTimeout(timer);
@@ -33,30 +34,47 @@ const Notifikasi = () => {
   return (
     <>
       <Navbar isLogin={isLogin} isSearch={false} />
-      <div className="w-11/12 md:w-2/3 mx-auto flex flex-col gap-5">
-        <h1 className="text-xl font-bold">Notifikasi</h1>
-        <div className="flex justify-between items-center gap-5 mx-4">
-          <div className="flex items-center flex-grow bg-[#A06ECE] text-white gap-5 p-2 rounded-lg">
+      <div className="w-11/12 md:w-2/3 mx-auto flex flex-col gap-5 overflow-hidden">
+        <motion.h1
+          initial={{ opacity: 0, x: -75 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.75, delay: 0.25 }}
+          className="text-xl font-bold"
+        >
+          Notifikasi
+        </motion.h1>
+        <div className="flex justify-between items-center gap-5 mx-4 mb-5">
+          <motion.div
+            initial={{ opacity: 0, x: -75 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.75, delay: 0.75 }}
+            className="flex items-center flex-grow bg-[#A06ECE] text-white gap-5 p-2 rounded-lg"
+          >
             <Link to="/">
               <IoMdArrowRoundBack className="text-2xl" />
             </Link>
             <h3 className="text-base">Beranda</h3>
-          </div>
-          <div className="flex gap-2 items-center">
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 75 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.75, delay: 0.75 }}
+            className="flex gap-2 items-center"
+          >
             <button className="flex items-center text-base gap-2 border border-[#7126B5] p-1 px-2 rounded-full">
               <BiFilterAlt className="text-[#8A8A8A] text-xl" /> <p>Filter</p>
             </button>
             <button>
               <IoMdSearch className="text-[#7126B5] text-4xl" />
             </button>
-          </div>
+          </motion.div>
         </div>
         <div>
-          {loading ? (
+          {isLoading ? (
             <>
               <NotificationItemSkeleton />
               <NotificationItemSkeleton />
-            </> 
+            </>
           ) : (
             <>
               <NotificationItem
