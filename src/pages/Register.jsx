@@ -248,11 +248,14 @@ const Register = () => {
           <motion.button
             initial={{ opacity: 0, x: 75 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 1.75 }}
+            transition={{ duration: 0.5, delay: 1.25 }}
             type="submit"
-            className="w-full text-white bg-[#7126B5] hover:bg-[#7126B5]/90 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            disabled={loading}
+            className={`w-full text-white bg-[#7126B5] hover:bg-[#7126B5]/90 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center ${
+              loading ? "cursor-not-allowed" : ""
+            }`}
           >
-            Daftar
+            {loading ? "Loading..." : "Daftar"}{" "}
           </motion.button>
           <motion.p
             initial={{ opacity: 0, x: 75 }}
