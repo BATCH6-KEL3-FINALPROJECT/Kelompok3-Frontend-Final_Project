@@ -1,0 +1,15 @@
+{
+  "notifikasi": [
+    {
+      "title": "Promosi",
+      "date": "20 Maret, 14:04",
+      "message": "Dapatkan Potongan 50% Tiket!",
+      "extraMessage": "Syarat dan Ketentuan berlaku!"
+    },
+    {
+      "title": "Notifikasi",
+      "date": "5 Maret, 14:04",
+      "message": "Terdapat perubahan pada jadwal penerbangan kode booking 45GT6. Cek jadwal perjalanan Anda disini!"
+    }
+  ]
+}

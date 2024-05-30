@@ -1,13 +1,15 @@
 import React from "react";
 import { IoIosNotifications } from "react-icons/io";
 
-const NotificationItem = ({
-  title,
-  date,
-  message,
-  extraMessage,
-  iconColor,
-}) => {
+const NotificationItem = ({ title, date, message, extraMessage }) => {
+  let iconColor;
+
+  if (title === "Promosi") {
+    iconColor = "bg-[#73CA5C]";
+  } else if (title === "Notifikasi") {
+    iconColor = "bg-[#FA2C5A]";
+  }
+
   return (
     <div className="flex gap-5 mx-4 text-[#8A8A8A] text-sm p-2 rounded-lg">
       <IoIosNotifications className="text-white bg-[#7126B580]/50 rounded-full p-1 text-2xl" />

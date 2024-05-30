@@ -12,8 +12,33 @@ import { motion } from "framer-motion";
 const Notifikasi = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
+  // const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
   const cookies = new Cookies();
+
+  const notifikasi = [
+    {
+      title: "Promosi",
+      date: "20 Maret, 14:04",
+      message: "Dapatkan Potongan 50% Tiket!",
+      extraMessage: "Syarat dan Ketentuan berlaku!",
+      iconColor: "bg-[#73CA5C]",
+    },
+    {
+      title: "Notifikasi",
+      date: "5 Maret, 14:04",
+      message:
+        "Terdapat perubahan pada jadwal penerbangan kode booking 45GT6. Cek jadwal perjalanan Anda disini!",
+      iconColor: "bg-[#FA2C5A]",
+    },
+    {
+      title: "Notifikasi",
+      date: "5 Maret, 14:04",
+      message:
+        "Terdapat perubahan pada jadwal penerbangan kode booking 45GT6. Cek jadwal perjalanan Anda disini!",
+      iconColor: "bg-[#FA2C5A]",
+    },
+  ];
 
   useEffect(() => {
     const checkToken = cookies.get("token");
@@ -24,12 +49,24 @@ const Notifikasi = () => {
       navigate("/");
     }
 
+    // async function fetchData() {
+    //   try {
+    //     const response = await fetch("http://localhost:8000/notifikasi");
+    //     const data = await response.json();
+    //     setNotifications(data);
+    //   } catch (error) {
+    //     console.error("Error fetching notifications:", error);
+    //   }
+    // }
+
+    // fetchData();
+
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, []);
 
   return (
     <>
@@ -70,32 +107,37 @@ const Notifikasi = () => {
           </motion.div>
         </div>
         <div>
-          {isLoading ? (
-            <>
-              <NotificationItemSkeleton />
-              <NotificationItemSkeleton />
-            </>
-          ) : (
-            <>
-              <NotificationItem
-                title="Promosi"
-                date="20 Maret, 14:04"
-                message="Dapatkan Potongan 50% Tiket!"
-                extraMessage="Syarat dan Ketentuan berlaku!"
-                iconColor="bg-[#73CA5C]"
-              />
-              <NotificationItem
-                title="Notifikasi"
-                date="5 Maret, 14:04"
-                message="Terdapat perubahan pada jadwal penerbangan kode booking 45GT6. Cek jadwal perjalanan Anda disini!"
-                iconColor="bg-[#FA2C5A]"
-              />
-            </>
-          )}
+          {isLoading
+            ? notifikasi.map((_, index) => (
+                <NotificationItemSkeleton key={index} />
+              ))
+            : notifikasi.map((notification, index) => (
+                <NotificationItem
+                  key={index}
+                  title={notification.title}
+                  date={notification.date}
+                  message={notification.message}
+                  extraMessage={notification.extraMessage}
+                  iconColor={notification.iconColor}
+                />
+              ))}
+          {/* {isLoading
+            ? notifications.map((_, index) => (
+                <NotificationItemSkeleton key={index} />
+              ))
+            : notifications.map((notification, index) => (
+                <NotificationItem
+                  key={index}
+                  title={notification.title}
+                  date={notification.date}
+                  message={notification.message}
+                  extraMessage={notification.extraMessage}
+                  iconColor={notification.iconColor}
+                />
+              ))} */}
         </div>
       </div>
     </>
   );
 };
-
 export default Notifikasi;
