@@ -69,9 +69,7 @@ function Beranda() {
 
   return (
     <div className="relative">
-      <div className="absolute top-10 mt-3 left-0 right-0 h-[150px] bg-[#7126B580] -z-10">
-       
-      </div>
+      <div className="absolute top-10 mt-3 left-0 right-0 h-[150px] bg-[#7126B580] -z-10"></div>
       <div className="container px-4 md:px-8 mx-auto relative z-10">
         {/* Banner */}
         <div className="flex justify-center items-center">
@@ -90,19 +88,18 @@ function Beranda() {
 
         {/* Search */}
         <div className="content max-w-[1098px] w-full mx-auto -mt-12 relative z-20 pt-6 bg-white rounded-lg shadow-md">
-          
-            <h2 className="text-xl md:text-2xl font-bold mb-4 text-gray-800 px-8 ">
-              Pilih Jadwal Penerbangan spesial di
-              <span className="text-purple-600 bg-white px-2 py-1 rounded">
-                Tiketku
-              </span>
-            </h2>
-            {/* form */}
-            <form className="grid grid-cols-1 gap-8 " onSubmit={handleSearch}>
+          <h2 className="text-xl md:text-2xl font-bold mb-4 text-gray-800 px-8 ">
+            Pilih Jadwal Penerbangan spesial di
+            <span className="text-purple-600 bg-white px-2 py-1 rounded">
+              Tiketku
+            </span>
+          </h2>
+          {/* form */}
+          <form className="grid grid-cols-1 gap-8" onSubmit={handleSearch}>
             {/* fligh */}
             <div className="flex items-center justify-between px-8 flex-wrap">
               {/* flight From */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 justify-start">
                 <img src="plane.svg" alt="From" />
                 <label
                   htmlFor="from"
@@ -112,7 +109,7 @@ function Beranda() {
                 </label>
                 <div
                   className="relative w-full font-bold"
-                  style={{ maxWidth: "245px" }}
+                  style={{ maxWidth: "300px" }}
                 >
                   <InputComponent
                     id="from"
@@ -124,15 +121,17 @@ function Beranda() {
                 </div>
               </div>
               {/* Button Switch */}
-              <button
-                type="button"
-                onClick={handleSwitchCities}
-                className="text-gray-600 font-semibold hover:text-gray-800 focus:outline-none"
-              >
-                <img src="return.png" alt="Switch" className="w-6 h-6" />
-              </button>
+              <div className="justify-center">
+                <button
+                  type="button"
+                  onClick={handleSwitchCities}
+                  className="text-gray-600 font-semibold hover:text-gray-800 focus:outline-none"
+                >
+                  <img src="return.png" alt="Switch" className="w-6 h-6" />
+                </button>
+              </div>
               {/* Flight TO */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 justify-end">
                 <img src="plane.svg" alt="To" />
                 <label
                   htmlFor="to"
@@ -142,7 +141,7 @@ function Beranda() {
                 </label>
                 <div
                   className="relative w-full font-bold"
-                  style={{ maxWidth: "245px" }}
+                  style={{ maxWidth: "300px" }}
                 >
                   <InputComponent
                     type="text"
@@ -157,9 +156,11 @@ function Beranda() {
             </div>
 
             {/* date */}
-            <div className="flex items-center justify-between w-full sm:w-auto sm:flex-row px-8 flex-wrap">
-              {/* Depature */}
-              <div className="flex items-center gap-4 flex-wrap">
+            {/* <div className="flex items-center justify-between w-full sm:w-auto sm:flex-row px-8 flex-wrap"> */}
+            {/* Depature */}
+            <div className="flex items-center justify-between px-8 flex-wrap">
+              {/* Date and Return */}
+              <div className="flex items-center gap-4">
                 <img src="date1.svg" alt="From" />
                 <label
                   htmlFor="from"
@@ -182,48 +183,57 @@ function Beranda() {
                     className="w-36 h-10 border border-gray-300 rounded px-2 focus:outline-none"
                   />
                 </div>
-                {/* Return */}
-                <div className="flex items-center">
-                  <div className="flex flex-col ml-3">
-                    <label
-                      htmlFor="return"
-                      className="block text-xs font-semibold text-gray-600 mb-3"
-                    >
-                      Return
-                    </label>
-                    <DatePickerComponent
-                      id="return"
-                      value={returnDate}
-                      onChange={(date) => setReturnDate(date)}
-                      disabled={!sliderChecked}
-                      className="w-36 h-10 border border-gray-300 rounded px-2 focus:outline-none"
-                    />
-                  </div>
-                </div>
-                {/* Slider */}
-                <SliderComponent
-                  checked={sliderChecked}
-                  onChange={handleSliderChange}
-                />
               </div>
+              {/* Return */}
+              <div className="flex items-center gap-4">
+                <div className="flex flex-col ml-3">
+                  <label
+                    htmlFor="return"
+                    className="block text-xs font-semibold text-gray-600 mb-3"
+                  >
+                    Return
+                  </label>
+                  <DatePickerComponent
+                    id="return"
+                    value={returnDate}
+                    onChange={(date) => setReturnDate(date)}
+                    disabled={!sliderChecked}
+                    className="w-36 h-10 border border-gray-300 rounded px-2 focus:outline-none"
+                  />
+                </div>
+              </div>
+              {/* Slider */}
+              <SliderComponent
+                checked={sliderChecked}
+                onChange={handleSliderChange}
+              />
 
-                {/* Pasengers */}
-                <Passenger onChange={setPassengerCounts} />
+              {/* Passengers and Seat Class */}
+              <div className="flex items-center justify-between flex-wrap">
+                {/* Passengers */}
+                <div className="flex items-center gap-4">
+                  <Passenger onChange={setPassengerCounts} />
+                </div>
 
                 {/* Seat Class */}
-                <SeatClass
-                  seatClass={seatClass}
-                  handleSeatClassChange={handleSeatClassChange}
-                />
+                <div className="flex items-center gap-4" style={{ maxWidth: "200px", marginLeft: "auto" }}>
+                  <SeatClass
+                    seatClass={seatClass}
+                    handleSeatClassChange={handleSeatClassChange}
+                  />
+                </div>
               </div>
-              {/* //button */}
-              <button
-                className="bg-[#7126B5] hover:bg-[#7126B5] text-white font-semibold py-3 rounded w-full "
-                type="submit"
-              >
-                <Link to="/search">Cari Penerbangan</Link>
-              </button>
-            </form>
+            </div>
+
+            {/* </div> */}
+            {/* //button */}
+            <button
+              className="bg-[#7126B5] hover:bg-[#7126B5] text-white font-semibold py-3 rounded w-full "
+              type="submit"
+            >
+              <Link to="/search">Cari Penerbangan</Link>
+            </button>
+          </form>
         </div>
         <Test />
       </div>
