@@ -10,6 +10,7 @@ import ButtonSearchingDay from "../components/ButtonSearchingDay";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { LuArrowUpDown } from "react-icons/lu";
 import { motion } from "framer-motion";
+import axios from "axios";
 
 const Search = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -226,9 +227,9 @@ const Search = () => {
           </motion.button>
         </div>
         <div className="flex justify-between mx-4 overflow-x-auto">
-          {days.map(({ day, date }) => (
+          {days.map(({ day, date }, index) => (
             <ButtonSearchingDay
-              key={day}
+              key={index}
               day={day}
               date={date}
               onClick={() => handleClick(date)}

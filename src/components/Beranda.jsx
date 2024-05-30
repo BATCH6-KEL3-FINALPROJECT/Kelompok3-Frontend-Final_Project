@@ -216,7 +216,10 @@ function Beranda() {
                 </div>
 
                 {/* Seat Class */}
-                <div className="flex items-center gap-4" style={{ maxWidth: "200px", marginLeft: "auto" }}>
+                <div
+                  className="flex items-center gap-4"
+                  style={{ maxWidth: "200px", marginLeft: "auto" }}
+                >
                   <SeatClass
                     seatClass={seatClass}
                     handleSeatClassChange={handleSeatClassChange}
@@ -228,10 +231,12 @@ function Beranda() {
             {/* </div> */}
             {/* //button */}
             <button
-              className="bg-[#7126B5] hover:bg-[#7126B5] text-white font-semibold py-3 rounded w-full "
+              className="bg-[#7126B5] hover:bg-[#7126B5] text-white font-semibold py-3 rounded w-full flex"
               type="submit"
             >
-              <Link to="/search">Cari Penerbangan</Link>
+              <Link to="/search" className="w-full">
+                Cari Penerbangan
+              </Link>
             </button>
           </form>
         </div>

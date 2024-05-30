@@ -16,7 +16,7 @@ const EditSearch = ({ origin, destination, passengers, classType, onEdit }) => {
         <IoMdArrowRoundBack className="text-2xl" />
       </Link>
       <h3 className="text-base">
-        {origin} {">"} {destination} - {passengers} - {classType}
+        {origin} {">"} {destination} - {passengers} Penumpang - {classType}
       </h3>
     </motion.div>
   );
