@@ -8,6 +8,7 @@ import Riwayat from "./pages/Riwayat";
 import Notifikasi from "./pages/Notifikasi";
 import Akun from "./pages/Akun";
 import Otp from "./pages/Otp";
+import Search from "./pages/Search";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/notifikasi" element={<Notifikasi />}></Route>
         <Route path="/akun" element={<Akun />}></Route>
         <Route path="/register/OTP" element={<Otp />}></Route>
+        <Route path="/search" element={<Search></Search>}></Route>
         <Route
           path="*"
           element={
