@@ -6,6 +6,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import useSend from "../hooks/useSend";
 import { motion } from "framer-motion";
+import Cookies from "universal-cookie";
 
 const Register = () => {
   const { loading, error, statusCode, sendData } = useSend();
@@ -13,20 +14,26 @@ const Register = () => {
   const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [registerData, setRegisterData] = useState({
-    nama: "",
+    name: "",
     email: "",
-    telepon: "",
+    phone_number: "",
     password: "",
   });
   const [errors, setErrors] = useState({
-    nama: false,
+    name: false,
     email: false,
-    telepon: false,
+    phone_number: false,
     password: false,
   });
   const navigate = useNavigate();
+  const cookies = new Cookies();
 
   useEffect(() => {
+    const checkToken = cookies.get("token");
+    if (checkToken) {
+      navigate("/");
+    }
+
     if (isSuccess) {
       const timer = setTimeout(() => {
         navigate("/login");
@@ -41,22 +48,46 @@ const Register = () => {
   };
 
   const handlePhoneChange = (value) => {
-    setRegisterData((prev) => ({ ...prev, telepon: value }));
+    setRegisterData((prev) => ({ ...prev, phone_number: value }));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    let valid = true;
     if (registerData.password.length < 8) {
       setErrors((prevErrors) => ({ ...prevErrors, password: true }));
-      setIsSuccess(false);
-      setMessage("Password min 8 karakter!");
+      valid = false;
     } else {
       setErrors((prevErrors) => ({ ...prevErrors, password: false }));
     }
 
-    setIsSuccess(true);
-    setMessage("Login berhasil!");
+    if (valid) {
+      try {
+        const response = await sendData(
+          "/api/v1/auth/register",
+          "POST",
+          registerData
+        );
+        if (response) {
+          setIsSuccess(true);
+          setMessage("Register berhasil!");
+        } else {
+          setIsSuccess(false);
+          if (error == null) {
+            setMessage("Terjadi Kesalahan Ketika Register!");
+          } else {
+            setMessage(`${error}`);
+          }
+        }
+      } catch (err) {
+        setIsSuccess(false);
+        setMessage("Something went wrong. Please try again.");
+      }
+    } else {
+      setIsSuccess(false);
+      setMessage("Password min 8 karakter!");
+    }
   };
 
   return (
@@ -118,18 +149,18 @@ const Register = () => {
             transition={{ duration: 0.5, delay: 0.75 }}
           >
             <label
-              htmlFor="nama"
+              htmlFor="name"
               className="block mb-2 text-xs font-normal text-black"
             >
               Nama
             </label>
             <input
               type="text"
-              name="nama"
-              id="nama"
+              name="name"
+              id="name"
               className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
               placeholder="Nama Lengkap"
-              value={registerData.nama}
+              value={registerData.name}
               onChange={handleChange}
               required
             />
@@ -170,7 +201,7 @@ const Register = () => {
             </label>
             <PhoneInput
               country={"id"}
-              value={registerData.telepon}
+              value={registerData.phone_number}
               onChange={handlePhoneChange}
               inputProps={{
                 name: "telepon",
@@ -217,11 +248,14 @@ const Register = () => {
           <motion.button
             initial={{ opacity: 0, x: 75 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 1.75 }}
+            transition={{ duration: 0.5, delay: 1.25 }}
             type="submit"
-            className="w-full text-white bg-[#7126B5] hover:bg-[#7126B5]/90 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            disabled={loading}
+            className={`w-full text-white bg-[#7126B5] hover:bg-[#7126B5]/90 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center ${
+              loading ? "cursor-not-allowed" : ""
+            }`}
           >
-            Daftar
+            {loading ? "Loading..." : "Daftar"}{" "}
           </motion.button>
           <motion.p
             initial={{ opacity: 0, x: 75 }}

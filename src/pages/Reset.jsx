@@ -4,6 +4,7 @@ import { IoMdArrowRoundBack, IoMdCheckmarkCircle } from "react-icons/io";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import useSend from "../hooks/useSend";
 import { motion } from "framer-motion";
+import Cookies from "universal-cookie";
 
 const Reset = () => {
   const { loading, error, statusCode, sendData } = useSend();
@@ -20,8 +21,14 @@ const Reset = () => {
     confirmPassword: false,
   });
   const navigate = useNavigate();
+  const cookies = new Cookies();
 
   useEffect(() => {
+    const checkToken = cookies.get("token");
+    if (checkToken) {
+      navigate("/");
+    }
+
     if (isSuccess) {
       const timer = setTimeout(() => {
         navigate("/login");
