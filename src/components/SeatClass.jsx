@@ -20,7 +20,7 @@ function SeatClass({ seatClass, handleSeatClassChange }) {
 
   return (
     <div className="flex items-center gap-3 mb-3">
-      <div className="flex flex-col gap-3 ml-6">
+      <div className="flex flex-col gap-3 ml-3">
         <label htmlFor="seatClass" className="block text-xs font-semibold text-gray-600">
           Seat Class
         </label>
