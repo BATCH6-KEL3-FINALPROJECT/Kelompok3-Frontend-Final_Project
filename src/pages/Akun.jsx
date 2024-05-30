@@ -7,10 +7,13 @@ import Navbar from "../components/Navbar";
 import { motion } from "framer-motion";
 import AccountSkeleton from "../components/AccountSkeleton";
 import AccountItem from "../components/AccountItem";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Akun = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoggedOut, setIsLoggedOut] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState({
     name: "Harry",
@@ -60,9 +63,41 @@ const Akun = () => {
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(profile);
+
+    if (!profile.name) {
+      toast.error("Name cannot be empty");
+      return;
+    }
+
+    if (!profile.telepon) {
+      toast.error("Telepon cannot be empty");
+      return;
+    }
+
+    if (!profile.email) {
+      toast.error("Email cannot be empty");
+      return;
+    }
+
+    if (!validateEmail(profile.email)) {
+      toast.error("Invalid email format");
+      return;
+    }
+
+    setLoading(true);
+
+    setTimeout(() => {
+      setLoading(false);
+      toast.success("Profile saved successfully");
+      console.log(profile);
+    }, 3000);
   };
 
   return (
@@ -73,6 +108,7 @@ const Akun = () => {
           initial={{ opacity: 0, x: -75 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.75, delay: 0.25 }}
+          viewport={{ once: true }}
           className="text-xl font-bold"
         >
           Akun
@@ -82,6 +118,7 @@ const Akun = () => {
             initial={{ opacity: 0, x: -75 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.75, delay: 0.75 }}
+            viewport={{ once: true }}
             className="flex items-center flex-grow bg-[#A06ECE] text-white gap-5 p-2 rounded-lg"
           >
             <Link to="/">
@@ -100,6 +137,7 @@ const Akun = () => {
               handleSubmit={handleSubmit}
               profile={profile}
               setProfile={setProfile}
+              loading={loading}
             />
           )}
         </div>
@@ -115,6 +153,7 @@ const Akun = () => {
           </div>
         </>
       )}
+      <ToastContainer />
     </>
   );
 };

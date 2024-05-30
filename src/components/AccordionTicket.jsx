@@ -7,9 +7,9 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
   };
 
   return (
-    <div className=" shadow-md border-2 rounded-3xl  bg-white  rounded-lg mb-4 transition-all duration-500 w-[95vw] sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-[640px] relative">
+    <div className="p-3 shadow-md border-2 bg-white rounded-lg mb-4 transition-all duration-500 relative hover:border-[#7126B580]/50">
       <div
-        className={`px-4 py-3 text-left text-lg font-medium text-gray-900 bg-white flex items-center justify-between ${
+        className={` text-left text-lg font-medium text-gray-900 bg-white flex items-center justify-between ${
           isOpen ? "rounded-t-lg" : "rounded-lg"
         }`}
       >
@@ -47,7 +47,7 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
         </div>
         <div>
           <img
-            className="hidden md:block me-10 "
+            className="hidden 2xs:block me-10 "
             src="tas.svg"
             alt="iconticket"
           />

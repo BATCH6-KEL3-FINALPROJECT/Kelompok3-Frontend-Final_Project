@@ -17,6 +17,7 @@ const Riwayat = () => {
           initial={{ opacity: 0, x: -75 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.75, delay: 0.25 }}
+          viewport={{ once: true }}
           className="text-xl font-bold"
         >
           Riwayat Pemesanan
@@ -26,6 +27,7 @@ const Riwayat = () => {
             initial={{ opacity: 0, x: -75 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.75, delay: 0.75 }}
+            viewport={{ once: true }}
             className="flex items-center flex-grow bg-[#A06ECE] text-white gap-5 p-2 rounded-lg"
           >
             <Link to="/">
@@ -37,6 +39,7 @@ const Riwayat = () => {
             initial={{ opacity: 0, x: 75 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.75, delay: 0.75 }}
+            viewport={{ once: true }}
             className="flex gap-2 items-center"
           >
             <button className="flex items-center text-base gap-2 border border-[#7126B5] p-1 px-2 rounded-full">

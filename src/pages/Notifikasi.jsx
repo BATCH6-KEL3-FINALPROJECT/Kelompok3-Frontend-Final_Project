@@ -12,7 +12,10 @@ import { motion } from "framer-motion";
 const Notifikasi = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  // const [notifications, setNotifications] = useState([]);
+  const [filter, setFilter] = useState("All");
+  const [search, setSearch] = useState("");
+  const [isFilterDropdownVisible, setIsFilterDropdownVisible] = useState(false);
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
   const navigate = useNavigate();
   const cookies = new Cookies();
 
@@ -49,24 +52,35 @@ const Notifikasi = () => {
       navigate("/");
     }
 
-    // async function fetchData() {
-    //   try {
-    //     const response = await fetch("http://localhost:8000/notifikasi");
-    //     const data = await response.json();
-    //     setNotifications(data);
-    //   } catch (error) {
-    //     console.error("Error fetching notifications:", error);
-    //   }
-    // }
-
-    // fetchData();
-
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
+
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+    setIsFilterDropdownVisible(false);
+  };
+
+  const handleSearchChange = (event) => {
+    setSearch(event.target.value);
+  };
+
+  const filteredNotifications = notifikasi.filter((notification) => {
+    const matchesFilter = filter === "All" || notification.title === filter;
+    const matchesSearch = notification.message
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+
+  const uniqueTitles = [...new Set(notifikasi.map((notif) => notif.title))];
+  const filterOptions = uniqueTitles.map((title) => ({
+    label: title,
+    value: title,
+  }));
 
   return (
     <>
@@ -76,15 +90,17 @@ const Notifikasi = () => {
           initial={{ opacity: 0, x: -75 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.75, delay: 0.25 }}
+          viewport={{ once: true }}
           className="text-xl font-bold"
         >
           Notifikasi
         </motion.h1>
-        <div className="flex justify-between items-center gap-5 mx-4 mb-5">
+        <div className="flex justify-between items-center gap-5 mx-4 mb-8 relative">
           <motion.div
             initial={{ opacity: 0, x: -75 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.75, delay: 0.75 }}
+            viewport={{ once: true }}
             className="flex items-center flex-grow bg-[#A06ECE] text-white gap-5 p-2 rounded-lg"
           >
             <Link to="/">
@@ -96,14 +112,70 @@ const Notifikasi = () => {
             initial={{ opacity: 0, x: 75 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.75, delay: 0.75 }}
+            viewport={{ once: true }}
             className="flex gap-2 items-center"
           >
-            <button className="flex items-center text-base gap-2 border border-[#7126B5] p-1 px-2 rounded-full">
-              <BiFilterAlt className="text-[#8A8A8A] text-xl" /> <p>Filter</p>
+            <button
+              className="flex items-center text-base gap-2 border border-[#7126B5] p-1 px-2 rounded-full"
+              onClick={() => {
+                setIsFilterDropdownVisible(!isFilterDropdownVisible);
+                setIsSearchVisible(false);
+              }}
+            >
+              <BiFilterAlt className="text-[#8A8A8A] text-xl" />
+              <p>Filter</p>
             </button>
-            <button>
+            {isFilterDropdownVisible && (
+              <div className="absolute top-12 right-0 z-10 bg-white shadow-lg rounded-md">
+                <motion.button
+                  initial={{ opacity: 0, x: 75 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{
+                    duration: 0.75,
+                    delay: 0.25,
+                  }}
+                  className="block w-full text-center px-9 py-2 rounded-lg text-black bg-[#A06ECE] hover:text-white hover:bg-[#8A4FC9] border-b"
+                  onClick={() => handleFilterChange("All")}
+                >
+                  All
+                </motion.button>
+                {filterOptions.map((option, index) => (
+                  <motion.button
+                    key={option.value}
+                    initial={{ opacity: 0, x: 75 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{
+                      duration: 0.75,
+                      delay: 0.25 * (index + 1),
+                    }}
+                    className="block w-full text-center px-9 py-2 rounded-lg text-black bg-[#A06ECE] hover:text-white hover:bg-[#8A4FC9] border-b"
+                    onClick={() => handleFilterChange(option.value)}
+                  >
+                    {option.label}
+                  </motion.button>
+                ))}
+              </div>
+            )}
+            <button
+              onClick={() => {
+                setIsSearchVisible(!isSearchVisible);
+                setIsFilterDropdownVisible(false);
+              }}
+            >
               <IoMdSearch className="text-[#7126B5] text-4xl" />
             </button>
+            {isSearchVisible && (
+              <motion.input
+                initial={{ opacity: 0, x: 75 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.75, delay: 0.25 }}
+                type="text"
+                placeholder="Search..."
+                value={search}
+                onChange={handleSearchChange}
+                className="border border-[#7126B5] p-1 px-5 rounded-full absolute top-12 right-0 bg-white shadow-lg z-10"
+              />
+            )}
           </motion.div>
         </div>
         <div>
@@ -111,7 +183,7 @@ const Notifikasi = () => {
             ? notifikasi.map((_, index) => (
                 <NotificationItemSkeleton key={index} />
               ))
-            : notifikasi.map((notification, index) => (
+            : filteredNotifications.map((notification, index) => (
                 <NotificationItem
                   key={index}
                   title={notification.title}
@@ -121,23 +193,10 @@ const Notifikasi = () => {
                   iconColor={notification.iconColor}
                 />
               ))}
-          {/* {isLoading
-            ? notifications.map((_, index) => (
-                <NotificationItemSkeleton key={index} />
-              ))
-            : notifications.map((notification, index) => (
-                <NotificationItem
-                  key={index}
-                  title={notification.title}
-                  date={notification.date}
-                  message={notification.message}
-                  extraMessage={notification.extraMessage}
-                  iconColor={notification.iconColor}
-                />
-              ))} */}
         </div>
       </div>
     </>
   );
 };
+
 export default Notifikasi;

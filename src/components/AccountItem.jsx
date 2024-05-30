@@ -11,6 +11,7 @@ const AccountItem = ({
   handleSubmit,
   profile,
   setProfile,
+  loading,
 }) => {
   return (
     <>
@@ -98,9 +99,14 @@ const AccountItem = ({
               <div className="flex justify-center">
                 <button
                   type="submit"
-                  className="bg-[#4B1979] text-base font-medium text-white mx-auto px-12 p-3 rounded-xl hover:bg-[#7126B5] transition-all duration-300"
+                  className={`bg-[#4B1979] text-base font-medium text-white mx-auto px-12 p-3 rounded-xl transition-all duration-300 ${
+                    loading
+                      ? "cursor-not-allowed opacity-50"
+                      : "hover:bg-[#7126B5]"
+                  }`}
+                  disabled={loading}
                 >
-                  Simpan
+                  {loading ? "Loading..." : "Simpan"}
                 </button>
               </div>
             </form>

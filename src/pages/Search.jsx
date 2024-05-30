@@ -1,24 +1,20 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import Filter from "../components/Filter";
 import AccordionTicket from "../components/AccordionTicket";
 import ModalFilter from "../components/ModalFilter";
 import EditSearch from "../components/EditSearch";
 import ButtonSearchingDay from "../components/ButtonSearchingDay";
+import { IoMdArrowRoundBack } from "react-icons/io";
 import { LuArrowUpDown } from "react-icons/lu";
+import { motion } from "framer-motion";
 
 const Search = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [isLoggedOut, setIsLoggedOut] = useState(false);
   const navigate = useNavigate();
   const cookies = new Cookies();
-
-  const handleLogout = async (event) => {
-    cookies.remove("token");
-    setIsLoggedOut(true);
-  };
 
   useEffect(() => {
     const checkToken = cookies.get("token");
@@ -27,14 +23,7 @@ const Search = () => {
     } else {
       setIsLogin(false);
     }
-
-    if (isLoggedOut) {
-      const timer = setTimeout(() => {
-        navigate("/login");
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [isLoggedOut, navigate]);
+  }, [navigate]);
 
   const flightsDummy = [
     {
@@ -206,17 +195,19 @@ const Search = () => {
   ];
 
   return (
-    <div>
-      <div>
-        <Navbar isLogin={isLogin} />
-      </div>
-      <div>
-        <div className=" mt-3 hidden md:block md:mt-10  md:ps-44 ">
-          <h1 className="text-lg">
-            <strong>Detail Penerbangan</strong>
-          </h1>
-        </div>
-        <div className=" flex flex-col items-center">
+    <>
+      <Navbar isLogin={isLogin} isSearch={true} />
+      <div className="w-11/12 md:w-2/3 mx-auto flex flex-col gap-5 overflow-hidden">
+        <motion.h1
+          initial={{ opacity: 0, x: -75 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.75, delay: 0.25 }}
+          viewport={{ once: true }}
+          className="text-xl font-bold"
+        >
+          Notifikasi
+        </motion.h1>
+        <div className="flex justify-between items-center gap-2 mx-4 relative">
           <EditSearch
             origin="JKT"
             destination="MLB"
@@ -224,63 +215,66 @@ const Search = () => {
             classType="Economy"
             onEdit={() => console.log("Edit search clicked")}
           />
-          <div className="flex md:justify-center  w-screen md:w-auto overflow-scroll md:overflow-auto">
-            {days.map(({ day, date }) => (
-              <ButtonSearchingDay
-                key={day}
-                day={day}
-                date={date}
-                onClick={() => handleClick(date)}
-                isSelected={selectedDate === date}
+          <motion.button
+            initial={{ opacity: 0, x: 75 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.75, delay: 0.75 }}
+            viewport={{ once: true }}
+            className="text-white gap-5 p-2 md:p-3 px-5 rounded-lg bg-[#73CA5C]"
+          >
+            Ubah Pencarian
+          </motion.button>
+        </div>
+        <div className="flex justify-between mx-4 overflow-x-auto">
+          {days.map(({ day, date }) => (
+            <ButtonSearchingDay
+              key={day}
+              day={day}
+              date={date}
+              onClick={() => handleClick(date)}
+              isSelected={selectedDate === date}
+            />
+          ))}
+        </div>
+
+        {/*  Filter Button dan Modal */}
+        <div className="flex justify-end">
+          <button
+            className="flex justify-center items-center gap-2 px-3 py-1 border border-[#A06ECE] text-[#7126B5] rounded-full mx-4"
+            onClick={handleOpenModal}
+          >
+            <span>
+              <LuArrowUpDown className="text-lg" />
+            </span>
+            <span className="text-base">{getButtonText()}</span>
+          </button>
+        </div>
+        <ModalFilter
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          selectedFilter={temporaryFilter}
+          onSelectFilter={handleSelectFilter}
+          onApplyFilter={handleApplyFilter}
+        />
+
+        <div className="flex flex-col md:flex-row gap-5 mx-4">
+          <div className="flex-col gap-4 font-medium none hidden md:flex text-base md:w-1/4">
+            <h1 className="font-medium text-base">Filter</h1>
+            <Filter />
+          </div>
+          <div className="flex-grow">
+            {flightsDummy.map((flight, index) => (
+              <AccordionTicket
+                key={index}
+                flight={flight}
+                isOpen={openAccordion === index}
+                toggleAccordion={() => toggleAccordion(index)}
               />
             ))}
           </div>
         </div>
-
-        {/*  Filter Button dan Modal */}
-        <div className="flex ms-3 md:mt-8  mt-4 md:mb-2 md:justify-end me-36">
-          <button
-            className="flex justify-center items-center px-1 py-2 border border-purple-600 text-purple-600 rounded-full"
-            style={{ width: "110px", height: " 35px" }}
-            onClick={handleOpenModal}
-          >
-            <span className="ps-0 pe-1">
-              <LuArrowUpDown />
-            </span>
-            <span className="text-sm">{getButtonText()}</span>
-          </button>
-          <ModalFilter
-            isOpen={isModalOpen}
-            onClose={handleCloseModal}
-            selectedFilter={temporaryFilter}
-            onSelectFilter={handleSelectFilter}
-            onApplyFilter={handleApplyFilter}
-          />
-        </div>
-
-        <div className="flex flex-col md:flex-row h-screen">
-          {/* Sidebar */}
-          <div className="w-1/3 p-4 ms-3 mt-6 justify-end md:flex hidden ">
-            <Filter></Filter>
-          </div>
-
-          {/* Flight List */}
-          <div className="w-3/4 ps-2">
-            {/* Flight Cards */}
-            <div className=" mx-auto md:mt-10 mt-5 md:ms-16">
-              {flightsDummy.map((flight, index) => (
-                <AccordionTicket
-                  key={index}
-                  flight={flight}
-                  isOpen={openAccordion === index}
-                  toggleAccordion={() => toggleAccordion(index)}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
+    </>
   );
 };
 
