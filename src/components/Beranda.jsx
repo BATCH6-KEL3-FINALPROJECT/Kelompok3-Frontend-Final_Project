@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import InputComponent from "./InputComponent";
 import DatePickerComponent from "./DatePicker";
 import SliderComponent from "./SliderComponent";
 import Passenger from "./Passenger";
 import SeatClass from "./SeatClass";
 import Test from "./Test";
+import airportOptions from "../data/airports.json";
 
 function Beranda() {
   const [fromCity, setFromCity] = useState("");
@@ -63,90 +65,61 @@ function Beranda() {
     };
 
     console.log("Mencari penerbangan dengan kriteria:", searchData);
-
-    // Implementasi API fetching disini
-    // Misalnya menggunakan fetch atau axios:
-    // fetch("API_URL", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(searchData),
-    // })
-    //   .then(response => response.json())
-    //   .then(data => {
-    //     // Handle the response data
-    //     console.log(data);
-    //   })
-    //   .catch(error => {
-    //     console.error("Error fetching data:", error);
-    //   });
   };
 
-
   return (
-    <div className="container px-4 md:px-8 mx-auto">
-      {/* Banner */}
-      <div className="flex justify-center items-center">
-        <div className="relative mt-6 md:mt-15">
-          <img
-            src="left.png"
-            alt="Left Image"
-            className="absolute z-0 w-24 h-16 md:w-[236px] md:h-[150px] top-10 left-[-40px] md:left-[-150px] border-r-20 rounded-l-20"
-            style={{ borderRadius: "20px 0px 0px 0px" }}
-          />
-          <div className="background-image relative z-10">
-            <img
-              src="img_banner.png"
-              alt="Background"
-              className="w-full h-40 md:w-[1213px] md:h-[232px] md:top-[116px] md:left-[128px] border-r-20 rounded-r-20"
-              style={{ borderRadius: "0px 20px 20px 0px" }}
-            />
-          </div>
-          <img
-            src="right.png"
-            alt="Right Image"
-            className="absolute z-0 w-24 h-16 md:w-[236px] md:h-[150px] top-10 right-[-40px] md:right-[-120px] border-r-20 rounded-l-20"
-            style={{ borderRadius: "20px 0px 0px 0px" }}
-          />
-        </div>
+    <div className="relative">
+      <div className="absolute top-10 mt-3 left-0 right-0 h-[150px] bg-[#7126B580] -z-10">
+       
       </div>
-      {/* End Banner */}
+      <div className="container px-4 md:px-8 mx-auto relative z-10">
+        {/* Banner */}
+        <div className="flex justify-center items-center">
+          <div className="relative mt-6 md:mt-15">
+            <div className="background-image relative z-10">
+              <img
+                src="img_banner.png"
+                alt="Background"
+                className="w-full h-40 md:w-[1213px] md:h-[232px] md:top-[116px] md:left-[128px] border-r-20 rounded-r-20"
+                style={{ borderRadius: "0px 20px 20px 0px", width: "1350px" }}
+              />
+            </div>
+          </div>
+        </div>
+        {/* End Banner */}
 
-      {/* Search */}
-      <div className="content max-w-[1098px] w-full mx-auto -mt-12 relative z-20 pt-6 bg-white rounded-lg shadow-md">
-        {/* Pilih Jadwal */}
-        <div>
-          <h2 className="text-xl md:text-2xl font-bold mb-4 text-gray-800 px-8 ">
-            Pilih Jadwal Penerbangan spesial di
-            <span className="text-purple-600 bg-white px-2 py-1 rounded">
-              Tiketku
-            </span>
-          </h2>
-          {/* form */}
-          <form className="grid grid-cols-1 gap-8 " onSubmit={handleSearch}>
+        {/* Search */}
+        <div className="content max-w-[1098px] w-full mx-auto -mt-12 relative z-20 pt-6 bg-white rounded-lg shadow-md">
+          
+            <h2 className="text-xl md:text-2xl font-bold mb-4 text-gray-800 px-8 ">
+              Pilih Jadwal Penerbangan spesial di
+              <span className="text-purple-600 bg-white px-2 py-1 rounded">
+                Tiketku
+              </span>
+            </h2>
+            {/* form */}
+            <form className="grid grid-cols-1 gap-8 " onSubmit={handleSearch}>
             {/* fligh */}
             <div className="flex items-center justify-between px-8 flex-wrap">
               {/* flight From */}
               <div className="flex items-center gap-4">
-                <img
-                  src="plane.svg"
-                  alt="From"
-                  // className="w-10 h-10 object-cover rounded-full mr-2"
-                />
+                <img src="plane.svg" alt="From" />
                 <label
                   htmlFor="from"
                   className="block text-xs font-semibold text-gray-600 mb-1 mr-2"
                 >
                   From
                 </label>
-                <div className="relative w-full font-bold">
+                <div
+                  className="relative w-full font-bold"
+                  style={{ maxWidth: "245px" }}
+                >
                   <InputComponent
-                    label="From"
                     id="from"
                     value={fromCity}
                     onChange={(e) => setFromCity(e.target.value)}
                     placeholder="Jakarta (JKTA)"
+                    airportOptions={airportOptions}
                   />
                 </div>
               </div>
@@ -154,31 +127,30 @@ function Beranda() {
               <button
                 type="button"
                 onClick={handleSwitchCities}
-                className="mx-4 text-gray-600 font-semibold hover:text-gray-800 focus:outline-none"
+                className="text-gray-600 font-semibold hover:text-gray-800 focus:outline-none"
               >
                 <img src="return.png" alt="Switch" className="w-6 h-6" />
               </button>
               {/* Flight TO */}
               <div className="flex items-center gap-4">
-                <img
-                  src="plane.svg"
-                  alt="To"
-                  // className="w-10 h-10 object-cover rounded-full mr-2"
-                />
+                <img src="plane.svg" alt="To" />
                 <label
                   htmlFor="to"
                   className="block text-xs font-semibold text-gray-600 mb-1 mr-2"
                 >
                   To
                 </label>
-                <div className="relative w-full font-bold">
+                <div
+                  className="relative w-full font-bold"
+                  style={{ maxWidth: "245px" }}
+                >
                   <InputComponent
                     type="text"
                     id="to"
                     value={toCity}
                     onChange={(e) => setToCity(e.target.value)}
                     placeholder="Melbourne (MLBA)"
-                    className="appearance-none w-full text-gray-700 border-none rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:ring-2 focus:ring-black"
+                    airportOptions={airportOptions}
                   />
                 </div>
               </div>
@@ -223,7 +195,7 @@ function Beranda() {
                       id="return"
                       value={returnDate}
                       onChange={(date) => setReturnDate(date)}
-                      disabled={!sliderChecked} 
+                      disabled={!sliderChecked}
                       className="w-36 h-10 border border-gray-300 rounded px-2 focus:outline-none"
                     />
                   </div>
@@ -235,26 +207,26 @@ function Beranda() {
                 />
               </div>
 
-              {/* Pasengers */}
-              <Passenger onChange={setPassengerCounts} />
+                {/* Pasengers */}
+                <Passenger onChange={setPassengerCounts} />
 
-              {/* Seat Class */}
-              <SeatClass
-                seatClass={seatClass}
-                handleSeatClassChange={handleSeatClassChange}
-              />
-            </div>
-            {/* //button */}
-            <button
-              className="bg-[#7126B5] hover:bg-[#7126B5] text-white font-semibold py-3 rounded w-full "
-              type="submit"
-            >
-              Cari Penerbangan
-            </button>
-          </form>
+                {/* Seat Class */}
+                <SeatClass
+                  seatClass={seatClass}
+                  handleSeatClassChange={handleSeatClassChange}
+                />
+              </div>
+              {/* //button */}
+              <button
+                className="bg-[#7126B5] hover:bg-[#7126B5] text-white font-semibold py-3 rounded w-full "
+                type="submit"
+              >
+                <Link to="/search">Cari Penerbangan</Link>
+              </button>
+            </form>
         </div>
+        <Test />
       </div>
-      <Test />
     </div>
   );
 }
