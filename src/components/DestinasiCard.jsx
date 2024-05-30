@@ -13,7 +13,7 @@ const DestinasiCard = ({
 }) => {
   return (
     <a
-      href="#"
+      href="/search"
       className="block bg-white shadow-2xl p-4 rounded-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-lg"
     >
       <img
