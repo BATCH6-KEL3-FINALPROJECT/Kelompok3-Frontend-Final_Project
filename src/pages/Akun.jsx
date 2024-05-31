@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoMdArrowRoundBack, IoMdCheckmarkCircle } from "react-icons/io";
-import { Link } from "react-router-dom";
 import Cookies from "universal-cookie";
 import Navbar from "../components/Navbar";
 import { motion } from "framer-motion";

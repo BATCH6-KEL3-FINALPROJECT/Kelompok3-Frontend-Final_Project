@@ -99,7 +99,7 @@ const Register = () => {
         className="hidden md:block w-1/2 h-screen"
       >
         <img
-          src="/Auth_Side_Background.png"
+          src="/Auth_Skypass_Background.png"
           alt="Auth Background"
           className="w-full h-full object-cover"
         />
