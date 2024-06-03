@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import Cookies from "universal-cookie";
 
 const Register = () => {
-  const { loading, error, statusCode, sendData } = useSend();
+  const { loading, sendData } = useSend();
   const [isSuccess, setIsSuccess] = useState(null);
   const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -36,7 +36,7 @@ const Register = () => {
 
     if (isSuccess) {
       const timer = setTimeout(() => {
-        navigate("/login");
+        navigate("/otp");
       }, 3000);
       return () => clearTimeout(timer);
     }
@@ -51,34 +51,80 @@ const Register = () => {
     setRegisterData((prev) => ({ ...prev, phone_number: value }));
   };
 
+  const validateInputs = () => {
+    let valid = true;
+    const newErrors = {
+      name: false,
+      email: false,
+      phone_number: false,
+      password: false,
+    };
+    let errorMessage = "";
+
+    if (
+      registerData.name.trim() === "" &&
+      registerData.email.trim() === "" &&
+      registerData.phone_number.trim() === "" &&
+      registerData.password.trim() === ""
+    ) {
+      errorMessage = "Masukkan Data Anda!";
+      valid = false;
+    } else {
+      if (registerData.name.trim() === "") {
+        newErrors.name = true;
+        errorMessage = "Field Nama Tidak Boleh Kosong!";
+        valid = false;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (registerData.email.trim() === "") {
+        newErrors.email = true;
+        errorMessage = "Field Email Tidak Boleh Kosong!";
+        valid = false;
+      } else if (!emailRegex.test(registerData.email)) {
+        newErrors.email = true;
+        errorMessage = "Format Email Tidak Valid!";
+        valid = false;
+      }
+
+      if (registerData.phone_number.trim() === "") {
+        newErrors.phone_number = true;
+        errorMessage = "Field Telepon Tidak Boleh Kosong!";
+        valid = false;
+      }
+
+      if (registerData.password.trim() === "") {
+        newErrors.password = true;
+        errorMessage = "Tolong Masukkan Password!";
+        valid = false;
+      } else if (registerData.password.length < 8) {
+        newErrors.password = true;
+        errorMessage = "Password min 8 karakter!";
+        valid = false;
+      }
+    }
+
+    setErrors(newErrors);
+    setMessage(errorMessage);
+    return valid;
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    let valid = true;
-    if (registerData.password.length < 8) {
-      setErrors((prevErrors) => ({ ...prevErrors, password: true }));
-      valid = false;
-    } else {
-      setErrors((prevErrors) => ({ ...prevErrors, password: false }));
-    }
-
-    if (valid) {
+    if (validateInputs()) {
       try {
         const response = await sendData(
           "/api/v1/auth/register",
           "POST",
           registerData
         );
-        if (response) {
+        if (response && response.statusCode === 200) {
           setIsSuccess(true);
           setMessage("Register berhasil!");
         } else {
           setIsSuccess(false);
-          if (error == null) {
-            setMessage("Terjadi Kesalahan Ketika Register!");
-          } else {
-            setMessage(`${error}`);
-          }
+          setMessage(`${response.data.message}`);
         }
       } catch (err) {
         setIsSuccess(false);
@@ -86,7 +132,6 @@ const Register = () => {
       }
     } else {
       setIsSuccess(false);
-      setMessage("Password min 8 karakter!");
     }
   };
 
@@ -158,11 +203,12 @@ const Register = () => {
               type="text"
               name="name"
               id="name"
-              className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
+              className={`bg-gray-50 border ${
+                errors.name ? "border-red-500" : "border-gray-300"
+              } text-gray-900 sm:text-sm rounded-lg block w-full p-2.5`}
               placeholder="Nama Lengkap"
               value={registerData.name}
               onChange={handleChange}
-              required
             />
           </motion.div>
           <motion.div
@@ -180,11 +226,12 @@ const Register = () => {
               type="email"
               name="email"
               id="email"
-              className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
+              className={`bg-gray-50 border ${
+                errors.email ? "border-red-500" : "border-gray-300"
+              } text-gray-900 sm:text-sm rounded-lg block w-full p-2.5`}
               placeholder="Contoh: johndee@gmail.com"
               value={registerData.email}
               onChange={handleChange}
-              required
               autoComplete="email"
             />
           </motion.div>
@@ -209,7 +256,9 @@ const Register = () => {
                 autoFocus: false,
               }}
               containerClass="w-full"
-              inputClass="w-full bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg p-2.5"
+              inputClass={`w-full bg-gray-50 border border ${
+                errors.phone_number ? "text-red-500" : "text-gray-900"
+              }  sm:text-sm rounded-lg p-2.5`}
             />
           </motion.div>
           <motion.div
@@ -234,7 +283,6 @@ const Register = () => {
               } text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-cyan-500`}
               value={registerData.password}
               onChange={handleChange}
-              required
               autoComplete="new-password"
             />
             <button

@@ -20,7 +20,7 @@ function App() {
         <Route path="/checkout" element={<Checkout />}></Route>
         <Route path="/login" element={<Login />}></Route>
         <Route path="/register" element={<Register />}></Route>
-        <Route path="/register/OTP" element={<Otp />}></Route>
+        <Route path="/otp" element={<Otp />}></Route>
         <Route path="/reset-password" element={<Reset />}></Route>
         <Route path="/riwayat-pesanan" element={<Riwayat />}></Route>
         <Route path="/notifikasi" element={<Notifikasi />}></Route>

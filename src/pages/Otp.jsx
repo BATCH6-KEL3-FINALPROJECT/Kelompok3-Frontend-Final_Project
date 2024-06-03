@@ -1,11 +1,21 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import OtpInput from "../components/OtpInput";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { motion } from "framer-motion";
+import Cookies from "universal-cookie";
 
 const Otp = () => {
+  const [otp, setOtp] = useState(new Array(6).fill(""));
+  const navigate = useNavigate();
+  const cookies = new Cookies();
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log("Inputan OTP:", otp.join(""));
+  };
+
   return (
     <>
       <Navbar isSearch={false} isOTP={true} />
@@ -27,13 +37,21 @@ const Otp = () => {
             <p className="text-center w-full">
               Ketik 6 digit kode yang dikirimkan ke J*****@gmail.com
             </p>
-            <div className="flex justify-center w-full">
-              <OtpInput />
-            </div>
-            <p className="text-center w-full">Kirim Ulang OTP dalam 60 detik</p>
-            <button className="mt-4 px-6 py-2 bg-[#7126B5] text-white rounded-2xl hover:bg-[#7126B5]/50 w-full">
-              Simpan
-            </button>
+            <form onSubmit={handleSubmit}>
+              <div className="flex justify-center w-full">
+                <OtpInput onChange={(updatedOtp) => setOtp(updatedOtp)} />
+              </div>
+              <p className="text-center w-full">
+                Kirim Ulang OTP dalam 60 detik
+              </p>
+              <button
+                type="submit"
+                className="mt-4 px-6 py-2 bg-[#7126B5] text-white rounded-2xl hover:bg-[#7126B5]/50 w-full"
+                onClick={handleSubmit}
+              >
+                Simpan
+              </button>
+            </form>
           </div>
         </div>
       </div>

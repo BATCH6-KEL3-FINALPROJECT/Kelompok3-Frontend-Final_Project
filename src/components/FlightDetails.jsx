@@ -1,5 +1,4 @@
 import React, { Suspense, useEffect, useState } from "react";
-import logo from "../../public/Checkout_Plane_Logo.png";
 
 const FlightDetails = ({ flightDetail, isSavedData }) => {
   const [datas, setDatas] = useState([]);
@@ -28,7 +27,7 @@ const FlightDetails = ({ flightDetail, isSavedData }) => {
           <p> JT - 203 </p>
         </div>
         <div className="flex gap-2">
-          <img src={logo} className="w-6 h-6" />
+          <img src="/Checkout_Plane_Logo.png" className="w-6 h-6" />
           <div className="text-sm ">
             <p className="font-bold"> Informasi : </p>
             {datas.flightDescription && (

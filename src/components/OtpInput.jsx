@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 
-const OtpInput = () => {
-  const [otp, setOtp] = useState(new Array(5).fill(""));
+const OtpInput = ({ onChange }) => {
+  const [otp, setOtp] = useState(new Array(6).fill(""));
 
   const handleChange = (element, index) => {
-    if (isNaN(element.value)) return false;
+    const value = element.value;
 
-    setOtp([...otp.map((d, idx) => (idx === index ? element.value : d))]);
+    const updatedOtp = [...otp.map((d, idx) => (idx === index ? value : d))];
+    setOtp(updatedOtp);
+    onChange(updatedOtp);
 
     if (element.nextSibling) {
       element.nextSibling.focus();

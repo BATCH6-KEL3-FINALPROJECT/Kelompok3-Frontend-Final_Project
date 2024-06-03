@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import Cookies from "universal-cookie";
 
 const Login = () => {
-  const { loading, error, statusCode, sendData } = useSend();
+  const { loading, sendData } = useSend();
   const [isSuccess, setIsSuccess] = useState(null);
   const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -42,24 +42,21 @@ const Login = () => {
     event.preventDefault();
     try {
       const response = await sendData("/api/v1/auth/login", "POST", login);
-      if (response && response.token) {
-        cookies.set("token", response.token, {
+      if (response.data && response.data.token) {
+        cookies.set("token", response.data.token, {
           path: "/",
           expires: new Date(Date.now() + 604800000),
         });
         setIsSuccess(true);
-        setMessage("Login berhasil!");
+        setMessage(`${response.message}`);
         setErrors({ email: false, password: false });
       } else {
         setIsSuccess(false);
-        if (error == null) {
-          setMessage("Terjadi Kesalahan Ketika Login!");
-        } else {
-          setMessage(`${error}`);
-        }
-        if (statusCode === 401) {
+        setMessage(`${response.message}`);
+        console.log(response.statusCode);
+        if (response.statusCode === 401) {
           setErrors({ email: false, password: true });
-        } else if (statusCode === 404) {
+        } else if (response.statusCode === 400) {
           setErrors({ email: true, password: false });
         } else {
           setErrors({ email: true, password: true });
