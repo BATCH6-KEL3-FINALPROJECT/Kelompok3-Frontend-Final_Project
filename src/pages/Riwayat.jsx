@@ -4,15 +4,15 @@ import { IoMdSearch, IoMdArrowRoundBack } from "react-icons/io";
 import { BiFilterAlt } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import Cookies from "universal-cookie";
-import Navbar from "../components/Navbar";
 import { motion } from "framer-motion";
+import Topnav from "../components/Topnav";
 
 const Riwayat = () => {
   const [isLogin, setIsLogin] = useState(true);
   return (
     <>
-      <Navbar isLogin={isLogin} isSearch={false} />
-      <div className="w-11/12 md:w-2/3 mx-auto flex flex-col gap-5 overflow-hidden">
+      <Topnav isLogin={isLogin} isSearch={false} />
+      <div className="w-11/12 md:w-2/3 mx-auto flex flex-col mt-28 gap-5 overflow-hidden">
         <motion.h1
           initial={{ opacity: 0, x: -75 }}
           whileInView={{ opacity: 1, x: 0 }}

@@ -8,8 +8,8 @@ import Register from "./pages/Register";
 import Otp from "./pages/Otp";
 import Reset from "./pages/Reset";
 import Riwayat from "./pages/Riwayat";
-import Notifikasi from "./pages/Notifikasi";
-import Akun from "./pages/Akun";
+import Notification from "./pages/Notification";
+import Account from "./pages/Account";
 
 function App() {
   return (
@@ -23,8 +23,8 @@ function App() {
         <Route path="/otp" element={<Otp />}></Route>
         <Route path="/reset-password" element={<Reset />}></Route>
         <Route path="/riwayat-pesanan" element={<Riwayat />}></Route>
-        <Route path="/notifikasi" element={<Notifikasi />}></Route>
-        <Route path="/akun" element={<Akun />}></Route>
+        <Route path="/notification" element={<Notification />}></Route>
+        <Route path="/account" element={<Account />}></Route>
         <Route
           path="*"
           element={

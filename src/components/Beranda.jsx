@@ -5,7 +5,7 @@ import DatePickerComponent from "./DatePicker";
 import SliderComponent from "./SliderComponent";
 import Passenger from "./Passenger";
 import SeatClass from "./SeatClass";
-import Test from "./Test";
+import Destinasi from "./Destinasi";
 import airportOptions from "../data/airports.json";
 
 function Beranda() {
@@ -68,7 +68,7 @@ function Beranda() {
   };
 
   return (
-    <div className="relative">
+    <div className="relative mt-20">
       <div className="absolute top-10 mt-3 left-0 right-0 h-[150px] bg-[#7126B580] -z-10"></div>
       <div className="container px-4 md:px-8 mx-auto relative z-10">
         {/* Banner */}
@@ -240,7 +240,7 @@ function Beranda() {
             </button>
           </form>
         </div>
-        <Test />
+        <Destinasi />
       </div>
     </div>
   );

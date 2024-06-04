@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import DestinasiFavoritBtn from "../components/DestinasiFavoritBtn";
-import DestinasiCard from "../components/DestinasiCard";
+import DestinasiFavoritBtn from "./DestinasiFavoritBtn";
+import DestinasiCard from "./DestinasiCard";
 import InputSearch from "./InputSearch";
 
-const Test = () => {
+const Destinasi = () => {
   const [selected, setSelected] = useState("Semua");
   const [searchInput, setSearchInput] = useState("");
   const [showDestinations, setShowDestinations] = useState(false);
@@ -65,7 +65,9 @@ const Test = () => {
   };
 
   const deleteSearchItem = (item) => {
-    setFilteredDestinations(filteredDestinations.filter((city) => city !== item));
+    setFilteredDestinations(
+      filteredDestinations.filter((city) => city !== item)
+    );
   };
 
   const deleteAllSearchItems = () => {
@@ -85,7 +87,7 @@ const Test = () => {
 
   return (
     <div className="content max-w-[1098px] w-full mx-auto -mt-12 relative pt-6 bg-none rounded-lg">
-      <h2 className="text-xl md:text-2xl font-bold mb-4 text-gray-800 px-5 mt-10 ml-3">
+      <h2 className="text-xl md:text-2xl font-bold mb-4 text-gray-800 px-5 mt-10">
         Destinasi Favorit
       </h2>
       <div className="flex flex-col items-center">
@@ -219,4 +221,4 @@ const Test = () => {
   );
 };
 
-export default Test;
+export default Destinasi;

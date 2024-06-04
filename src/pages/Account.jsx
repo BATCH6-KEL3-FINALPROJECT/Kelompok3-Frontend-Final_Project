@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { IoMdArrowRoundBack, IoMdCheckmarkCircle } from "react-icons/io";
+import { IoMdCheckmarkCircle, IoMdArrowRoundBack } from "react-icons/io";
 import Cookies from "universal-cookie";
-import Navbar from "../components/Navbar";
+import Topnav from "../components/Topnav";
 import { motion } from "framer-motion";
-import AccountSkeleton from "../components/AccountSkeleton";
+import AccountSkeleton from "../components/AccountContentSkeleton";
 import AccountItem from "../components/AccountItem";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AccountSideNav from "../components/AccountSideNav";
+import AccountSideNavSkeleton from "../components/AccountSideNavSkeleton";
 
-const Akun = () => {
+const Account = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoggedOut, setIsLoggedOut] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -19,11 +21,7 @@ const Akun = () => {
     telepon: "+62 897823232",
     email: "Johndoe@gmail.com",
   });
-  const [errors, setErrors] = useState({
-    name: false,
-    telepon: false,
-    email: false,
-  });
+  const [activeSection, setActiveSection] = useState("profile");
   const navigate = useNavigate();
   const cookies = new Cookies();
 
@@ -53,6 +51,7 @@ const Akun = () => {
   }, [isLoggedOut, navigate]);
 
   const handleLogout = async (event) => {
+    setActiveSection("logout");
     cookies.remove("token");
     setIsLoggedOut(true);
   };
@@ -101,8 +100,8 @@ const Akun = () => {
 
   return (
     <>
-      <Navbar isLogin={isLogin} isSearch={false} />
-      <div className="w-11/12 md:w-2/3 mx-auto flex flex-col gap-5 overflow-hidden">
+      <Topnav isLogin={isLogin} isSearch={false} />
+      <div className="w-11/12 md:w-2/3 mx-auto mt-28 flex flex-col gap-5 overflow-hidden">
         <motion.h1
           initial={{ opacity: 0, x: -75 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -128,17 +127,29 @@ const Akun = () => {
         </div>
         <div className="flex flex-col md:flex-row gap-5 mx-4">
           {isLoading ? (
-            <AccountSkeleton />
+            <AccountSideNavSkeleton />
           ) : (
-            <AccountItem
+            <AccountSideNav
+              activeSection={activeSection}
+              setActiveSection={setActiveSection}
               handleLogout={handleLogout}
-              handleChange={handleChange}
-              handleSubmit={handleSubmit}
-              profile={profile}
-              setProfile={setProfile}
-              loading={loading}
             />
           )}
+          <div className="flex-grow">
+            {isLoading ? (
+              <AccountSkeleton />
+            ) : (
+              <AccountItem
+                handleLogout={handleLogout}
+                handleChange={handleChange}
+                handleSubmit={handleSubmit}
+                profile={profile}
+                setProfile={setProfile}
+                loading={loading}
+                activeSection={activeSection}
+              />
+            )}
+          </div>
         </div>
       </div>
       {isLoggedOut && (
@@ -157,4 +168,4 @@ const Akun = () => {
   );
 };
 
-export default Akun;
+export default Account;

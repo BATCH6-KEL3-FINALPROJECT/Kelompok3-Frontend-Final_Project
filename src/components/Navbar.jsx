@@ -15,7 +15,7 @@ const Navbar = ({
   isOTP = false,
 }) => {
   return (
-    <nav className="flex justify-between py-4 px-2 xl:px-28 md:items-center">
+    <nav className="flex justify-between py-4 mt-52 px-2 xl:px-28 md:items-center">
       <div className="flex flex-1 flex-col md:flex-row md:ps-10 gap-3 md:gap-10 ">
         <Link to="/">
           <img
@@ -35,10 +35,10 @@ const Navbar = ({
               <Link to="/riwayat-pesanan">
                 <ListSvg isActive={isHistory} />
               </Link>
-              <Link to="/notifikasi">
+              <Link to="/notification">
                 <BellSvg isActive={isNotification} />
               </Link>
-              <Link to="/akun">
+              <Link to="/account">
                 <UserSvg isActive={isAccount} />
               </Link>
             </NavbarItems>

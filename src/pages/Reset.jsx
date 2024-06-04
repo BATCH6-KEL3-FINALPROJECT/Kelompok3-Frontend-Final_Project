@@ -123,6 +123,17 @@ const Reset = () => {
               Reset Password
             </h1>
           </motion.div>
+          <label htmlFor="username" className="sr-only">
+            Username
+          </label>  
+          <input
+            type="text"
+            id="username"
+            name="username"
+            className="sr-only"
+            autoComplete="username"
+            aria-hidden="true"
+          />
           <motion.div
             initial={{ opacity: 0, x: 75 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -145,7 +156,6 @@ const Reset = () => {
                 placeholder="Password"
                 value={newPassword.password}
                 onChange={handleChange}
-                required
                 autoComplete="new-password"
               />
               <button

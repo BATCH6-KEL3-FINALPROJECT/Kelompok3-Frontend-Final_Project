@@ -36,7 +36,7 @@ const Register = () => {
 
     if (isSuccess) {
       const timer = setTimeout(() => {
-        navigate("/otp");
+        navigate("/login");
       }, 3000);
       return () => clearTimeout(timer);
     }
@@ -119,7 +119,7 @@ const Register = () => {
           "POST",
           registerData
         );
-        if (response && response.statusCode === 200) {
+        if (response && response.statusCode === 201) {
           setIsSuccess(true);
           setMessage("Register berhasil!");
         } else {

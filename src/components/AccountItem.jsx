@@ -1,36 +1,18 @@
 import React from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import { MdLogout } from "react-icons/md";
-import { IoSettingsOutline } from "react-icons/io5";
-import { FiEdit3 } from "react-icons/fi";
 
 const AccountItem = ({
-  handleLogout,
   handleChange,
   handleSubmit,
   profile,
   setProfile,
   loading,
+  activeSection,
 }) => {
   return (
     <>
-      <div className="flex flex-col gap-4 font-medium text-base w-full md:w-1/3">
-        <button className="flex gap-4 items-center p-2 rounded-lg hover:bg-gray-200 hover:text-[#7126B5] transition-all duration-300">
-          <FiEdit3 className="text-[#7126B5] text-xl" /> <p>Ubah Profil</p>
-        </button>
-        <button className="flex gap-4 items-center p-2 rounded-lg hover:bg-gray-200 hover:text-[#7126B5] transition-all duration-300">
-          <IoSettingsOutline className="text-[#7126B5] text-xl" />
-          <p>Pengaturan Akun</p>
-        </button>
-        <button
-          onClick={handleLogout}
-          className="flex gap-4 items-center p-2 rounded-lg hover:bg-gray-200 hover:text-[#7126B5] transition-all duration-300"
-        >
-          <MdLogout className="text-[#7126B5] text-xl" /> <p>Keluar</p>
-        </button>
-      </div>
-      <div className="flex-grow">
+      {activeSection === "profile" ? (
         <div className="flex flex-col gap-5">
           <h1 className="text-xl font-bold text-center md:text-left">
             Ubah Data Profil
@@ -112,7 +94,13 @@ const AccountItem = ({
             </form>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex flex-col gap-5">
+          <h1 className="text-xl font-bold text-center md:text-left">
+            Pengaturan Akun
+          </h1>
+        </div>
+      )}
     </>
   );
 };

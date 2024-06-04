@@ -4,12 +4,12 @@ import { IoMdSearch, IoMdArrowRoundBack } from "react-icons/io";
 import { BiFilterAlt } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import Cookies from "universal-cookie";
-import Navbar from "../components/Navbar";
 import NotificationItemSkeleton from "../components/NotificationItemSkeleton";
 import NotificationItem from "../components/NotificationItem";
 import { motion } from "framer-motion";
+import Topnav from "../components/Topnav";
 
-const Notifikasi = () => {
+const Notification = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState("All");
@@ -84,8 +84,8 @@ const Notifikasi = () => {
 
   return (
     <>
-      <Navbar isLogin={isLogin} isSearch={false} />
-      <div className="w-11/12 md:w-2/3 mx-auto flex flex-col gap-5 overflow-hidden">
+      <Topnav isLogin={isLogin} isSearch={false} />
+      <div className="w-11/12 md:w-2/3 mx-auto flex mt-28 flex-col gap-5 overflow-hidden">
         <motion.h1
           initial={{ opacity: 0, x: -75 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -199,4 +199,4 @@ const Notifikasi = () => {
   );
 };
 
-export default Notifikasi;
+export default Notification;

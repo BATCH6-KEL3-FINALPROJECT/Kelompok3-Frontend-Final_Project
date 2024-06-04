@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import Filter from "../components/Filter";
 import AccordionTicket from "../components/AccordionTicket";
 import ModalFilter from "../components/ModalFilter";
 import EditSearch from "../components/EditSearch";
 import ButtonSearchingDay from "../components/ButtonSearchingDay";
-import { IoMdArrowRoundBack } from "react-icons/io";
 import { LuArrowUpDown } from "react-icons/lu";
 import { motion } from "framer-motion";
 import axios from "axios";
+import Topnav from "../components/Topnav";
 
 const Search = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -197,8 +196,8 @@ const Search = () => {
 
   return (
     <>
-      <Navbar isLogin={isLogin} isSearch={true} />
-      <div className="w-11/12 md:w-2/3 mx-auto flex flex-col gap-5 overflow-hidden">
+      <Topnav isLogin={isLogin} isSearch={true} />
+      <div className="w-11/12 md:w-2/3 mx-auto flex flex-col mt-28 gap-5 overflow-hidden">
         <motion.h1
           initial={{ opacity: 0, x: -75 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -206,7 +205,7 @@ const Search = () => {
           viewport={{ once: true }}
           className="text-xl font-bold"
         >
-          Notifikasi
+          Pilih Penerbangan
         </motion.h1>
         <div className="flex justify-between items-center gap-2 mx-4 relative">
           <EditSearch
