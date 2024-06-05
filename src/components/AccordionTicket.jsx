@@ -47,7 +47,7 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
         </div>
         <div>
           <img
-            className="hidden 2xs:block me-10 "
+            className="hidden 2xs:block me-6 lg:me-10 "
             src="tas.svg"
             alt="iconticket"
           />

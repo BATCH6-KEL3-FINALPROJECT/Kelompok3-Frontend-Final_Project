@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import InputComponent from "./InputComponent";
 import DatePickerComponent from "./DatePicker";
 import SliderComponent from "./SliderComponent";
@@ -9,6 +9,7 @@ import Destinasi from "./Destinasi";
 import airportOptions from "../data/airports.json";
 
 function Beranda() {
+  const [searchParams] = useSearchParams();
   const [fromCity, setFromCity] = useState("");
   const [toCity, setToCity] = useState("");
   const [departureDate, setDepartureDate] = useState("");
@@ -234,7 +235,10 @@ function Beranda() {
               className="bg-[#7126B5] hover:bg-[#7126B5] text-white font-semibold py-3 rounded w-full flex"
               type="submit"
             >
-              <Link to="/search" className="w-full">
+              <Link
+                to="/search?departure_city=JKT&arrival_city=MLB&penumpang=2&seat_class=Economy"
+                className="w-full"
+              >
                 Cari Penerbangan
               </Link>
             </button>

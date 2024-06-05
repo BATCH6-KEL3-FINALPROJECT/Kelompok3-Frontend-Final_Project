@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { IoMdArrowRoundBack, IoMdCheckmarkCircle } from "react-icons/io";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import useSend from "../hooks/useSend";
@@ -7,18 +7,19 @@ import { motion } from "framer-motion";
 import Cookies from "universal-cookie";
 
 const Reset = () => {
-  const { loading, error, statusCode, sendData } = useSend();
+  const [searchParams] = useSearchParams();
+  const { loading, sendData } = useSend();
   const [isSuccess, setIsSuccess] = useState(null);
   const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showConfPassword, setShowConfPassword] = useState(false);
   const [newPassword, setNewPassword] = useState({
     password: "",
-    confirmPassword: "",
+    confPassword: "",
   });
   const [errors, setErrors] = useState({
     password: false,
-    confirmPassword: false,
+    confPassword: false,
   });
   const navigate = useNavigate();
   const cookies = new Cookies();
@@ -27,6 +28,14 @@ const Reset = () => {
     const checkToken = cookies.get("token");
     if (checkToken) {
       navigate("/");
+    }
+
+    if (
+      searchParams.size === 0 &&
+      !searchParams.has("rpkey") &&
+      searchParams.get("rpkey") == null
+    ) {
+      navigate("/login");
     }
 
     if (isSuccess) {
@@ -50,18 +59,34 @@ const Reset = () => {
       setErrors((prevErrors) => ({ ...prevErrors, password: false }));
     }
 
-    if (newPassword.password !== newPassword.confirmPassword) {
-      setErrors((prevErrors) => ({ ...prevErrors, confirmPassword: true }));
+    if (newPassword.password !== newPassword.confPassword) {
+      setErrors((prevErrors) => ({ ...prevErrors, confPassword: true }));
       setIsSuccess(false);
       setMessage("Password tidak cocok!");
       hasError = true;
     } else {
-      setErrors((prevErrors) => ({ ...prevErrors, confirmPassword: false }));
+      setErrors((prevErrors) => ({ ...prevErrors, confPassword: false }));
     }
 
     if (!hasError) {
-      setIsSuccess(true);
-      setMessage("Reset password berhasil!");
+      try {
+        const response = await sendData(
+          `/api/v1/auth/reset-password?rpkey=${searchParams.get("rpkey")}`,
+          "PUT",
+          newPassword
+        );
+        console.log(response);
+        console.log(newPassword);
+        if (response && response.statusCode === 200) {
+          setIsSuccess(true);
+          setMessage("Reset password berhasil!");
+        } else {
+          setIsSuccess(false);
+          setMessage("Invalid Token");
+        }
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
 
@@ -125,7 +150,7 @@ const Reset = () => {
           </motion.div>
           <label htmlFor="username" className="sr-only">
             Username
-          </label>  
+          </label>
           <input
             type="text"
             id="username"
@@ -173,21 +198,21 @@ const Reset = () => {
             transition={{ duration: 0.5, delay: 1 }}
           >
             <label
-              htmlFor="confirmPassword"
+              htmlFor="confPassword"
               className="flex justify-between mb-2 text-xs text-black"
             >
               Ulangi Password Baru
             </label>
             <div className="relative">
               <input
-                type={showConfirmPassword ? "text" : "password"}
-                name="confirmPassword"
-                id="confirmPassword"
+                type={showConfPassword ? "text" : "password"}
+                name="confPassword"
+                id="confPassword"
                 placeholder="Konfirmasi Password"
                 className={`bg-gray-50 border ${
-                  errors.confirmPassword ? "border-red-500" : "border-gray-300"
+                  errors.confPassword ? "border-red-500" : "border-gray-300"
                 } text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-cyan-500`}
-                value={newPassword.confirmPassword}
+                value={newPassword.confPassword}
                 onChange={handleChange}
                 required
                 autoComplete="current-password"
@@ -195,9 +220,9 @@ const Reset = () => {
               <button
                 type="button"
                 className="absolute top-1/2 transform -translate-y-1/2 right-3 text-2xl text-gray-600"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                onClick={() => setShowConfPassword(!showConfPassword)}
               >
-                {showConfirmPassword ? <IoEyeOffOutline /> : <IoEyeOutline />}
+                {showConfPassword ? <IoEyeOffOutline /> : <IoEyeOutline />}
               </button>
             </div>
           </motion.div>
@@ -206,9 +231,12 @@ const Reset = () => {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 1.25 }}
             type="submit"
-            className="w-full text-white bg-[#7126B5] hover:bg-[#7126B5]/90 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            disabled={loading}
+            className={`w-full text-white bg-[#7126B5] hover:bg-[#7126B5]/90 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center ${
+              loading ? "cursor-not-allowed" : ""
+            }`}
           >
-            Simpan
+            {loading ? "Loading..." : "Simpan"}
           </motion.button>
           {isSuccess !== null && (
             <motion.div
