@@ -1,6 +1,14 @@
 import React from "react";
 
-const CheckoutInput = ({ label, placeholder, name, type }) => {
+const CheckoutInput = ({
+  label,
+  placeholder,
+  name,
+  type,
+  value,
+  onChange,
+  isSaved,
+}) => {
   return (
     <div className="flex flex-col gap-1 px-4 py-2">
       <label htmlFor={name} className="text-purple-900 font-bold">
@@ -11,7 +19,10 @@ const CheckoutInput = ({ label, placeholder, name, type }) => {
         type={type}
         id={name}
         name={name}
+        value={value}
+        onChange={onChange}
         placeholder={placeholder}
+        disabled={isSaved}
       />
     </div>
   );
