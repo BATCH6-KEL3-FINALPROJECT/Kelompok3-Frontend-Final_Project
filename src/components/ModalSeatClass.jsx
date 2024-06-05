@@ -24,13 +24,13 @@ const ModalSeatClass = ({ isOpen, closeModal, seatClass, setSeatClass }) => {
 
   return (
     <div
-      className="absolute bg-white p-6 rounded-lg shadow-lg flex flex-col z-10"
+      className="absolute bg-white p-6 rounded-lg shadow-lg flex flex-col z-10 mt-2"
       style={{
         width: "400px",
         borderRadius: "20px",
         padding: "24px",
         top: "100%", // Adjusts the position to be below the button
-        right: "-30px",
+        right: "-45px",
       }}
     >
       <hr

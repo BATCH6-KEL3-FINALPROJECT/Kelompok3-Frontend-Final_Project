@@ -24,10 +24,10 @@ const ModalPassenger = ({
       className="absolute bg-white p-6 rounded-lg shadow-lg flex flex-col z-10"
       style={{
         width: "400px",
-        borderRadius: "16px",
+        borderRadius: "20px",
         padding: "24px 0",
         top: "100%", // Adjusts the position to be below the button
-        left: "20px",
+        left: "-50px",
       }}
     >
       <div className="px-6">
