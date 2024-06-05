@@ -1,21 +1,29 @@
 import React, { useState } from "react";
 
-const SeatItem = ({ seatNumber, sendData, isAvailable }) => {
+const SeatItem = ({
+  seatNumber,
+  sendData,
+  isAvailable,
+  isMax,
+  passengerNumber,
+}) => {
   const [isSelected, setIsSelected] = useState(false);
 
   function handleClick(seat_number) {
     if (isSelected) {
       setIsSelected(false);
       sendData(seat_number);
-    } else {
+    } else if (!isSelected && !isMax) {
       setIsSelected(true);
       sendData(seat_number);
     }
   }
+
   return (
     <>
       {isAvailable && (
         <button
+          type="button"
           className={`w-9 h-9 rounded-md p-1 transition-all duration-200 ease-in-out ${
             isSelected
               ? "bg-[#7126B5] text-white"
@@ -23,11 +31,12 @@ const SeatItem = ({ seatNumber, sendData, isAvailable }) => {
           }`}
           onClick={() => handleClick(seatNumber)}
         >
-          {isSelected ? `${seatNumber}` : ""}
+          {isSelected ? `${passengerNumber}` : ""}
         </button>
       )}
       {!isAvailable && (
         <button
+          type="button"
           className="w-9 h-9 rounded-md bg-gray-300 text-white cursor-not-allowed"
           disabled
         >
