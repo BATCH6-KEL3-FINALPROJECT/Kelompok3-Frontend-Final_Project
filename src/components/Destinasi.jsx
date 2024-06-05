@@ -86,7 +86,7 @@ const Destinasi = () => {
   }, [selected]);
 
   return (
-    <div className="content max-w-[1098px] w-full mx-auto -mt-12 relative pt-6 bg-none rounded-lg">
+    <div className="content max-w-[1098px] w-full mx-auto -mt-11 relative pt-1 bg-none rounded-lg">
       <h2 className="text-xl md:text-2xl font-bold mb-4 text-gray-800 px-5 mt-10">
         Destinasi Favorit
       </h2>

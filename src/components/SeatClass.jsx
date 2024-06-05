@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import ModalSeatClass from "./ModalSeatClass"; // Adjust the import path as necessary
+import ModalSeatClass from "./ModalSeatClass";
 
 function SeatClass({ seatClass, handleSeatClassChange }) {
   const [showModal, setShowModal] = useState(false);
@@ -15,10 +15,11 @@ function SeatClass({ seatClass, handleSeatClassChange }) {
 
   const handleSeatClassSelect = (selectedClass) => {
     handleSeatClassChange({ target: { value: selectedClass } });
+    setShowModal(false);
   };
 
   return (
-    <div className="flex items-center gap-3 mb-3">
+    <div className="flex items-center gap-3 mb-3 relative">
       <div className="flex flex-col gap-3 ml-3">
         <label
           htmlFor="seatClass"
@@ -29,7 +30,7 @@ function SeatClass({ seatClass, handleSeatClassChange }) {
         <button
           ref={buttonRef}
           type="button"
-          className="appearance-none w-full font-semibold text-gray-700 border-b-4 border-gray-300 rounded-t py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-black mb-2"
+          className="appearance-none w-[200px] font-semibold text-gray-700 border-b-4 border-gray-300 rounded-t py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-black mb-2"
           onClick={handleModalOpen}
         >
           {seatClass || "Select Seat Class"}

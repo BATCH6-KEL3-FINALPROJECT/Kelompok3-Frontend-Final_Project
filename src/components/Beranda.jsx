@@ -70,11 +70,11 @@ function Beranda() {
   return (
     <div className="relative mt-20">
       <div className="absolute top-10 mt-3 left-0 right-0 h-[150px] bg-[#7126B580] -z-10"></div>
-      <div className="container px-4 md:px-8 mx-auto relative z-10">
+      <div className="container px-4 md:px-8 mx-auto relative">
         {/* Banner */}
         <div className="flex justify-center items-center">
           <div className="relative mt-6 md:mt-15">
-            <div className="background-image relative z-10">
+            <div className="background-image relative">
               <img
                 src="img_banner.png"
                 alt="Background"
@@ -87,7 +87,7 @@ function Beranda() {
         {/* End Banner */}
 
         {/* Search */}
-        <div className="content max-w-[1098px] w-full mx-auto -mt-12 relative z-20 pt-6 bg-white rounded-lg shadow-md">
+        <div className="content max-w-[1098px] w-full mx-auto -mt-12 relative  pt-6 bg-white rounded-lg shadow-md  mb-10">
           <h2 className="text-xl md:text-2xl font-bold mb-4 text-gray-800 px-8 ">
             Pilih Jadwal Penerbangan spesial di
             <span className="text-purple-600 bg-white px-2 py-1 rounded">

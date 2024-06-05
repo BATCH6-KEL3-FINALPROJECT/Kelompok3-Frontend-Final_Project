@@ -13,7 +13,7 @@ function Passenger({ onChange }) {
   }, [adultCount, childCount, infantCount, onChange]);
 
   return (
-    <div className="flex items-center gap-4 flex-wrap ml-4">
+    <div className="flex items-center gap-4 flex-wrap ml-4 relative">
       <div className="flex flex-col mb-4 gap-3 ml-6">
         <label
           htmlFor="passengers"

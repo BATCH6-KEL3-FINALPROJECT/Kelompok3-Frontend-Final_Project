@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { FaCheck } from "react-icons/fa";
+import checklistIcon from "../../public/Checkout_Saved.svg";
 
 const ModalSeatClass = ({ isOpen, closeModal, seatClass, setSeatClass }) => {
-  const [tempSeatClass, setTempSeatClass] = useState(seatClass);
+  const [hoveredOption, setHoveredOption] = useState(null);
 
   const options = [
     { label: "Economy", value: "Economy", price: "IDR 4,950,000" },
@@ -16,67 +16,76 @@ const ModalSeatClass = ({ isOpen, closeModal, seatClass, setSeatClass }) => {
   ];
 
   const handleOptionClick = (option) => {
-    setTempSeatClass(option.value);
-  };
-
-  const handleSave = () => {
-    setSeatClass(tempSeatClass);
+    setSeatClass(option.value);
     closeModal();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0  flex items-center justify-center z-50">
-      <div
-        className="bg-white rounded-lg overflow-hidden  shadow-lg transform transition-all max-w-md w-full"
-        style={{ width: "400px", height: "306px" }}
-      >
-        <div className="bg-white p-4 flex justify-end items-center">
-          <button
-            className="text-black text-2xl font-bold"
-            onClick={closeModal}
+    <div
+      className="absolute bg-white p-6 rounded-lg shadow-lg flex flex-col z-10"
+      style={{
+        width: "400px",
+        borderRadius: "20px",
+        padding: "24px",
+        top: "100%", // Adjusts the position to be below the button
+        right: "-30px",
+      }}
+    >
+      <hr
+        className="border-gray-400 w-full absolute left-0"
+        style={{ top: "55px" }}
+      />
+      <div className="flex justify-end mb-2">
+        <button onClick={closeModal}>
+          <svg
+            className="w-6 h-6 text-gray-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
           >
-            &times;
-          </button>
-          <hr
-            className="border-gray-400 w-full absolute left-0"
-            style={{ top: "55px" }}
-          />
-        </div>
-        <div className="ps-4 pe-4">
-          {options.map((option, index) => (
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+      <div className="flex flex-col gap-2">
+        {options.map((option) => (
+          <div key={option.value}>
             <div
-              key={index}
-              className={` flex items-center justify-between cursor-pointer ${
-                tempSeatClass === option.value ? "bg-purple-700 text-white" : ""
+              className={`px-4 py-2 cursor-pointer flex justify-between items-center ${
+                seatClass === option.value || hoveredOption === option.value
+                  ? "bg-[#4B1979] text-white"
+                  : ""
               }`}
               onClick={() => handleOptionClick(option)}
+              onMouseEnter={() => setHoveredOption(option.value)}
+              onMouseLeave={() => setHoveredOption(null)}
             >
               <div>
                 <div className="font-semibold">{option.label}</div>
-                <div className="text-gray-700">{option.price}</div>
+                <div className="text-gray-500">{option.price}</div>
               </div>
-              {tempSeatClass === option.value && (
-                <FaCheck
-                  className="inline-block ml-2 rounded-full bg-green-400"
-                  style={{ color: "#7126B5", marginRight: "8px" }}
-                />
+              {(seatClass === option.value || hoveredOption === option.value) && (
+                <img src={checklistIcon} alt="Selected" className="w-6 h-6" />
               )}
             </div>
-          ))}
-        </div>
-        <hr className="border-gray-300" />
-        <div className="bg-gray-50 px-4 py-1 sm:px-6 sm:flex sm:flex-row-reverse">
-          <button
-            type="button"
-            className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white hover:bg-purple-800 sm:ml-3 sm:w-auto sm:text-sm"
-            style={{ backgroundColor: "#4B1979" }}
-            onClick={handleSave}
-          >
-            Simpan
-          </button>
-        </div>
+            <hr className="my-1 border-gray-300" />
+          </div>
+        ))}
+      </div>
+      <div className="flex justify-end">
+        <button
+          className="bg-[#4B1979] hover:bg-[#4B1979] text-white font-semibold py-2 px-4 rounded"
+          onClick={closeModal}
+        >
+          Simpan
+        </button>
       </div>
     </div>
   );
