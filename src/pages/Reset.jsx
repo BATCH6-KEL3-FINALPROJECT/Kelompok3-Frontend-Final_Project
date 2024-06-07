@@ -37,14 +37,16 @@ const Reset = () => {
     ) {
       navigate("/login");
     }
+  }, []);
 
+  useEffect(() => {
     if (isSuccess) {
       const timer = setTimeout(() => {
         navigate("/login");
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [isSuccess, navigate]);
+  }, [isSuccess]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -75,8 +77,6 @@ const Reset = () => {
           "PUT",
           newPassword
         );
-        console.log(response);
-        console.log(newPassword);
         if (response && response.statusCode === 200) {
           setIsSuccess(true);
           setMessage("Reset password berhasil!");
@@ -86,7 +86,11 @@ const Reset = () => {
         }
       } catch (err) {
         console.log(err);
+        setIsSuccess(false);
+        setMessage("Something went wrong. Please try again.");
       }
+    } else {
+      setMessage("Something went wrong. Please try again.");
     }
   };
 
@@ -109,7 +113,7 @@ const Reset = () => {
           className="w-full h-full object-cover"
         />
       </motion.div>
-      {isSuccess && (
+      {/* {isSuccess && (
         <>
           <div className="fixed inset-0 bg-black opacity-50 z-40"></div>
           <motion.div
@@ -124,7 +128,7 @@ const Reset = () => {
             </h2>
           </motion.div>
         </>
-      )}
+      )} */}
       <div className="w-full md:w-1/2 flex items-center justify-center bg-gradient-to-r from-purple-500 to-blue-500 md:from-white md:to-white h-screen">
         <motion.form
           initial={{ opacity: 0, x: 75 }}

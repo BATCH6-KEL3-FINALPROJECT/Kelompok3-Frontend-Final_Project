@@ -132,6 +132,7 @@ const Register = () => {
       }
     } else {
       setIsSuccess(false);
+      setMessage("Something went wrong. Please try again.");
     }
   };
 
