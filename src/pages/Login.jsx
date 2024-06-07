@@ -99,18 +99,19 @@ const Login = () => {
           email: login.email,
         });
         console.log(response);
+        console.log(response.data.data.token);
         if (response.statusCode === 400) {
           setIsSuccess(false);
           setMessage(response.message);
         } else {
           const check = await sendData(
-            `/api/v1/auth/reset-password?rpkey=${response.data.token}`,
+            `/api/v1/auth/reset-password?rpkey=${response.data.data.token}`,
             "GET"
           );
           if (check) {
-            if (check.statusCode === 201) {
+            if (check.statusCode === 200) {
               setIsSuccess(true);
-              setResetToken(response.data.token);
+              setResetToken(response.data.data.token);
               setMessage("Tautan reset password terkirim");
             } else {
               setMessage("Tautan invalid atau kadaluarsa");
@@ -148,7 +149,7 @@ const Login = () => {
           className="w-full h-full object-cover"
         />
       </motion.div>
-      {isSuccess && (
+      {/* {isSuccess && (
         <>
           <div className="fixed inset-0 bg-black opacity-50 z-40"></div>
           <motion.div
@@ -163,7 +164,7 @@ const Login = () => {
             </h2>
           </motion.div>
         </>
-      )}
+      )} */}
       <div className="w-full md:w-1/2 flex items-center justify-center bg-gradient-to-r from-purple-500 to-blue-500 md:from-white md:to-white h-screen">
         <motion.form
           initial={{ opacity: 0, x: 75 }}
@@ -271,12 +272,12 @@ const Login = () => {
             className="text-sm font-light text-black text-center"
           >
             Belum punya akun?{" "}
-            <button
+            <Link
               to="/register"
               className="font-medium text-[#7126B5] hover:underline"
             >
               Daftar di sini
-            </button>
+            </Link>
           </motion.p>
           {isSuccess !== null && (
             <motion.div

@@ -4,7 +4,13 @@ import axios from "axios";
 const useSend = () => {
   const [loading, setLoading] = useState(false);
 
-  const sendData = async (url, method, body = null, token = null) => {
+  const sendData = async (
+    url,
+    method,
+    body = null,
+    token = null,
+    json = false
+  ) => {
     const BASE_URL = "https://airline.azkazk11.my.id";
     let data = null,
       message = null,
@@ -16,6 +22,10 @@ const useSend = () => {
       const headers = {};
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      if (json) {
+        headers["Content-Type"] = "application/json";
       }
 
       const response = await axios({

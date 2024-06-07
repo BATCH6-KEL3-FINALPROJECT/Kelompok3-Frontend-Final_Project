@@ -8,13 +8,17 @@ import EditSearch from "../components/EditSearch";
 import ButtonSearchingDay from "../components/ButtonSearchingDay";
 import { LuArrowUpDown } from "react-icons/lu";
 import { motion } from "framer-motion";
-import axios from "axios";
 import Topnav from "../components/Topnav";
+import useSend from "../hooks/useSend";
 
 const Search = () => {
+  const { loading, sendData } = useSend();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [dataFlight, setDataFlight] = useState([]);
   const [searchParams] = useSearchParams();
   const [isLogin, setIsLogin] = useState(true);
-  const [tickeSearch, setTicketSearch] = useState({
+  const [ticketSearch, setTicketSearch] = useState({
     departure_city: searchParams.get("departure_city"),
     arrival_city: searchParams.get("arrival_city"),
     penumpang: searchParams.get("penumpang"),
@@ -22,6 +26,22 @@ const Search = () => {
   });
   const navigate = useNavigate();
   const cookies = new Cookies();
+
+  const fetchData = async () => {
+    const response = await sendData(`/api/v1/flight`, "GET", null, null, true);
+    console.log(response);
+    if (response.statusCode === 200) {
+      setDataFlight(response.data.data.flights);
+      console.log(dataFlight);
+    } else {
+      console.error(response.message);
+    }
+  };
+
+  useEffect(() => {
+    console.log("Fetching...");
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const checkToken = cookies.get("token");
@@ -119,21 +139,6 @@ const Search = () => {
   const [filteredFlights, setFilteredFlights] = useState([]);
 
   useEffect(() => {
-    // Fetch data from API
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("https://api.example.com/flights");
-        setFlights(response.data);
-        setFilteredFlights(response.data);
-      } catch (error) {
-        console.error("Error fetching flight data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
     filterFlights();
   }, [selectedFilter, flights]);
 
@@ -187,13 +192,13 @@ const Search = () => {
     const parts = selectedFilter.split(" - ");
     return parts.length > 1 ? parts[1] : parts[0];
   };
-  //   Search data
 
-  const [selectedDate, setSelectedDate] = useState("02/03/2023"); // State for selected day
+  const [selectedDate, setSelectedDate] = useState("02/03/2023");
 
   const handleClick = (date) => {
     setSelectedDate(date);
   };
+
   const days = [
     { day: "Selasa", date: "01/03/2023" },
     { day: "Rabu", date: "02/03/2023" },
@@ -220,10 +225,10 @@ const Search = () => {
         </motion.h1>
         <div className="flex justify-between items-center gap-2 mx-4 relative">
           <EditSearch
-            origin={tickeSearch.departure_city}
-            destination={tickeSearch.arrival_city}
-            passengers={tickeSearch.penumpang}
-            classType={tickeSearch.seat_class}
+            origin={ticketSearch.departure_city}
+            destination={ticketSearch.arrival_city}
+            passengers={ticketSearch.penumpang}
+            classType={ticketSearch.seat_class}
             onEdit={() => console.log("Edit search clicked")}
           />
           <motion.button
@@ -231,6 +236,7 @@ const Search = () => {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.75, delay: 0.75 }}
             viewport={{ once: true }}
+            onClick={() => navigate("/")}
             className="text-white gap-5 p-2 md:p-3 px-5 rounded-lg bg-[#73CA5C]"
           >
             Ubah Pencarian
@@ -274,14 +280,24 @@ const Search = () => {
             <Filter />
           </div>
           <div className="flex-grow">
-            {flightsDummy.map((flight, index) => (
+            {/* {flightsDummy.map((flight, index) => (
               <AccordionTicket
                 key={index}
                 flight={flight}
                 isOpen={openAccordion === index}
                 toggleAccordion={() => toggleAccordion(index)}
               />
-            ))}
+            ))} */}
+            {loading &&
+              dataFlight.map((flight, index) => (
+                <AccordionTicket
+                  key={index}
+                  flight={flight}
+                  isOpen={openAccordion === index}
+                  toggleAccordion={() => toggleAccordion(index)}
+                />
+              ))}
+            {}
           </div>
         </div>
       </div>
