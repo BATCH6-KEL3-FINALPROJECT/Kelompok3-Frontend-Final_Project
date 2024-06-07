@@ -75,7 +75,9 @@ const InputComponent = ({
       {showSelect && (
         <div
           className={`absolute left-1/3 transform ${
-            id === "from" ? "-translate-x-1/3" : "-translate-x-1/2"
+            id === "from"
+              ? "md:-translate-x-1/3 -translate-x-1/2"
+              : "-translate-x-1/2"
           } top-1/3 z-10 mt-7 h-[300px] w-[90vw] md:w-[600px] bg-white px-4 shadow-md rounded-md`}
         >
           <div className="flex items-center gap-2 pt-3">
@@ -111,7 +113,7 @@ const InputComponent = ({
           </div>
           <div className="overflow-y-scroll pt-3" style={{ height: "238px" }}>
             {locationNotFound ? (
-              <div className="text-head-1-5 mb-2 pt-2 font-poppins font-semibold">
+              <div className="text-head-1-5 mb-2 pt-2 font-poppins text-[14px] md:font-semibold">
                 <h1>Location not found...</h1>
               </div>
             ) : (
