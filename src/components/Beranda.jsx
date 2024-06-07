@@ -13,6 +13,8 @@ function Beranda() {
   const [searchParams] = useSearchParams();
   const [fromCity, setFromCity] = useState("");
   const [toCity, setToCity] = useState("");
+  const [activeInput, setActiveInput] = useState(null);
+  const [isRotated, setIsRotated] = useState(false);
   const [departureDate, setDepartureDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
   const [passengerCounts, setPassengerCounts] = useState({
@@ -28,9 +30,10 @@ function Beranda() {
   };
 
   const handleSwitchCities = () => {
-    const tempCity = toCity;
-    setToCity(fromCity);
-    setFromCity(tempCity);
+    const temp = fromCity;
+    setFromCity(toCity);
+    setToCity(temp);
+    setIsRotated(!isRotated);
   };
 
   const handleSliderChange = () => {
@@ -117,8 +120,10 @@ function Beranda() {
                     id="from"
                     value={fromCity}
                     onChange={(e) => setFromCity(e.target.value)}
-                    placeholder="Jakarta (JKTA)"
+                    placeholder="Please select a location ..."
                     airportOptions={airportOptions}
+                    activeInput={activeInput}
+                    setActiveInput={setActiveInput}
                   />
                 </div>
               </div>
@@ -127,7 +132,9 @@ function Beranda() {
                 <button
                   type="button"
                   onClick={handleSwitchCities}
-                  className="text-gray-600 font-semibold hover:text-gray-800 focus:outline-none"
+                  className={`text-gray-600 font-semibold hover:text-gray-800 focus:outline-none transition-transform duration-5000 ${
+                    isRotated ? "rotate-180" : "-rotate-180"
+                  }`}
                 >
                   <img src="return.png" alt="Switch" className="w-8 h-8" />
                 </button>
@@ -143,12 +150,13 @@ function Beranda() {
                 </label>
                 <div className="relative font-bold w-full md:w-[340px]">
                   <InputComponent
-                    type="text"
                     id="to"
                     value={toCity}
                     onChange={(e) => setToCity(e.target.value)}
-                    placeholder="Melbourne (MLBA)"
+                    placeholder="Please select a location ..."
                     airportOptions={airportOptions}
+                    activeInput={activeInput}
+                    setActiveInput={setActiveInput}
                   />
                 </div>
               </div>
