@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import checklistIcon from "../../public/Checkout_Saved.svg";
 
 const ModalSeatClass = ({ isOpen, closeModal, seatClass, setSeatClass }) => {
   const [hoveredOption, setHoveredOption] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(seatClass);
+
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedOption(seatClass);
+    }
+  }, [isOpen, seatClass]);
 
   const options = [
     { label: "Economy", value: "Economy", price: "IDR 4,950,000" },
@@ -16,7 +23,11 @@ const ModalSeatClass = ({ isOpen, closeModal, seatClass, setSeatClass }) => {
   ];
 
   const handleOptionClick = (option) => {
-    setSeatClass(option.value);
+    setSelectedOption(option.value);
+  };
+
+  const handleSaveClick = () => {
+    setSeatClass(selectedOption);
     closeModal();
   };
 
@@ -24,9 +35,8 @@ const ModalSeatClass = ({ isOpen, closeModal, seatClass, setSeatClass }) => {
 
   return (
     <div
-      className="absolute bg-white p-6 rounded-lg shadow-lg flex flex-col z-10 mt-2"
+      className="absolute bg-white p-6 rounded-lg shadow-lg flex flex-col z-10 mt-2 w-[380px] md:w-[400px] md:h-[356px]"
       style={{
-        width: "400px",
         borderRadius: "20px",
         padding: "24px",
         top: "100%", // Adjusts the position to be below the button
@@ -58,8 +68,9 @@ const ModalSeatClass = ({ isOpen, closeModal, seatClass, setSeatClass }) => {
         {options.map((option) => (
           <div key={option.value}>
             <div
-              className={`px-4 py-2 cursor-pointer flex justify-between items-center ${
-                seatClass === option.value || hoveredOption === option.value
+              className={`px-4 py-1 cursor-pointer flex justify-between items-center ${
+                selectedOption === option.value ||
+                hoveredOption === option.value
                   ? "bg-[#4B1979] text-white"
                   : ""
               }`}
@@ -71,18 +82,19 @@ const ModalSeatClass = ({ isOpen, closeModal, seatClass, setSeatClass }) => {
                 <div className="font-semibold">{option.label}</div>
                 <div className="text-gray-500">{option.price}</div>
               </div>
-              {(seatClass === option.value || hoveredOption === option.value) && (
+              {(selectedOption === option.value ||
+                hoveredOption === option.value) && (
                 <img src={checklistIcon} alt="Selected" className="w-6 h-6" />
               )}
             </div>
-            <hr className="my-1 border-gray-300" />
+            <hr className="border-gray-300" />
           </div>
         ))}
       </div>
       <div className="flex justify-end">
         <button
           className="bg-[#4B1979] hover:bg-[#4B1979] text-white font-semibold py-2 px-4 rounded"
-          onClick={closeModal}
+          onClick={handleSaveClick}
         >
           Simpan
         </button>

@@ -104,58 +104,6 @@ const Destinasi = () => {
             )
           )}
         </div>
-        {showDestinations && (
-          <div
-            className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[90%] sm:w-96 flex items-center justify-center z-20"
-            style={{ maxWidth: "600px" }}
-          >
-            <div
-              className="border border-gray-300 rounded-lg p-4 bg-white shadow-lg gap-2"
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                borderRadius: "20px",
-              }}
-              ref={destinationsRef}
-            >
-              {/* btn Input Seach */}
-              <div className="flex items-center mb-4">
-                <InputSearch
-                  placeholder="Masukan Kota atau Negara"
-                  value={searchInput}
-                  onChange={handleSearchInputChange}
-                  onReset={resetSearchInput}
-                />
-              </div>
-              {/* btn clear semua pencarian */}
-              <div className="flex justify-between items-center mb-4">
-                <span className="font-semibold">Pencarian Terkini</span>
-                <button
-                  className="text-red-500 hover:text-red-600 font-semibold py-1 px-2 rounded"
-                  onClick={deleteAllSearchItems}
-                >
-                  Hapus
-                </button>
-              </div>
-              {/* hapus per kota */}
-              {filteredDestinations.map((city) => (
-                <div
-                  key={city}
-                  className="border-b border-gray-300 py-2 flex justify-between items-center"
-                  style={{ borderRadius: "20px" }}
-                >
-                  <span className="ml-4 font-semibold">{city}</span>
-                  <button
-                    className="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-2 rounded mr-4"
-                    onClick={() => deleteSearchItem(city)}
-                  >
-                    X
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
       {/* Card Destinasin Favorite */}
       <div className="container mx-auto p-4 ml-3">

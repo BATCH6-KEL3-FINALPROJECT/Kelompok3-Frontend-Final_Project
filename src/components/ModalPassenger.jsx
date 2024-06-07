@@ -21,9 +21,8 @@ const ModalPassenger = ({
 
   return (
     <div
-      className="absolute bg-white p-6 rounded-lg shadow-lg flex flex-col z-10"
+      className="absolute  bg-white p-6 rounded-lg shadow-lg flex flex-col z-10 ms-1 md:ms-0  w-[380px] md:w-[400px] md:h-[306px]"
       style={{
-        width: "400px",
         borderRadius: "20px",
         padding: "24px 0",
         top: "100%", // Adjusts the position to be below the button
@@ -49,7 +48,10 @@ const ModalPassenger = ({
           </button>
         </div>
       </div>
-      <hr className="border-gray-400 w-full absolute left-0" style={{ top: "55px" }} />
+      <hr
+        className="border-gray-400 w-full absolute left-0"
+        style={{ top: "55px" }}
+      />
       <div className="px-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
@@ -66,20 +68,33 @@ const ModalPassenger = ({
           <div className="flex items-center">
             <button
               className="px-2 py-1 rounded"
-              style={{ border: "1px solid #4B1979", height: "40px", width: "40px" }}
+              style={{
+                border: "1px solid #4B1979",
+                height: "40px",
+                width: "40px",
+              }}
               onClick={() => decrement(setAdults, adults, 1)}
             >
               -
             </button>
             <span
               className="mx-4 flex items-center justify-center bg-gray-100 border rounded"
-              style={{ width: "60px", height: "40px", borderRadius: "4px", border: "1px solid #4B1979" }}
+              style={{
+                width: "60px",
+                height: "40px",
+                borderRadius: "4px",
+                border: "1px solid #4B1979",
+              }}
             >
               {adults}
             </span>
             <button
               className="px-2 py-1 rounded"
-              style={{ border: "1px solid #4B1979", height: "40px", width: "40px" }}
+              style={{
+                border: "1px solid #4B1979",
+                height: "40px",
+                width: "40px",
+              }}
               onClick={() => increment(setAdults, adults)}
             >
               +
@@ -102,20 +117,33 @@ const ModalPassenger = ({
           <div className="flex items-center">
             <button
               className="px-2 py-1 rounded"
-              style={{ border: "1px solid #4B1979", height: "40px", width: "40px" }}
+              style={{
+                border: "1px solid #4B1979",
+                height: "40px",
+                width: "40px",
+              }}
               onClick={() => decrement(setChildrens, childrens)}
             >
               -
             </button>
             <span
               className="mx-4 flex items-center justify-center bg-gray-100 border rounded"
-              style={{ width: "60px", height: "40px", borderRadius: "4px", border: "1px solid #4B1979" }}
+              style={{
+                width: "60px",
+                height: "40px",
+                borderRadius: "4px",
+                border: "1px solid #4B1979",
+              }}
             >
               {childrens}
             </span>
             <button
               className="px-2 py-1 rounded"
-              style={{ border: "1px solid #4B1979", height: "40px", width: "40px" }}
+              style={{
+                border: "1px solid #4B1979",
+                height: "40px",
+                width: "40px",
+              }}
               onClick={() => increment(setChildrens, childrens)}
             >
               +
@@ -138,20 +166,33 @@ const ModalPassenger = ({
           <div className="flex items-center">
             <button
               className="px-2 py-1 rounded"
-              style={{ border: "1px solid #4B1979", height: "40px", width: "40px" }}
+              style={{
+                border: "1px solid #4B1979",
+                height: "40px",
+                width: "40px",
+              }}
               onClick={() => decrement(setInfants, infants)}
             >
               -
             </button>
             <span
               className="mx-4 flex items-center justify-center bg-gray-100 border rounded"
-              style={{ width: "60px", height: "40px", borderRadius: "4px", border: "1px solid #4B1979" }}
+              style={{
+                width: "60px",
+                height: "40px",
+                borderRadius: "4px",
+                border: "1px solid #4B1979",
+              }}
             >
               {infants}
             </span>
             <button
               className="px-2 py-1 rounded"
-              style={{ border: "1px solid #4B1979", height: "40px", width: "40px" }}
+              style={{
+                border: "1px solid #4B1979",
+                height: "40px",
+                width: "40px",
+              }}
               onClick={() => increment(setInfants, infants)}
             >
               +
