@@ -17,7 +17,7 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
           <img src="logoplane.svg" alt="Logo" className="h-6 mr-2" />
           <div className="flex flex-col ml-2">
             <span className="text-sm text-gray-500">
-              {flight.airline} - {flight.class}
+              {flight.airline_name} - {flight.seat_class}
             </span>
             <div
               className="grid grid-cols-3 gap-0 text-sm text-gray-500 mt-1"
@@ -28,20 +28,20 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
               }}
             >
               <div>
-                <strong className="text-black">{flight.departureTime}</strong>
+                <strong className="text-black">{flight.departure_time}</strong>
               </div>
               <div className="text-sm text-center">Duration</div>
               <div>
-                <strong className="text-black">{flight.arrivalTime}</strong>
+                <strong className="text-black">{flight.arrival_time}</strong>
               </div>
               <div></div>
               <div className="text-center">
                 <img src="arrow.svg" alt="arrowicon" />
               </div>
               <div></div>
-              <div className="text-black">{flight.origin}</div>
+              <div className="text-black">{flight.origin || "JKT"}</div>
               <div className="text-sm text-center">Direct</div>
-              <div className="text-black">{flight.destination}</div>
+              <div className="text-black">{flight.destination || "MLB"}</div>
             </div>
           </div>
         </div>
@@ -97,14 +97,14 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
           </div>
           <div className="text-sm flex justify-between text-black">
             <div>
-              <strong>{flight.departureTime}</strong>
+              <strong>{flight.departure_time}</strong>
             </div>
             <div className="font-semibold" style={{ color: "#A06ECE" }}>
               Keberangkatan
             </div>
           </div>
-          <div className="text-sm">{flight.departureDate}</div>
-          <div className="text-sm">{flight.originAirport}</div>
+          <div className="text-sm">{flight.departure_date}</div>
+          <div className="text-sm">{flight.departure_airport_name}</div>
         </div>
         <div>
           <hr className="my-1 border-gray-300" />
@@ -112,11 +112,11 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
         <div className="text-black text-sm mb-2">
           <div className="mb-0 p-0">
             <strong>
-              {flight.airline} - {flight.class}
+              {flight.airline_name} - {flight.seat_class}
             </strong>
           </div>
           <div className="mt-0 pt-0">
-            <strong>kode pesawat (JT03)</strong>
+            <strong>{flight.flight_code}</strong>
           </div>
         </div>
         <div className="mb-2 flex items-center">
