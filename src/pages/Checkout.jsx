@@ -12,6 +12,7 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import { passenger } from "../utils/generatePassanger";
 import CheckoutPricing from "../components/CheckoutPricing";
 import { getSeats } from "../utils/seatsDummy";
+import { FormProvider, useForm } from "react-hook-form";
 
 const Checkout = () => {
   const [datas, setDatas] = useState([]);
@@ -21,13 +22,31 @@ const Checkout = () => {
   const [isDataSaved, setIsDataSaved] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [passengerInfo, setPassengerInfo] = useState([]);
-  const [customerForm, setCustomerForm] = useState({
-    customerFullName: "",
-    customerFamilyName: "",
-    customerPhoneNumber: "",
-    customerEmail: "",
+  const methods = useForm();
+
+  const onSubmit = methods.handleSubmit((data) => {
+    const passengersData = [];
+    let customerData = {};
+
+    for (const key in data) {
+      if (key.startsWith("customer")) {
+        customerData[key] = data[key];
+        continue;
+      }
+      const index = key.split("_")[1];
+
+      if (!passengersData[index]) {
+        passengersData[index] = {};
+      }
+
+      passengersData[index][key.split("_")[0]] = data[key];
+    }
+
+    const objectData = {
+      customerData,
+      passengersData: passengersData,
+    };
   });
-  const [passengerForm, setPassengerForm] = useState([]);
 
   useEffect(() => {
     try {
@@ -41,22 +60,6 @@ const Checkout = () => {
     setFlightDetail(flightDetails());
     setPassengerInfo(passenger.sort());
   }, []);
-
-  useEffect(() => {
-    setIsPassengerFamilyName(new Array(passengerInfo.length).fill(false));
-
-    setPassengerForm(() => {
-      return passengerInfo.map(() => ({
-        fullname: "",
-        familyName: "",
-        phoneNumber: "",
-        email: "",
-        birthDate: "",
-        citizenship: "",
-        issuingCountry: "",
-      }));
-    });
-  }, [passengerInfo]);
 
   function handleCustomerBtn() {
     if (isCustomerFamilyName) {
@@ -72,239 +75,255 @@ const Checkout = () => {
     );
   }
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    console.log(customerForm);
-    console.log(passengerForm);
-  }
-
-  function handleCustomerForm(e) {
-    const { value, name } = e.target;
-    setCustomerForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  }
-
-  function handlePassengerForm(e, index) {
-    const { value, name } = e.target;
-    let data = [...passengerForm];
-    data[index][name] = value;
-    setPassengerForm(data);
-  }
-
   return (
     <>
       <Navbar isLogin={isLogin} />
       <Breadcrumbs isPayment={isDataSaved} isSuccess={false} />
 
-      {!isDataSaved && (
+      {isDataSaved ? (
+        <CheckoutAlert type="Success" message="Data anda berhasil disimpan!" />
+      ) : (
         <CheckoutAlert type="Danger" message="Selesaikan dalam 00:15:00" />
       )}
 
-      {isDataSaved && (
-        <CheckoutAlert type="Success" message="Data anda berhasil disimpan!" />
-      )}
-
       <div className="my-5 flex flex-col lg:flex-row md:justify-center md:items-center lg:items-start lg:justify-center gap-10">
-        <form onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-10">
-            {/* Form Data Customer */}
-            <div className="flex flex-col gap-10 px-2">
-              <CheckoutCards>
-                <h3 className="text-xl font-bold mb-4"> Isi Data Pemesan </h3>
-                <CheckoutForm title="Data Diri Pemesan" isSaved={isDataSaved}>
-                  <CheckoutInput
-                    label="Nama Lengkap"
-                    placeholder="Harry"
-                    name="customerFullName"
-                    type="text"
-                    onChange={handleCustomerForm}
-                    value={customerForm.customerFullName}
-                    isSaved={isDataSaved}
-                  />
-                  <div className="flex justify-between px-4">
-                    <p> Punya nama keluarga? </p>
-                    <div className="relative">
-                      <input
-                        type="checkbox"
-                        onClick={handleCustomerBtn}
-                        disabled={isDataSaved}
-                        className="absolute left-1/2 -translate-x-1/2 w-full h-full peer appearance-none rounded-md"
-                      />
-                      <span className="w-10 h-6 flex items-center flex-shrink-0 ml-4 p-1 bg-slate-300  rounded-full duration-300 ease-in-out peer-checked:bg-[#4B1979] after:w-4 after:h-4 after:bg-white after:rounded-full after:shadow-md after:duration-300 peer-checked:after:translate-x-4 group-hover:after:translate-x-1"></span>
+        <FormProvider {...methods}>
+          <form onSubmit={(e) => e.preventDefault()} noValidate>
+            <div className="flex flex-col gap-10">
+              {/* Form Data Customer */}
+              <div className="flex flex-col gap-10 px-2">
+                <CheckoutCards>
+                  <h3 className="text-xl font-bold mb-4"> Isi Data Pemesan </h3>
+                  <CheckoutForm title="Data Diri Pemesan" isSaved={isDataSaved}>
+                    <CheckoutInput
+                      label="Nama Lengkap"
+                      placeholder="Harry"
+                      name="customerFullName"
+                      type="text"
+                      validation={{
+                        required: {
+                          value: true,
+                          message: "Harap isi input ini!",
+                        },
+                      }}
+                      isSaved={isDataSaved}
+                    />
+                    <div className="flex justify-between px-4">
+                      <p> Punya nama keluarga? </p>
+                      <div className="relative">
+                        <input
+                          type="checkbox"
+                          onClick={handleCustomerBtn}
+                          disabled={isDataSaved}
+                          className="absolute left-1/2 -translate-x-1/2 w-full h-full peer appearance-none rounded-md"
+                        />
+                        <span className="w-10 h-6 flex items-center flex-shrink-0 ml-4 p-1 bg-slate-300  rounded-full duration-300 ease-in-out peer-checked:bg-[#4B1979] after:w-4 after:h-4 after:bg-white after:rounded-full after:shadow-md after:duration-300 peer-checked:after:translate-x-4 group-hover:after:translate-x-1"></span>
+                      </div>
                     </div>
-                  </div>
-                  <AnimatePresence>
-                    {isCustomerFamilyName && (
-                      <motion.div
-                        key="customerFamilyInput"
-                        initial={{ translateY: -10 }}
-                        animate={{ translateY: 0 }}
-                        transition={{
-                          duration: 0.3,
-                        }}
-                      >
+                    <AnimatePresence>
+                      {isCustomerFamilyName && (
+                        <motion.div
+                          key="customerFamilyInput"
+                          initial={{ translateY: -10 }}
+                          animate={{ translateY: 0 }}
+                          transition={{
+                            duration: 0.3,
+                          }}
+                        >
+                          <CheckoutInput
+                            label="Nama Keluarga"
+                            placeholder="Potter"
+                            name="customerFamilyName"
+                            type="text"
+                            isSaved={isDataSaved}
+                          />
+                        </motion.div>
+                      )}
+                      <motion.div layout transition={{ duration: 0.3 }}>
                         <CheckoutInput
-                          label="Nama Keluarga"
-                          placeholder="Potter"
-                          name="customerFamilyName"
-                          type="text"
-                          onChange={handleCustomerForm}
-                          value={customerForm.customerFamilyName}
+                          label="Nomor Telepon"
+                          placeholder="08521111111"
+                          name="customerPhoneNumber"
+                          type="number"
+                          validation={{
+                            required: {
+                              value: true,
+                              message: "Harap isi input ini!",
+                            },
+                          }}
+                          isSaved={isDataSaved}
+                        />
+                        <CheckoutInput
+                          label="Email"
+                          placeholder="johnd@mail.com"
+                          name="customerEmail"
+                          type="email"
+                          validation={{
+                            required: {
+                              value: true,
+                              message: "Harap isi input ini!",
+                            },
+                          }}
                           isSaved={isDataSaved}
                         />
                       </motion.div>
-                    )}
-                    <motion.div layout transition={{ duration: 0.3 }}>
-                      <CheckoutInput
-                        label="Nomor Telepon"
-                        placeholder="08521111111"
-                        name="customerPhoneNumber"
-                        type="number"
-                        onChange={handleCustomerForm}
-                        value={customerForm.customerPhoneNumber}
-                        isSaved={isDataSaved}
-                      />
-                      <CheckoutInput
-                        label="Email"
-                        placeholder="johnd@mail.com"
-                        name="customerEmail"
-                        type="email"
-                        onChange={handleCustomerForm}
-                        value={customerForm.customerEmail}
-                        isSaved={isDataSaved}
-                      />
-                    </motion.div>
-                  </AnimatePresence>
-                </CheckoutForm>
-              </CheckoutCards>
-              {/* Batas Form Data Customer */}
+                    </AnimatePresence>
+                  </CheckoutForm>
+                </CheckoutCards>
+                {/* Batas Form Data Customer */}
 
-              {/* Form Data Penumpang (di map berdasarkan jumlah tiket yang dipesan) */}
-              {passengerInfo.length > 0 && passengerForm.length > 0 && (
-                <CheckoutCards>
-                  <h3 className="text-xl font-bold mb-4">Isi Data Penumpang</h3>
-                  <div className="flex flex-col gap-7">
-                    {passengerInfo.map((item, index) => (
-                      <CheckoutForm
-                        key={`checkoutForm_${index}`}
-                        title={`Data Diri Penumpang ${index + 1} - ${item}`}
-                        isSaved={isDataSaved}
-                      >
-                        <CheckoutInput
-                          label="Nama Lengkap"
-                          placeholder="Harry"
-                          name="fullname"
-                          value={passengerForm.fullname}
-                          onChange={(e) => handlePassengerForm(e, index)}
+                {/* Form Data Penumpang (di map berdasarkan jumlah tiket yang dipesan) */}
+                {passengerInfo.length > 0 && (
+                  <CheckoutCards>
+                    <h3 className="text-xl font-bold mb-4">
+                      Isi Data Penumpang
+                    </h3>
+                    <div className="flex flex-col gap-7">
+                      {passengerInfo.map((item, index) => (
+                        <CheckoutForm
+                          key={`checkoutForm_${index}`}
+                          title={`Data Diri Penumpang ${index + 1} - ${item}`}
                           isSaved={isDataSaved}
-                        />
-                        <div className="flex justify-between px-4 items-center">
-                          <p> Punya nama keluarga? </p>
-                          <div className="relative">
-                            <input
-                              type="checkbox"
-                              onClick={() => handlePassengerBtn(index)}
-                              className="absolute left-1/2 -translate-x-1/2 w-full h-full peer appearance-none rounded-md"
-                              disabled={isDataSaved}
-                            />
-                            <span className="w-10 h-6 flex items-center flex-shrink-0 ml-4 p-1 bg-slate-300  rounded-full duration-300 ease-in-out peer-checked:bg-[#4B1979] after:w-4 after:h-4 after:bg-white after:rounded-full after:shadow-md after:duration-300 peer-checked:after:translate-x-4 group-hover:after:translate-x-1"></span>
+                        >
+                          <CheckoutInput
+                            label="Nama Lengkap"
+                            placeholder="Harry"
+                            name={`fullname_${index}`}
+                            type="text"
+                            validation={{
+                              required: {
+                                value: true,
+                                message: "Harap isi input ini!",
+                              },
+                            }}
+                            isSaved={isDataSaved}
+                          />
+                          <div className="flex justify-between px-4 items-center">
+                            <p> Punya nama keluarga? </p>
+                            <div className="relative">
+                              <input
+                                type="checkbox"
+                                onClick={() => handlePassengerBtn(index)}
+                                className="absolute left-1/2 -translate-x-1/2 w-full h-full peer appearance-none rounded-md"
+                                disabled={isDataSaved}
+                              />
+                              <span className="w-10 h-6 flex items-center flex-shrink-0 ml-4 p-1 bg-slate-300  rounded-full duration-300 ease-in-out peer-checked:bg-[#4B1979] after:w-4 after:h-4 after:bg-white after:rounded-full after:shadow-md after:duration-300 peer-checked:after:translate-x-4 group-hover:after:translate-x-1"></span>
+                            </div>
                           </div>
-                        </div>
-                        <AnimatePresence>
-                          {isPassengerFamilyName[index] && (
-                            <motion.div
-                              key={`passengerFamilyInput_${index}`}
-                              initial={{ translateY: -10 }}
-                              animate={{ translateY: 0 }}
-                              transition={{
-                                duration: 0.3,
-                              }}
-                            >
+                          <AnimatePresence>
+                            {isPassengerFamilyName[index] && (
+                              <motion.div
+                                key={`passengerFamilyInput_${index}`}
+                                initial={{ translateY: -10 }}
+                                animate={{ translateY: 0 }}
+                                transition={{
+                                  duration: 0.3,
+                                }}
+                              >
+                                <CheckoutInput
+                                  label="Nama Keluarga"
+                                  placeholder="Potter"
+                                  type="text"
+                                  name={`familyName_${index}`}
+                                  isSaved={isDataSaved}
+                                />
+                              </motion.div>
+                            )}
+                            <motion.div layout transition={{ duration: 0.3 }}>
                               <CheckoutInput
-                                label="Nama Keluarga"
-                                placeholder="Potter"
+                                label="Nomor Telepon"
+                                placeholder="08521111111"
+                                type="number"
+                                name={`phoneNumber_${index}`}
+                                validation={{
+                                  required: {
+                                    value: true,
+                                    message: "Harap isi input ini!",
+                                  },
+                                }}
+                                isSaved={isDataSaved}
+                              />
+                              <CheckoutInput
+                                label="Email"
+                                placeholder="johnd@mail.com"
+                                type="email"
+                                name={`email_${index}`}
+                                validation={{
+                                  required: {
+                                    value: true,
+                                    message: "Harap isi input ini!",
+                                  },
+                                }}
+                                isSaved={isDataSaved}
+                              />
+                              <CheckoutInput
+                                label="Tanggal Lahir"
+                                placeholder="dd/mm/yy"
+                                type="date"
+                                name={`birthDate_${index}`}
+                                validation={{
+                                  required: {
+                                    value: true,
+                                    message: "Harap isi input ini!",
+                                  },
+                                }}
+                                isSaved={isDataSaved}
+                              />
+                              <CheckoutInput
+                                label="Kewarnegaraan"
+                                placeholder="Indonesia"
                                 type="text"
-                                name="familyName"
-                                value={passengerForm.familyName}
-                                onChange={(e) => handlePassengerForm(e, index)}
+                                name={`citizenship_${index}`}
+                                validation={{
+                                  required: {
+                                    value: true,
+                                    message: "Harap isi input ini!",
+                                  },
+                                }}
+                                isSaved={isDataSaved}
+                              />
+                              <CheckoutInput
+                                label="Negara Penertbit"
+                                placeholder="Indonesia"
+                                type="text"
+                                name={`issuingCountry_${index}`}
+                                validation={{
+                                  required: {
+                                    value: true,
+                                    message: "Harap isi input ini!",
+                                  },
+                                }}
                                 isSaved={isDataSaved}
                               />
                             </motion.div>
-                          )}
-                          <motion.div layout transition={{ duration: 0.3 }}>
-                            <CheckoutInput
-                              label="Nomor Telepon"
-                              placeholder="08521111111"
-                              type="number"
-                              name="phoneNumber"
-                              value={passengerForm.phoneNumber}
-                              onChange={(e) => handlePassengerForm(e, index)}
-                              isSaved={isDataSaved}
-                            />
-                            <CheckoutInput
-                              label="Email"
-                              placeholder="johnd@mail.com"
-                              type="email"
-                              name="email"
-                              value={passengerForm.email}
-                              onChange={(e) => handlePassengerForm(e, index)}
-                              isSaved={isDataSaved}
-                            />
-                            <CheckoutInput
-                              label="Tanggal Lahir"
-                              placeholder="dd/mm/yy"
-                              type="date"
-                              name="birthDate"
-                              value={passengerForm.birthDate}
-                              onChange={(e) => handlePassengerForm(e, index)}
-                              isSaved={isDataSaved}
-                            />
-                            <CheckoutInput
-                              label="Kewarnegaraan"
-                              placeholder="Indonesia"
-                              type="text"
-                              name="citizenship"
-                              value={passengerForm.citizenship}
-                              onChange={(e) => handlePassengerForm(e, index)}
-                              isSaved={isDataSaved}
-                            />
-                            <CheckoutInput
-                              label="Negara Penertbit"
-                              placeholder="Indonesia"
-                              type="text"
-                              name="issuingCountry"
-                              value={passengerForm.issuingCountry}
-                              onChange={(e) => handlePassengerForm(e, index)}
-                              isSaved={isDataSaved}
-                            />
-                          </motion.div>
-                        </AnimatePresence>
-                      </CheckoutForm>
-                    ))}
-                  </div>
+                          </AnimatePresence>
+                        </CheckoutForm>
+                      ))}
+                    </div>
+                  </CheckoutCards>
+                )}
+                {/* Batas Form Data Passenger */}
+              </div>
+              <div className="flex flex-col gap-5 px-2">
+                <CheckoutCards>
+                  <Seats
+                    datas={datas}
+                    maxSeatsSelected={passengerInfo.length}
+                  />
                 </CheckoutCards>
-              )}
-              {/* Batas Form Data Passenger */}
+                <button
+                  className={`py-4 text-center w-full ${
+                    isDataSaved ? "bg-[#D0D0D0]" : "bg-[#7126B5]"
+                  }  rounded-xl text-white shadow-xl text-xl font-semibold transition-all`}
+                  // disabled={isDataSaved}
+                  onClick={onSubmit}
+                >
+                  Simpan
+                </button>
+              </div>
             </div>
-            <div className="flex flex-col gap-5 px-2">
-              <CheckoutCards>
-                <Seats datas={datas} maxSeatsSelected={passengerInfo.length} />
-              </CheckoutCards>
-              <button
-                type="submit"
-                className={`py-4 text-center w-full ${
-                  isDataSaved ? "bg-[#D0D0D0]" : "bg-[#7126B5]"
-                }  rounded-xl text-white shadow-xl text-xl font-semibold transition-all`}
-                // disabled={isDataSaved}
-                onClick={() => setIsDataSaved(!isDataSaved)}
-              >
-                Simpan
-              </button>
-            </div>
-          </div>
-        </form>
+          </form>
+        </FormProvider>
         <div className="px-5 lg:px-0">
           <FlightDetails
             flightDetail={flightDetail}
