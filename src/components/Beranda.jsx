@@ -278,7 +278,10 @@ function Beranda() {
             </button>
           </form>
         </div>
-        <Destinasi />
+        <div className="mt-4">
+          {" "}
+          <Destinasi />
+        </div>
       </div>
     </div>
   );

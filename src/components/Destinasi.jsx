@@ -87,12 +87,12 @@ const Destinasi = () => {
 
   return (
     <div className="content max-w-[1098px] w-full mx-auto -mt-11 relative pt-1 bg-none rounded-lg">
-      <h2 className="text-xl md:text-2xl font-bold mb-4 text-gray-800 px-5 mt-10">
+      <h2 className="text-xl md:text-2xl font-bold mb-2 text-gray-800 px-5 mt-10">
         Destinasi Favorit
       </h2>
       <div className="flex flex-col items-center">
         {/* Destinasi favorit */}
-        <div className="flex flex-wrap gap-5 mx-auto p-5 ml-3">
+        <div className="flex md:w-auto w-full overflow-x-auto md:overflow-hidden md:flex-wrap gap-5 mx-auto md:p-5 ml-3">
           {["Semua", "Asia", "Amerika", "Australia", "Eropa", "Afrika"].map(
             (text) => (
               <DestinasiFavoritBtn
