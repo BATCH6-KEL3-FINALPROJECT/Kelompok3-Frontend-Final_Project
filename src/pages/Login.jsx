@@ -10,6 +10,7 @@ const Login = () => {
   const { loading, sendData } = useSend();
   const [isSuccess, setIsSuccess] = useState(null);
   const [message, setMessage] = useState("");
+  const [resetToken, setResetToken] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [login, setLogin] = useState({
     email: "",
@@ -32,7 +33,7 @@ const Login = () => {
   useEffect(() => {
     if (isSuccess) {
       const timer = setTimeout(() => {
-        navigate("/");
+        navigate(`/reset-password?rpkey?${resetToken}`);
       }, 3000);
       return () => clearTimeout(timer);
     }
@@ -45,7 +46,7 @@ const Login = () => {
       if (response.data && response.data.token) {
         cookies.set("token", response.data.token, {
           path: "/",
-          expires: new Date(Date.now() + 604800000),
+          expires: new Date(Date.now() + 43200000),
         });
         setIsSuccess(true);
         setMessage(`${response.message}`);
@@ -64,6 +65,67 @@ const Login = () => {
       }
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  const validateForgotPwd = () => {
+    let valid = true;
+    let errorMessage = "";
+    const newErrors = {
+      email: false,
+    };
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (login.email.trim() === "") {
+      newErrors.email = true;
+      errorMessage = "Field Email Tidak Boleh Kosong!";
+      valid = false;
+    } else if (!emailRegex.test(login.email)) {
+      newErrors.email = true;
+      errorMessage = "Format Email Tidak Valid!";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    setMessage(errorMessage || "Loading...");
+    return valid;
+  };
+
+  const handleForgotPassword = async (event) => {
+    event.preventDefault();
+    if (validateForgotPwd()) {
+      try {
+        const response = await sendData("/api/v1/auth/reset-password", "POST", {
+          email: login.email,
+        });
+        console.log(response);
+        if (response.statusCode === 400) {
+          setIsSuccess(false);
+          setMessage(response.message);
+        } else {
+          const check = await sendData(
+            `/api/v1/auth/reset-password?rpkey=${response.data.token}`,
+            "GET"
+          );
+          if (check) {
+            if (check.statusCode === 201) {
+              setIsSuccess(true);
+              setResetToken(response.data.token);
+              setMessage("Tautan reset password terkirim");
+            } else {
+              setMessage("Tautan invalid atau kadaluarsa");
+              setIsSuccess(false);
+            }
+          } else {
+            setIsSuccess(false);
+            setMessage("Tautan invalid atau kadaluarsa");
+          }
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      setIsSuccess(false);
     }
   };
 
@@ -162,9 +224,12 @@ const Login = () => {
               className="flex justify-between mb-2 text-xs text-black"
             >
               <p className="font-normal">Password</p>
-              <Link to="/reset-password" className="text-[#7126B5] font-medium">
+              <button
+                onClick={handleForgotPassword}
+                className="text-[#7126B5] font-medium"
+              >
                 Lupa Kata Sandi
-              </Link>
+              </button>
             </label>
             <input
               type={showPassword ? "text" : "password"}
@@ -206,12 +271,12 @@ const Login = () => {
             className="text-sm font-light text-black text-center"
           >
             Belum punya akun?{" "}
-            <Link
+            <button
               to="/register"
               className="font-medium text-[#7126B5] hover:underline"
             >
               Daftar di sini
-            </Link>
+            </button>
           </motion.p>
           {isSuccess !== null && (
             <motion.div

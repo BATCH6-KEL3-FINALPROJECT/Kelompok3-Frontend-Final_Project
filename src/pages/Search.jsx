@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Cookies from "universal-cookie";
 import Filter from "../components/Filter";
 import AccordionTicket from "../components/AccordionTicket";
@@ -12,7 +12,14 @@ import axios from "axios";
 import Topnav from "../components/Topnav";
 
 const Search = () => {
+  const [searchParams] = useSearchParams();
   const [isLogin, setIsLogin] = useState(true);
+  const [tickeSearch, setTicketSearch] = useState({
+    departure_city: searchParams.get("departure_city"),
+    arrival_city: searchParams.get("arrival_city"),
+    penumpang: searchParams.get("penumpang"),
+    seat_class: searchParams.get("seat_class"),
+  });
   const navigate = useNavigate();
   const cookies = new Cookies();
 
@@ -22,6 +29,10 @@ const Search = () => {
       setIsLogin(true);
     } else {
       setIsLogin(false);
+    }
+
+    if (searchParams.size === 0) {
+      navigate("/");
     }
   }, [navigate]);
 
@@ -209,10 +220,10 @@ const Search = () => {
         </motion.h1>
         <div className="flex justify-between items-center gap-2 mx-4 relative">
           <EditSearch
-            origin="JKT"
-            destination="MLB"
-            passengers={2}
-            classType="Economy"
+            origin={tickeSearch.departure_city}
+            destination={tickeSearch.arrival_city}
+            passengers={tickeSearch.penumpang}
+            classType={tickeSearch.seat_class}
             onEdit={() => console.log("Edit search clicked")}
           />
           <motion.button
