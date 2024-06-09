@@ -115,7 +115,7 @@ function Beranda() {
                 >
                   From
                 </label>
-                <div className="relative  font-bold w-full md:w-[340px]">
+                <div className="relative font-bold w-full md:w-[340px]">
                   <InputComponent
                     id="from"
                     value={fromCity}
