@@ -9,6 +9,31 @@ import Topnav from "../components/Topnav";
 
 const Riwayat = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+  const cookies = new Cookies();
+
+  useEffect(() => {
+    const checkToken = cookies.get("token");
+    if (checkToken) {
+      if (checkToken === "undefined") {
+        setIsLogin(false);
+        navigate("/");
+      } else {
+        setIsLogin(true);
+      }
+    } else {
+      setIsLogin(false);
+      navigate("/");
+    }
+
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <>
       <Topnav isLogin={isLogin} isSearch={false} />

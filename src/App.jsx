@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Search from "./pages/Search";
 import Checkout from "./pages/Checkout";
 import Login from "./pages/Login";
+import Send from "./pages/Send";
 import Register from "./pages/Register";
 import Otp from "./pages/Otp";
 import Reset from "./pages/Reset";
@@ -19,6 +20,7 @@ function App() {
         <Route path="/search" element={<Search />}></Route>
         <Route path="/checkout" element={<Checkout />}></Route>
         <Route path="/login" element={<Login />}></Route>
+        <Route path="/send-email" element={<Send />}></Route>
         <Route path="/register" element={<Register />}></Route>
         <Route path="/otp" element={<Otp />}></Route>
         <Route path="/reset-password" element={<Reset />}></Route>
