@@ -20,6 +20,7 @@ const Account = () => {
   const [isLoggedOut, setIsLoggedOut] = useState(false);
   const [waiting, setWaiting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isVerify, setIsVerify] = useState(null);
   const [profile, setProfile] = useState({
     name: "",
     telepon: "",
@@ -75,6 +76,7 @@ const Account = () => {
         telepon: response.data.data.user.phone_number,
         email: response.data.data.user.email,
       });
+      setIsVerify(response.data.data.user.is_verified);
     } catch (e) {
       console.log(e);
     }
@@ -189,6 +191,8 @@ const Account = () => {
                 setProfile={setProfile}
                 loading={waiting}
                 activeSection={activeSection}
+                isVerify={isVerify}
+                accountId={accountId}
               />
             )}
           </div>

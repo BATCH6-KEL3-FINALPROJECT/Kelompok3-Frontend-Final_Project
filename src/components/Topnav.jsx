@@ -153,8 +153,12 @@ const Topnav = ({ isLogin = false, isSearch, isOTP = false }) => {
                   <Link to="/riwayat-pesanan">
                     <IoIosList className="text-2xl" />
                   </Link>
-                  <Link to="/notification">
+                  <Link to="/notification" className="relative">
                     <FiBell className="text-2xl" />
+                    <span className="sr-only">Notifications</span>
+                    <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-3 -end-3 dark:border-gray-900">
+                      2
+                    </div>
                   </Link>
                   <Link to="/account">
                     <IoMdPerson className="text-2xl" />

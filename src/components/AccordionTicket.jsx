@@ -6,6 +6,14 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
     console.log("Ticket selected:", flight);
   };
 
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(price);
+  };
+
   return (
     <div className="p-3 shadow-md border-2 bg-white rounded-lg mb-4 transition-all duration-500 relative hover:border-[#7126B580]/50">
       <div
@@ -54,7 +62,7 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
         </div>
         <div className="flex flex-col items-end">
           <div className="md:text-[16px] text-sm text-purple-600 mt-4 md:mt-7 mb-1">
-            {flight.price}
+            {formatPrice(flight.price)}
           </div>
           <button
             className=" text-sm md:w-[100px] md:h-[32px] w-[70px] h-[20px] mr-2 px-4 py-2 bg-purple-600 text-white rounded mb-1 hover:bg-purple-700"

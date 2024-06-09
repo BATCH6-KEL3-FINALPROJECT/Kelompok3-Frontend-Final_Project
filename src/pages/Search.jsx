@@ -23,106 +23,44 @@ const Search = () => {
     arrival_city: searchParams.get("arrival_city"),
     penumpang: searchParams.get("penumpang"),
     seat_class: searchParams.get("seat_class"),
+    departure_date: searchParams.get("departure_date"),
   });
   const navigate = useNavigate();
   const cookies = new Cookies();
 
   const fetchData = async () => {
-    const response = await sendData(`/api/v1/flight`, "GET", null, null, true);
-    console.log(response);
+    const response = await sendData(
+      `/api/v1/flight?seat_class=${searchParams.get(
+        "seat_class"
+      )}&departure_city=${searchParams.get(
+        "departure_city"
+      )}&arrival_city=${searchParams.get(
+        "arrival_city"
+      )}&departure_date=${searchParams.get("departure_date")}`,
+      "GET",
+      null,
+      null,
+      true
+    );
     if (response.statusCode === 200) {
       setDataFlight(response.data.data.flights);
-      console.log(dataFlight);
     } else {
       console.error(response.message);
     }
   };
 
   useEffect(() => {
-    console.log("Fetching...");
     fetchData();
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     const checkToken = cookies.get("token");
-    if (checkToken) {
-      setIsLogin(true);
-    } else {
-      setIsLogin(false);
-    }
+    setIsLogin(!!checkToken);
 
     if (searchParams.size === 0) {
       navigate("/");
     }
-  }, [navigate]);
-
-  const flightsDummy = [
-    {
-      airline: "Jet Air",
-      class: "Economy",
-      departureTime: "07:00",
-      arrivalTime: "11:00",
-      departureDate: "3 Maret 2023",
-      arrivalDate: "3 Maret 2023",
-      origin: "JKT",
-      destination: "MLB",
-      originAirport: "Soekarno Hatta - Terminal 1A Domestik",
-      destinationAirport: "Melbourne International Airport",
-      baggage: 20,
-      cabinBaggage: 7,
-      entertainment: true,
-      price: "IDR 4.950.000",
-    },
-    {
-      airline: "Jet Air",
-      class: "Economy",
-      departureTime: "08:00",
-      arrivalTime: "12:00",
-      departureDate: "3 Maret 2023",
-      arrivalDate: "3 Maret 2023",
-      origin: "JKT",
-      destination: "MLB",
-      originAirport: "Soekarno Hatta - Terminal 1A Domestik",
-      destinationAirport: "Melbourne International Airport",
-      baggage: 20,
-      cabinBaggage: 7,
-      entertainment: true,
-      price: "IDR 5.950.000",
-    },
-    {
-      airline: "Jet Air",
-      class: "Economy",
-      departureTime: "08:00",
-      arrivalTime: "12:00",
-      departureDate: "3 Maret 2023",
-      arrivalDate: "3 Maret 2023",
-      origin: "JKT",
-      destination: "MLB",
-      originAirport: "Soekarno Hatta - Terminal 1A Domestik",
-      destinationAirport: "Melbourne International Airport",
-      baggage: 20,
-      cabinBaggage: 7,
-      entertainment: true,
-      price: "IDR 5.950.000",
-    },
-    {
-      airline: "Jet Air",
-      class: "Economy",
-      departureTime: "08:00",
-      arrivalTime: "12:00",
-      departureDate: "3 Maret 2023",
-      arrivalDate: "3 Maret 2023",
-      origin: "JKT",
-      destination: "MLB",
-      originAirport: "Soekarno Hatta - Terminal 1A Domestik",
-      destinationAirport: "Melbourne International Airport",
-      baggage: 20,
-      cabinBaggage: 7,
-      entertainment: true,
-      price: "IDR 5.950.000",
-    },
-    // Add more flight objects as needed
-  ];
+  }, [navigate, searchParams, cookies]);
 
   const [openAccordion, setOpenAccordion] = useState(null);
 
@@ -254,18 +192,22 @@ const Search = () => {
           ))}
         </div>
 
-        {/*  Filter Button dan Modal */}
-        <div className="flex justify-end">
-          <button
-            className="flex justify-center items-center gap-2 px-3 py-1 border border-[#A06ECE] text-[#7126B5] rounded-full mx-4"
-            onClick={handleOpenModal}
-          >
-            <span>
-              <LuArrowUpDown className="text-lg" />
-            </span>
-            <span className="text-base">{getButtonText()}</span>
-          </button>
-        </div>
+        {dataFlight.length !== 0 ? (
+          <div className="flex justify-end">
+            <button
+              className="flex justify-center items-center gap-2 px-3 py-1 border border-[#A06ECE] text-[#7126B5] rounded-full mx-4"
+              onClick={handleOpenModal}
+            >
+              <span>
+                <LuArrowUpDown className="text-lg" />
+              </span>
+              <span className="text-base">{getButtonText()}</span>
+            </button>
+          </div>
+        ) : (
+          ""
+        )}
+
         <ModalFilter
           isOpen={isModalOpen}
           onClose={handleCloseModal}
@@ -274,32 +216,34 @@ const Search = () => {
           onApplyFilter={handleApplyFilter}
         />
 
-        <div className="flex flex-col md:flex-row gap-5 mx-4">
-          <div className="flex-col gap-4 font-medium none hidden md:flex text-base md:w-1/4">
-            <h1 className="font-medium text-base">Filter</h1>
-            <Filter />
+        {dataFlight.length !== 0 ? (
+          <div className="flex flex-col md:flex-row gap-5 mx-4">
+            <div className="flex-col gap-4 font-medium none hidden md:flex text-base md:w-1/4">
+              <h1 className="font-medium text-base">Filter</h1>
+              <Filter />
+            </div>
+            <div className="flex-grow">
+              {!loading &&
+                dataFlight.length !== 0 &&
+                dataFlight.map((flight, index) => (
+                  <AccordionTicket
+                    key={index}
+                    flight={flight}
+                    isOpen={openAccordion === index}
+                    toggleAccordion={() => toggleAccordion(index)}
+                  />
+                ))}
+            </div>
           </div>
-          <div className="flex-grow">
-            {/* {flightsDummy.map((flight, index) => (
-              <AccordionTicket
-                key={index}
-                flight={flight}
-                isOpen={openAccordion === index}
-                toggleAccordion={() => toggleAccordion(index)}
-              />
-            ))} */}
-            {loading &&
-              dataFlight.map((flight, index) => (
-                <AccordionTicket
-                  key={index}
-                  flight={flight}
-                  isOpen={openAccordion === index}
-                  toggleAccordion={() => toggleAccordion(index)}
-                />
-              ))}
-            {}
+        ) : (
+          <div className="flex justify-center items-center pt-20">
+            <img
+              src="/skypass_logo.png"
+              alt=""
+              className="w-full h-40 object-contain"
+            />
           </div>
-        </div>
+        )}
       </div>
     </>
   );

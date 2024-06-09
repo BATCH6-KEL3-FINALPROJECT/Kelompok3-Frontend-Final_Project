@@ -301,7 +301,7 @@ const Register = () => {
             type="submit"
             disabled={loading || isSuccess}
             className={`w-full text-white bg-[#7126B5] hover:bg-[#7126B5]/90 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center ${
-              loading ? "cursor-not-allowed" : ""
+              loading || isSuccess ? "cursor-not-allowed" : ""
             }`}
           >
             {loading ? "Loading..." : "Daftar"}{" "}

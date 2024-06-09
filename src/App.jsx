@@ -11,6 +11,7 @@ import Reset from "./pages/Reset";
 import Riwayat from "./pages/Riwayat";
 import Notification from "./pages/Notification";
 import Account from "./pages/Account";
+import Test from "./pages/Test";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/riwayat-pesanan" element={<Riwayat />}></Route>
         <Route path="/notification" element={<Notification />}></Route>
         <Route path="/account" element={<Account />}></Route>
+        <Route path="/test" element={<Test />}></Route>
         <Route
           path="*"
           element={
