@@ -239,39 +239,44 @@ const Search = () => {
           onApplyFilter={handleApplyFilter}
         />
 
-        {dataFlight.length !== 0 ? (
+        {loading ? (
+          <div className="flex justify-center items-center pt-20">
+            <img
+              src="/img_banner.png"
+              alt="Loading..."
+              className="w-full h-40 object-contain"
+            />
+          </div>
+        ) : dataFlight.length !== 0 ? (
           <div className="flex flex-col md:flex-row gap-5 mx-4">
             <div className="flex-col gap-4 font-medium none hidden md:flex text-base md:w-1/4">
               <h1 className="font-medium text-base">Filter</h1>
               <Filter />
             </div>
             <div className="flex-grow">
-              {!loading &&
-                dataFlight.length !== 0 &&
-                dataFlight.map((flight, index) => (
-                  <AccordionTicket
-                    key={index}
-                    flight={flight}
-                    isOpen={openAccordion === index}
-                    toggleAccordion={() => toggleAccordion(index)}
-                  />
-                ))}
-              {!loading && dataFlight.length !== 0 && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  handlePrevPage={handlePrevPage}
-                  handleNextPage={handleNextPage}
-                  handlePageClick={handlePageClick}
+              {dataFlight.map((flight, index) => (
+                <AccordionTicket
+                  key={index}
+                  index={index}
+                  flight={flight}
+                  isOpen={openAccordion === index}
+                  toggleAccordion={() => toggleAccordion(index)}
                 />
-              )}
+              ))}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                handlePrevPage={handlePrevPage}
+                handleNextPage={handleNextPage}
+                handlePageClick={handlePageClick}
+              />
             </div>
           </div>
         ) : (
           <div className="flex justify-center items-center pt-20">
             <img
               src="/skypass_logo.png"
-              alt=""
+              alt="Tiket Tidak Tersedia"
               className="w-full h-40 object-contain"
             />
           </div>

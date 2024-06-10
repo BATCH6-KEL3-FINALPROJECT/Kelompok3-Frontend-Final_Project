@@ -88,14 +88,9 @@ const Pagination = ({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 75 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{
-        duration: 0.75,
-        delay: 0.25,
-        type: "spring",
-        stiffness: 200,
-      }}
+      initial={{ opacity: 0, x: 75 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.75, delay: 0.25 }}
       viewport={{ once: true }}
       className="flex items-center justify-center space-x-2 pt-5"
     >

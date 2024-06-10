@@ -1,7 +1,8 @@
 import React from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { motion } from "framer-motion";
 
-const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
+const AccordionTicket = ({ index, flight, isOpen, toggleAccordion }) => {
   const handleSelect = () => {
     console.log("Ticket selected:", flight);
   };
@@ -15,7 +16,16 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
   };
 
   return (
-    <div className="p-3 shadow-md border-2 bg-white rounded-lg mb-4 transition-all duration-500 relative hover:border-[#7126B580]/50">
+    <motion.div
+      initial={{ opacity: 0, x: 100 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{
+        duration: 0.25,
+        delay: index * 0.25,
+      }}
+      viewport={{ once: true }}
+      className="p-3 shadow-md border-2 bg-white rounded-lg mb-4 transition-all duration-500 relative hover:border-[#7126B580]/50"
+    >
       <div
         className={` text-left text-lg font-medium text-gray-900 bg-white flex items-center justify-between ${
           isOpen ? "rounded-t-lg" : "rounded-lg"
@@ -162,7 +172,7 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
           <div className="text-sm">{flight.destinationAirport}</div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
