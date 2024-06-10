@@ -2,9 +2,15 @@ import React from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { motion } from "framer-motion";
 
-const AccordionTicket = ({ index, flight, isOpen, toggleAccordion }) => {
-  const handleSelect = () => {
-    console.log("Ticket selected:", flight);
+const AccordionTicket = ({
+  index,
+  flight,
+  isOpen,
+  toggleAccordion,
+  handleSelect,
+}) => {
+  const handleSelectFlight = () => {
+    handleSelect(flight);
   };
 
   const formatPrice = (price) => {
@@ -89,7 +95,7 @@ const AccordionTicket = ({ index, flight, isOpen, toggleAccordion }) => {
               justifyContent: "center",
               transition: "background-color 0.3s ease",
             }}
-            onClick={handleSelect}
+            onClick={handleSelectFlight}
           >
             Pilih
           </button>

@@ -11,15 +11,20 @@ import { LuArrowUpDown } from "react-icons/lu";
 import { motion } from "framer-motion";
 import Topnav from "../components/Topnav";
 import useSend from "../hooks/useSend";
+import Loading from "../components/Loading";
 
 const Search = () => {
   const { loading, sendData } = useSend();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pagination, setPagination] = useState(null);
+  const [isSeatAvailable, setIsSeatAvailable] = useState(true);
   const [dataFlight, setDataFlight] = useState([]);
   const [searchParams] = useSearchParams();
   const [isLogin, setIsLogin] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(
+    searchParams.get("departure_date")
+  );
   const [ticketSearch, setTicketSearch] = useState({
     departure_city: searchParams.get("departure_city"),
     arrival_city: searchParams.get("arrival_city"),
@@ -30,7 +35,50 @@ const Search = () => {
   const navigate = useNavigate();
   const cookies = new Cookies();
 
+  const getDayName = (date) => {
+    const dayNames = [
+      "Minggu",
+      "Senin",
+      "Selasa",
+      "Rabu",
+      "Kamis",
+      "Jumat",
+      "Sabtu",
+    ];
+    const day = new Date(date).getDay();
+    return dayNames[day];
+  };
+
+  const generateDays = (departureDate) => {
+    const days = [];
+    const currentDate = new Date(departureDate);
+    for (let i = -3; i <= 3; i++) {
+      const date = new Date(currentDate);
+      date.setDate(date.getDate() + i);
+      days.push({
+        date: date.toISOString().split("T")[0],
+        day: getDayName(date),
+      });
+    }
+    return days;
+  };
+
+  const formatDate = (dateString) => {
+    const [year, month, day] = dateString.split("-");
+    return `${day}/${month}/${year}`;
+  };
+
+  const [days, setDays] = useState([]);
+
+  useEffect(() => {
+    const departureDate =
+      ticketSearch.departure_date || new Date().toISOString().split("T")[0];
+    const generatedDays = generateDays(departureDate);
+    setDays(generatedDays);
+  }, [ticketSearch.departure_date]);
+
   const fetchData = async () => {
+    setDataFlight([]);
     const response = await sendData(
       `/api/v1/flight?seat_class=${searchParams.get(
         "seat_class"
@@ -56,7 +104,7 @@ const Search = () => {
 
   useEffect(() => {
     fetchData();
-  }, [searchParams, currentPage]);
+  }, [searchParams, currentPage, selectedDate]);
 
   useEffect(() => {
     if (dataFlight && pagination) {
@@ -85,13 +133,27 @@ const Search = () => {
     setCurrentPage(pageNumber);
   };
 
+  const handleSelect = (flight) => {
+    // const seat = 0;
+    // if (seat > 0) {
+    //   setIsSeatAvailable(true);
+    //   navigate("/checkout");
+    // } else {
+    //   setIsSeatAvailable(false);
+    // }
+    if (flight.seats_available > 0) {
+      setIsSeatAvailable(true);
+      navigate("/checkout");
+    } else {
+      setIsSeatAvailable(false);
+    }
+  };
+
   const [openAccordion, setOpenAccordion] = useState(null);
 
   const toggleAccordion = (index) => {
     setOpenAccordion(openAccordion === index ? null : index);
   };
-
-  //   FILTER
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
@@ -154,22 +216,12 @@ const Search = () => {
     return parts.length > 1 ? parts[1] : parts[0];
   };
 
-  const [selectedDate, setSelectedDate] = useState("02/03/2023");
-
   const handleClick = (date) => {
     setSelectedDate(date);
+    const params = new URLSearchParams(searchParams);
+    params.set("departure_date", date);
+    navigate(`?${params.toString()}`);
   };
-
-  const days = [
-    { day: "Selasa", date: "01/03/2023" },
-    { day: "Rabu", date: "02/03/2023" },
-    { day: "Kamis", date: "03/03/2023" },
-    { day: "Jumat", date: "04/03/2023" },
-    { day: "Sabtu", date: "05/03/2023" },
-    { day: "Minggu", date: "06/03/2023" },
-    { day: "Senin", date: "07/03/2023" },
-    { day: "Selasa", date: "08/03/2023" },
-  ];
 
   return (
     <>
@@ -182,7 +234,7 @@ const Search = () => {
           viewport={{ once: true }}
           className="text-xl font-bold"
         >
-          Pilih Penerbangan
+          {isSeatAvailable ? "Detail Penerbangan" : "Pilih Penerbangan"}
         </motion.h1>
         <div className="flex justify-between items-center gap-2 mx-4 relative">
           <EditSearch
@@ -208,14 +260,14 @@ const Search = () => {
             <ButtonSearchingDay
               key={index}
               day={day}
-              date={date}
+              date={formatDate(date)}
               onClick={() => handleClick(date)}
               isSelected={selectedDate === date}
             />
           ))}
         </div>
 
-        {dataFlight.length !== 0 ? (
+        {isSeatAvailable && (
           <div className="flex justify-end">
             <button
               className="flex justify-center items-center gap-2 px-3 py-1 border border-[#A06ECE] text-[#7126B5] rounded-full mx-4"
@@ -227,8 +279,6 @@ const Search = () => {
               <span className="text-base">{getButtonText()}</span>
             </button>
           </div>
-        ) : (
-          ""
         )}
 
         <ModalFilter
@@ -239,46 +289,70 @@ const Search = () => {
           onApplyFilter={handleApplyFilter}
         />
 
-        {loading ? (
-          <div className="flex justify-center items-center pt-20">
-            <img
-              src="/img_banner.png"
-              alt="Loading..."
-              className="w-full h-40 object-contain"
-            />
+        {!isSeatAvailable ? (
+          <div className="flex justify-center gap-5 flex-col min-h-[50vh]">
+            <div className="flex justify-center">
+              <img
+                src="/search_tiket_habis.png"
+                alt="Pencarian Tidak Ditemukan"
+              />
+            </div>
+            <h1 className="text-black font-medium flex flex-col text-center">
+              <p>Maaf, Tiket terjual habis!</p>
+              <span className="text-[#7126B5]">
+                Coba cari perjalanan lainnya!
+              </span>
+            </h1>
           </div>
-        ) : dataFlight.length !== 0 ? (
+        ) : loading ? (
+          <div className="flex justify-center items-center">
+            <Loading loading={loading} />
+          </div>
+        ) : (
           <div className="flex flex-col md:flex-row gap-5 mx-4">
             <div className="flex-col gap-4 font-medium none hidden md:flex text-base md:w-1/4">
               <h1 className="font-medium text-base">Filter</h1>
               <Filter />
             </div>
             <div className="flex-grow">
-              {dataFlight.map((flight, index) => (
-                <AccordionTicket
-                  key={index}
-                  index={index}
-                  flight={flight}
-                  isOpen={openAccordion === index}
-                  toggleAccordion={() => toggleAccordion(index)}
-                />
-              ))}
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                handlePrevPage={handlePrevPage}
-                handleNextPage={handleNextPage}
-                handlePageClick={handlePageClick}
-              />
+              {dataFlight.length !== 0 ? (
+                <>
+                  {dataFlight.map((flight, index) => (
+                    <AccordionTicket
+                      key={index}
+                      index={index}
+                      flight={flight}
+                      isOpen={openAccordion === index}
+                      toggleAccordion={() => toggleAccordion(index)}
+                      handleSelect={() => handleSelect(flight)}
+                    />
+                  ))}
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    handlePrevPage={handlePrevPage}
+                    handleNextPage={handleNextPage}
+                    handlePageClick={handlePageClick}
+                  />
+                </>
+              ) : (
+                <div className="flex justify-center flex-col">
+                  <div className="flex justify-center">
+                    <img
+                      src="/search_empty.png"
+                      alt="Pencarian Tidak Ditemukan"
+                    />
+                  </div>
+
+                  <h1 className="text-black font-medium flex flex-col text-center">
+                    <p>Maaf, pencarian Anda tidak ditemukan</p>
+                    <span className="text-[#7126B5]">
+                      Coba cari perjalanan lainnya!
+                    </span>
+                  </h1>
+                </div>
+              )}
             </div>
-          </div>
-        ) : (
-          <div className="flex justify-center items-center pt-20">
-            <img
-              src="/skypass_logo.png"
-              alt="Tiket Tidak Tersedia"
-              className="w-full h-40 object-contain"
-            />
           </div>
         )}
       </div>
