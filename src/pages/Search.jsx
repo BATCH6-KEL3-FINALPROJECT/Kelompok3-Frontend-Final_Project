@@ -6,6 +6,7 @@ import AccordionTicket from "../components/AccordionTicket";
 import ModalFilter from "../components/ModalFilter";
 import EditSearch from "../components/EditSearch";
 import ButtonSearchingDay from "../components/ButtonSearchingDay";
+import Pagination from "../components/Pagination";
 import { LuArrowUpDown } from "react-icons/lu";
 import { motion } from "framer-motion";
 import Topnav from "../components/Topnav";
@@ -15,6 +16,7 @@ const Search = () => {
   const { loading, sendData } = useSend();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [pagination, setPagination] = useState(null);
   const [dataFlight, setDataFlight] = useState([]);
   const [searchParams] = useSearchParams();
   const [isLogin, setIsLogin] = useState(true);
@@ -36,7 +38,9 @@ const Search = () => {
         "departure_city"
       )}&arrival_city=${searchParams.get(
         "arrival_city"
-      )}&departure_date=${searchParams.get("departure_date")}`,
+      )}&departure_date=${searchParams.get(
+        "departure_date"
+      )}&limit=5&page=${currentPage}`,
       "GET",
       null,
       null,
@@ -44,6 +48,7 @@ const Search = () => {
     );
     if (response.statusCode === 200) {
       setDataFlight(response.data.data.flights);
+      setPagination(response.data.data.pagination);
     } else {
       console.error(response.message);
     }
@@ -51,7 +56,13 @@ const Search = () => {
 
   useEffect(() => {
     fetchData();
-  }, [searchParams]);
+  }, [searchParams, currentPage]);
+
+  useEffect(() => {
+    if (dataFlight && pagination) {
+      setTotalPages(pagination.totalPages);
+    }
+  }, [dataFlight]);
 
   useEffect(() => {
     const checkToken = cookies.get("token");
@@ -61,6 +72,18 @@ const Search = () => {
       navigate("/");
     }
   }, [navigate, searchParams, cookies]);
+
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+  };
+
+  const handlePageClick = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   const [openAccordion, setOpenAccordion] = useState(null);
 
@@ -151,7 +174,7 @@ const Search = () => {
   return (
     <>
       <Topnav isLogin={isLogin} isSearch={true} />
-      <div className="w-11/12 md:w-2/3 mx-auto flex flex-col mt-28 gap-5 overflow-hidden">
+      <div className="w-11/12 md:w-2/3 mx-auto flex flex-col mt-28 gap-5 overflow-hidden pb-10">
         <motion.h1
           initial={{ opacity: 0, x: -75 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -233,6 +256,15 @@ const Search = () => {
                     toggleAccordion={() => toggleAccordion(index)}
                   />
                 ))}
+              {!loading && dataFlight.length !== 0 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  handlePrevPage={handlePrevPage}
+                  handleNextPage={handleNextPage}
+                  handlePageClick={handlePageClick}
+                />
+              )}
             </div>
           </div>
         ) : (

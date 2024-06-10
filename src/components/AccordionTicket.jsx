@@ -36,11 +36,15 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
               }}
             >
               <div>
-                <strong className="text-black">{flight.departure_time}</strong>
+                <strong className="text-black">
+                  {flight.departure_time.slice(0, -3)}
+                </strong>
               </div>
               <div className="text-sm text-center">Duration</div>
               <div>
-                <strong className="text-black">{flight.arrival_time}</strong>
+                <strong className="text-black">
+                  {flight.arrival_time.slice(0, -3)}
+                </strong>
               </div>
               <div></div>
               <div className="text-center">
@@ -105,7 +109,7 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
           </div>
           <div className="text-sm flex justify-between text-black">
             <div>
-              <strong>{flight.departure_time}</strong>
+              <strong>{flight.departure_time.slice(0, -3)}</strong>
             </div>
             <div className="font-semibold" style={{ color: "#A06ECE" }}>
               Keberangkatan
