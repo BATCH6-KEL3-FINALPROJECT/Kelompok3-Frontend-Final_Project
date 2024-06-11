@@ -10,16 +10,21 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AccountSideNav from "../components/AccountSideNav";
 import AccountSideNavSkeleton from "../components/AccountSideNavSkeleton";
+import { jwtDecode } from "jwt-decode";
+import useSend from "../hooks/useSend";
 
 const Account = () => {
+  const { loading, sendData } = useSend();
+  const [accountId, setAccountId] = useState("");
   const [isLogin, setIsLogin] = useState(true);
   const [isLoggedOut, setIsLoggedOut] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [waiting, setWaiting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isVerify, setIsVerify] = useState(null);
   const [profile, setProfile] = useState({
-    name: "Harry",
-    telepon: "+62 897823232",
-    email: "Johndoe@gmail.com",
+    name: "",
+    telepon: "",
+    email: "",
   });
   const [activeSection, setActiveSection] = useState("profile");
   const navigate = useNavigate();
@@ -28,7 +33,14 @@ const Account = () => {
   useEffect(() => {
     const checkToken = cookies.get("token");
     if (checkToken) {
-      setIsLogin(true);
+      if (checkToken === "undefined") {
+        setIsLogin(false);
+        navigate("/");
+      } else {
+        setIsLogin(true);
+        const decoded = jwtDecode(checkToken);
+        setAccountId(decoded.id);
+      }
     } else {
       setIsLogin(false);
       navigate("/");
@@ -39,7 +51,13 @@ const Account = () => {
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, []);
+
+  useEffect(() => {
+    if (accountId) {
+      fetchData();
+    }
+  }, [accountId]);
 
   useEffect(() => {
     if (isLoggedOut) {
@@ -49,6 +67,20 @@ const Account = () => {
       return () => clearTimeout(timer);
     }
   }, [isLoggedOut, navigate]);
+
+  const fetchData = async () => {
+    try {
+      const response = await sendData(`/api/v1/user/${accountId}`, "GET");
+      setProfile({
+        name: response.data.data.user.name,
+        telepon: response.data.data.user.phone_number,
+        email: response.data.data.user.email,
+      });
+      setIsVerify(response.data.data.user.is_verified);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const handleLogout = async (event) => {
     setActiveSection("logout");
@@ -66,7 +98,7 @@ const Account = () => {
     return regex.test(email);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!profile.name) {
@@ -89,13 +121,25 @@ const Account = () => {
       return;
     }
 
-    setLoading(true);
+    setWaiting(true);
 
-    setTimeout(() => {
-      setLoading(false);
-      toast.success("Profile saved successfully");
-      console.log(profile);
-    }, 3000);
+    try {
+      const response = await sendData(
+        `/api/v1/user/${accountId}`,
+        "PATCH",
+        profile
+      );
+      setTimeout(() => {
+        setWaiting(false);
+        toast.success("Profile saved successfully");
+      }, 3000);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      setTimeout(() => {
+        toast.error("Failed to update profile");
+        setWaiting(false);
+      }, 3000);
+    }
   };
 
   return (
@@ -145,8 +189,10 @@ const Account = () => {
                 handleSubmit={handleSubmit}
                 profile={profile}
                 setProfile={setProfile}
-                loading={loading}
+                loading={waiting}
                 activeSection={activeSection}
+                isVerify={isVerify}
+                accountId={accountId}
               />
             )}
           </div>

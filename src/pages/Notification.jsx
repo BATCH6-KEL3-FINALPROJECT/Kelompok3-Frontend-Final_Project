@@ -46,7 +46,12 @@ const Notification = () => {
   useEffect(() => {
     const checkToken = cookies.get("token");
     if (checkToken) {
-      setIsLogin(true);
+      if (checkToken === "undefined") {
+        setIsLogin(false);
+        navigate("/");
+      } else {
+        setIsLogin(true);
+      }
     } else {
       setIsLogin(false);
       navigate("/");

@@ -270,7 +270,7 @@ function Beranda() {
               type="submit"
             >
               <Link
-                to="/search?departure_city=JKT&arrival_city=MLB&penumpang=2&seat_class=Economy"
+                to="/search?departure_city=Makassar&arrival_city=Bali&penumpang=2&seat_class=economy&departure_date=2024-06-05"
                 className="w-full"
               >
                 Cari Penerbangan

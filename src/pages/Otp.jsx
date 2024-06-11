@@ -1,18 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import OtpInput from "../components/OtpInput";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { motion } from "framer-motion";
 import Cookies from "universal-cookie";
+import useSend from "../hooks/useSend";
 
 const Otp = () => {
+  const { loading, sendData } = useSend();
   const [otp, setOtp] = useState(new Array(6).fill(""));
+  const [sendVerify, setSendVerify] = useState({
+    email: "",
+    otp: otp,
+  });
   const navigate = useNavigate();
   const cookies = new Cookies();
 
-  const handleSubmit = (event) => {
+  useEffect(() => {
+    
+  });
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    try {
+      const response = await sendData(
+        "/api/v1/auth/verify",
+        "POST",
+        sendVerify
+      );
+    } catch (err) {
+      console.log(err);
+    }
     console.log("Inputan OTP:", otp.join(""));
   };
 

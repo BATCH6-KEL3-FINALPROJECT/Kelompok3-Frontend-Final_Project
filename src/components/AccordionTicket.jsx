@@ -1,13 +1,37 @@
 import React from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { motion } from "framer-motion";
 
-const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
-  const handleSelect = () => {
-    console.log("Ticket selected:", flight);
+const AccordionTicket = ({
+  index,
+  flight,
+  isOpen,
+  toggleAccordion,
+  handleSelect,
+}) => {
+  const handleSelectFlight = () => {
+    handleSelect(flight);
+  };
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(price);
   };
 
   return (
-    <div className="p-3 shadow-md border-2 bg-white rounded-lg mb-4 transition-all duration-500 relative hover:border-[#7126B580]/50">
+    <motion.div
+      initial={{ opacity: 0, x: 100 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{
+        duration: 0.25,
+        delay: index * 0.25,
+      }}
+      viewport={{ once: true }}
+      className="p-3 shadow-md border-2 bg-white rounded-lg mb-4 transition-all duration-500 relative hover:border-[#7126B580]/50"
+    >
       <div
         className={` text-left text-lg font-medium text-gray-900 bg-white flex items-center justify-between ${
           isOpen ? "rounded-t-lg" : "rounded-lg"
@@ -28,11 +52,15 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
               }}
             >
               <div>
-                <strong className="text-black">{flight.departure_time}</strong>
+                <strong className="text-black">
+                  {flight.departure_time.slice(0, -3)}
+                </strong>
               </div>
               <div className="text-sm text-center">Duration</div>
               <div>
-                <strong className="text-black">{flight.arrival_time}</strong>
+                <strong className="text-black">
+                  {flight.arrival_time.slice(0, -3)}
+                </strong>
               </div>
               <div></div>
               <div className="text-center">
@@ -54,7 +82,7 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
         </div>
         <div className="flex flex-col items-end">
           <div className="md:text-[16px] text-sm text-purple-600 mt-4 md:mt-7 mb-1">
-            {flight.price}
+            {formatPrice(flight.price)}
           </div>
           <button
             className=" text-sm md:w-[100px] md:h-[32px] w-[70px] h-[20px] mr-2 px-4 py-2 bg-purple-600 text-white rounded mb-1 hover:bg-purple-700"
@@ -67,7 +95,7 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
               justifyContent: "center",
               transition: "background-color 0.3s ease",
             }}
-            onClick={handleSelect}
+            onClick={handleSelectFlight}
           >
             Pilih
           </button>
@@ -97,7 +125,7 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
           </div>
           <div className="text-sm flex justify-between text-black">
             <div>
-              <strong>{flight.departure_time}</strong>
+              <strong>{flight.departure_time.slice(0, -3)}</strong>
             </div>
             <div className="font-semibold" style={{ color: "#A06ECE" }}>
               Keberangkatan
@@ -150,7 +178,7 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
           <div className="text-sm">{flight.destinationAirport}</div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

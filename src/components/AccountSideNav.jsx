@@ -34,7 +34,7 @@ const AccountSideNav = ({ activeSection, setActiveSection, handleLogout }) => {
             activeSection === "settings" ? "text-white" : "text-[#7126B5]"
           }  text-xl`}
         />
-        <p>Pengaturan Akun</p>
+        <p className="text-left">Pengaturan Akun</p>
       </button>
       <button
         onClick={handleLogout}
