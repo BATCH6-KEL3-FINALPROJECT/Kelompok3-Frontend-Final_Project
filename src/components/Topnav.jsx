@@ -63,7 +63,7 @@ const Topnav = ({ isLogin = false, isSearch, isOTP = false }) => {
   };
 
   return (
-    <nav className="flex justify-between items-center bg-[#f1f5f9] fixed top-0 left-0 w-full z-10 py-4 px-4 md:px-2 xl:px-28 border-b-[1px]">
+    <nav className="flex justify-between items-center bg-[#f1f5f9] fixed top-0 left-0 w-full z-50 py-4 px-4 md:px-2 xl:px-28 border-b-[1px]">
       <div className="flex gap-10">
         <a href="/">
           <img

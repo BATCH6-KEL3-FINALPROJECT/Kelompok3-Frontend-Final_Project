@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { Link } from "react-router-dom";
 
-const EditSearch = ({ origin, destination, passengers, classType, onEdit }) => {
+const EditSearch = ({ origin, destination, passengers, classType }) => {
   return (
     <motion.div
       initial={{ opacity: 0, x: -75 }}

@@ -19,6 +19,17 @@ const AccountItem = ({
     navigate(`/otp`);
   };
 
+  const handleProfileImageChange = (event) => {
+    const imageFile = event.target.files[0];
+    if (imageFile) {
+      const imageUrl = URL.createObjectURL(imageFile);
+      setProfile((prevProfile) => ({
+        ...prevProfile,
+        image_url: imageUrl,
+      }));
+    }
+  };
+
   return (
     <>
       {activeSection === "profile" ? (
@@ -35,6 +46,23 @@ const AccountItem = ({
               className="bg-white border border-gray-300 p-4 rounded-b-xl"
             >
               <div className="flex flex-col gap-4 mb-5">
+                <div className="flex items-center gap-2 mx-auto">
+                  <div className="relative">
+                    <img
+                      src={profile.images}
+                      alt="Current Profile"
+                      className="w-40 h-40 rounded-full border-4 border-[#A06ECE] object-cover object-center"
+                    />
+                    <input
+                      type="file"
+                      id="images"
+                      name="images"
+                      accept="image/*"
+                      onChange={handleProfileImageChange}
+                      className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                    />
+                  </div>
+                </div>
                 <div className="flex flex-col">
                   <label
                     htmlFor="name"
@@ -104,23 +132,25 @@ const AccountItem = ({
           </div>
         </div>
       ) : (
-        <div className="flex flex-col gap-5">
-          <h1 className="text-xl font-bold text-center md:text-left">
-            Pengaturan Akun
-          </h1>
-          <div className="flex justify-between items-center mx-5">
-            <p>Verifikasi Akun Anda</p>
-            <button
-              disabled={isVerify}
-              onSubmit={handleChangeVerify}
-              className={`${
-                isVerify ? "bg-green-500" : "bg-red-600"
-              } px-6 py-2 text-white rounded-lg`}
-            >
-              {isVerify ? "Verified" : "Not Verified"}
-            </button>
+        activeSection == "settings" && (
+          <div className="flex flex-col gap-5">
+            <h1 className="text-xl font-bold text-center md:text-left">
+              Pengaturan Akun
+            </h1>
+            <div className="flex justify-between items-center mx-5">
+              <p>Verifikasi Akun Anda</p>
+              <button
+                disabled={isVerify}
+                onClick={handleChangeVerify}
+                className={`${
+                  isVerify ? "bg-green-500" : "bg-red-600"
+                } px-6 py-2 text-white rounded-lg`}
+              >
+                {isVerify ? "Verified" : "Not Verified"}
+              </button>
+            </div>
           </div>
-        </div>
+        )
       )}
     </>
   );

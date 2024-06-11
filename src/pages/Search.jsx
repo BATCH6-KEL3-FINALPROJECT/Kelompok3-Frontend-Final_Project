@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import Cookies from "universal-cookie";
-import Filter from "../components/Filter";
-import AccordionTicket from "../components/AccordionTicket";
-import ModalFilter from "../components/ModalFilter";
+import { motion } from "framer-motion";
+import { LuArrowUpDown } from "react-icons/lu";
+import Topnav from "../components/Topnav";
 import EditSearch from "../components/EditSearch";
 import ButtonSearchingDay from "../components/ButtonSearchingDay";
-import Pagination from "../components/Pagination";
-import { LuArrowUpDown } from "react-icons/lu";
-import { motion } from "framer-motion";
-import Topnav from "../components/Topnav";
-import useSend from "../hooks/useSend";
+import ModalFilter from "../components/ModalFilter";
+import TicketSoldOut from "../components/TicketSoldOut";
 import Loading from "../components/Loading";
+import Filter from "../components/Filter";
+import AccordionTicket from "../components/AccordionTicket";
+import Pagination from "../components/Pagination";
+import TicketEmpty from "../components/TicketEmpty";
+import useSend from "../hooks/useSend";
+import Cookies from "universal-cookie";
 
 const Search = () => {
   const { loading, sendData } = useSend();
@@ -26,15 +28,16 @@ const Search = () => {
   const [selectedDate, setSelectedDate] = useState(
     searchParams.get("departure_date")
   );
-  const [ticketSearch, setTicketSearch] = useState({
+  const navigate = useNavigate();
+  const cookies = new Cookies();
+
+  const ticketSearch = {
     departure_city: searchParams.get("departure_city"),
     arrival_city: searchParams.get("arrival_city"),
     penumpang: searchParams.get("penumpang"),
     seat_class: searchParams.get("seat_class"),
     departure_date: searchParams.get("departure_date"),
-  });
-  const navigate = useNavigate();
-  const cookies = new Cookies();
+  };
 
   const getDayName = (date) => {
     const dayNames = [
@@ -68,14 +71,6 @@ const Search = () => {
     return `${day}/${month}/${year}`;
   };
 
-  useEffect(() => {
-    const departureDate =
-      searchParams.get("departure_date") ||
-      new Date().toISOString().split("T")[0];
-    const generatedDays = generateDays(departureDate);
-    setDays(generatedDays);
-  }, [selectedDate]);
-
   const handleClick = (date) => {
     setSelectedDate(date);
     const params = new URLSearchParams(searchParams);
@@ -108,25 +103,6 @@ const Search = () => {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [searchParams, currentPage, selectedDate]);
-
-  useEffect(() => {
-    if (dataFlight && pagination) {
-      setTotalPages(pagination.totalPages);
-    }
-  }, [dataFlight]);
-
-  useEffect(() => {
-    const checkToken = cookies.get("token");
-    setIsLogin(!!checkToken);
-
-    if (searchParams.size === 0) {
-      navigate("/");
-    }
-  }, [navigate, searchParams, cookies]);
-
   const handleNextPage = () => {
     setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
   };
@@ -149,11 +125,38 @@ const Search = () => {
     // }
     if (flight.seats_available > 0) {
       setIsSeatAvailable(true);
-      navigate("/checkout");
+      // navigate("/checkout");
     } else {
       setIsSeatAvailable(false);
     }
   };
+
+  useEffect(() => {
+    const departureDate =
+      searchParams.get("departure_date") ||
+      new Date().toISOString().split("T")[0];
+    const generatedDays = generateDays(departureDate);
+    setDays(generatedDays);
+  }, [selectedDate]);
+
+  useEffect(() => {
+    fetchData();
+  }, [searchParams, currentPage, selectedDate]);
+
+  useEffect(() => {
+    if (dataFlight && pagination) {
+      setTotalPages(pagination.totalPages);
+    }
+  }, [dataFlight]);
+
+  useEffect(() => {
+    const checkToken = cookies.get("token");
+    setIsLogin(!!checkToken);
+
+    if (searchParams.size === 0) {
+      navigate("/");
+    }
+  }, [navigate, searchParams, cookies]);
 
   const [openAccordion, setOpenAccordion] = useState(null);
 
@@ -241,7 +244,6 @@ const Search = () => {
             destination={ticketSearch.arrival_city}
             passengers={ticketSearch.penumpang}
             classType={ticketSearch.seat_class}
-            onEdit={() => console.log("Edit search clicked")}
           />
           <motion.button
             initial={{ opacity: 0, x: 75 }}
@@ -254,7 +256,17 @@ const Search = () => {
             Ubah Pencarian
           </motion.button>
         </div>
-        <div className="flex justify-between mx-4 overflow-x-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 2,
+            type: "spring",
+            ease: "easeOut",
+            delay: 0.75,
+          }}
+          className="flex justify-between mx-4 overflow-x-auto"
+        >
           {days.map(({ day, date }, index) => (
             <ButtonSearchingDay
               key={index}
@@ -264,10 +276,15 @@ const Search = () => {
               isSelected={selectedDate === date}
             />
           ))}
-        </div>
+        </motion.div>
 
         {isSeatAvailable && (
-          <div className="flex justify-end">
+          <motion.div
+            initial={{ opacity: 0, x: 75 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.75, delay: 0.75 }}
+            className="flex justify-end"
+          >
             <button
               className="flex justify-center items-center gap-2 px-3 py-1 border border-[#A06ECE] text-[#7126B5] rounded-full mx-4"
               onClick={handleOpenModal}
@@ -277,7 +294,7 @@ const Search = () => {
               </span>
               <span className="text-base">{getButtonText()}</span>
             </button>
-          </div>
+          </motion.div>
         )}
 
         <ModalFilter
@@ -289,30 +306,20 @@ const Search = () => {
         />
 
         {!isSeatAvailable ? (
-          <div className="flex justify-center gap-5 flex-col min-h-[50vh]">
-            <div className="flex justify-center">
-              <img
-                src="/search_tiket_habis.png"
-                alt="Pencarian Tidak Ditemukan"
-              />
-            </div>
-            <h1 className="text-black font-medium flex flex-col text-center">
-              <p>Maaf, Tiket terjual habis!</p>
-              <span className="text-[#7126B5]">
-                Coba cari perjalanan lainnya!
-              </span>
-            </h1>
-          </div>
+          <TicketSoldOut />
         ) : loading ? (
-          <div className="flex justify-center items-center">
-            <Loading loading={loading} />
-          </div>
+          <Loading loading={loading} />
         ) : (
           <div className="flex flex-col md:flex-row gap-5 mx-4">
-            <div className="flex-col gap-4 font-medium none hidden md:flex text-base md:w-1/4">
+            <motion.div
+              initial={{ opacity: 0, x: -75 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.75, delay: 0.25 }}
+              className="flex-col gap-4 font-medium none hidden md:flex text-base md:w-1/4"
+            >
               <h1 className="font-medium text-base">Filter</h1>
               <Filter />
-            </div>
+            </motion.div>
             <div className="flex-grow">
               {dataFlight.length !== 0 ? (
                 <>
@@ -335,21 +342,7 @@ const Search = () => {
                   />
                 </>
               ) : (
-                <div className="flex justify-center flex-col">
-                  <div className="flex justify-center">
-                    <img
-                      src="/search_empty.png"
-                      alt="Pencarian Tidak Ditemukan"
-                    />
-                  </div>
-
-                  <h1 className="text-black font-medium flex flex-col text-center">
-                    <p>Maaf, pencarian Anda tidak ditemukan</p>
-                    <span className="text-[#7126B5]">
-                      Coba cari perjalanan lainnya!
-                    </span>
-                  </h1>
-                </div>
+                <TicketEmpty />
               )}
             </div>
           </div>

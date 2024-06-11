@@ -21,12 +21,13 @@ const Account = () => {
   const [waiting, setWaiting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isVerify, setIsVerify] = useState(null);
+  const [activeSection, setActiveSection] = useState("profile");
   const [profile, setProfile] = useState({
+    images: "",
     name: "",
     telepon: "",
     email: "",
   });
-  const [activeSection, setActiveSection] = useState("profile");
   const navigate = useNavigate();
   const cookies = new Cookies();
 
@@ -72,6 +73,7 @@ const Account = () => {
     try {
       const response = await sendData(`/api/v1/user/${accountId}`, "GET");
       setProfile({
+        images: response.data.data.user.image_url || "/placeholder-avatar.png",
         name: response.data.data.user.name,
         telepon: response.data.data.user.phone_number,
         email: response.data.data.user.email,
@@ -124,11 +126,17 @@ const Account = () => {
     setWaiting(true);
 
     try {
+      const token = cookies.get("token");
+      console.log(profile.images);
+      profile.images = "Test";
+      console.log(profile);
       const response = await sendData(
         `/api/v1/user/${accountId}`,
         "PATCH",
-        profile
+        profile,
+        token
       );
+      console.log(response);
       setTimeout(() => {
         setWaiting(false);
         toast.success("Profile saved successfully");
