@@ -17,7 +17,7 @@ const ButtonSearchingDay = ({ day, date, onClick, isSelected }) => {
         onClick={() => onClick(date)}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className={`min-w-[116px] h-[46px] p-0 pr-2 gap-2 border cursor-pointer rounded-lg transition-colors duration-300 relative ${
+        className={`min-w-[116px] h-[50px] p-0 pr-2 gap-2 border cursor-pointer rounded-lg transition-colors duration-300 relative ${
           isSelected
             ? "bg-[#7126B5] text-white"
             : isHovered

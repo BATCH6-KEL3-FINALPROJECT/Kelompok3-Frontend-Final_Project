@@ -19,6 +19,7 @@ const Search = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [pagination, setPagination] = useState(null);
   const [isSeatAvailable, setIsSeatAvailable] = useState(true);
+  const [days, setDays] = useState([]);
   const [dataFlight, setDataFlight] = useState([]);
   const [searchParams] = useSearchParams();
   const [isLogin, setIsLogin] = useState(true);
@@ -45,8 +46,7 @@ const Search = () => {
       "Jumat",
       "Sabtu",
     ];
-    const day = new Date(date).getDay();
-    return dayNames[day];
+    return dayNames[new Date(date).getDay()];
   };
 
   const generateDays = (departureDate) => {
@@ -68,14 +68,20 @@ const Search = () => {
     return `${day}/${month}/${year}`;
   };
 
-  const [days, setDays] = useState([]);
-
   useEffect(() => {
     const departureDate =
-      ticketSearch.departure_date || new Date().toISOString().split("T")[0];
+      searchParams.get("departure_date") ||
+      new Date().toISOString().split("T")[0];
     const generatedDays = generateDays(departureDate);
     setDays(generatedDays);
-  }, [ticketSearch.departure_date]);
+  }, [selectedDate]);
+
+  const handleClick = (date) => {
+    setSelectedDate(date);
+    const params = new URLSearchParams(searchParams);
+    params.set("departure_date", date);
+    navigate(`?${params.toString()}`);
+  };
 
   const fetchData = async () => {
     setDataFlight([]);
@@ -216,13 +222,6 @@ const Search = () => {
     return parts.length > 1 ? parts[1] : parts[0];
   };
 
-  const handleClick = (date) => {
-    setSelectedDate(date);
-    const params = new URLSearchParams(searchParams);
-    params.set("departure_date", date);
-    navigate(`?${params.toString()}`);
-  };
-
   return (
     <>
       <Topnav isLogin={isLogin} isSearch={true} />
@@ -234,7 +233,7 @@ const Search = () => {
           viewport={{ once: true }}
           className="text-xl font-bold"
         >
-          {isSeatAvailable ? "Detail Penerbangan" : "Pilih Penerbangan"}
+          {!isSeatAvailable ? "Detail Penerbangan" : "Pilih Penerbangan"}
         </motion.h1>
         <div className="flex justify-between items-center gap-2 mx-4 relative">
           <EditSearch
