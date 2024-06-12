@@ -22,10 +22,10 @@ const AccountItem = ({
   const handleProfileImageChange = (event) => {
     const imageFile = event.target.files[0];
     if (imageFile) {
-      const imageUrl = URL.createObjectURL(imageFile);
       setProfile((prevProfile) => ({
         ...prevProfile,
-        image_url: imageUrl,
+        current_image: URL.createObjectURL(imageFile),
+        images: imageFile,
       }));
     }
   };
@@ -49,7 +49,7 @@ const AccountItem = ({
                 <div className="flex items-center gap-2 mx-auto">
                   <div className="relative">
                     <img
-                      src={profile.images}
+                      src={profile.current_image}
                       alt="Current Profile"
                       className="w-40 h-40 rounded-full border-4 border-[#A06ECE] object-cover object-center"
                     />
