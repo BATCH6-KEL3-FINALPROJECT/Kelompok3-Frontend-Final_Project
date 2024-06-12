@@ -6,10 +6,15 @@ import { Link } from "react-router-dom";
 import Cookies from "universal-cookie";
 import { motion } from "framer-motion";
 import Topnav from "../components/Topnav";
+import useSend from "../hooks/useSend";
+import { jwtDecode } from "jwt-decode";
 
 const Riwayat = () => {
+  const { loading, sendData } = useSend();
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
+  const [dataRiwayat, setDataRiwayat] = useState([]);
+  const [accountId, setAccountId] = useState("");
   const navigate = useNavigate();
   const cookies = new Cookies();
 
@@ -32,6 +37,29 @@ const Riwayat = () => {
     }, 3000);
 
     return () => clearTimeout(timer);
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const token = cookies.get("token");
+      if (token) {
+        const decoded = jwtDecode(token);
+        setAccountId(decoded.id);
+        const response = await sendData(`/api/v1/ticket`, "GET", null, token);
+        if (response) {
+          const filteredTickets = response.data.data.tickets.filter(
+            (ticket) => ticket.passenger_id === accountId
+          );
+          setDataRiwayat(filteredTickets);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   return (

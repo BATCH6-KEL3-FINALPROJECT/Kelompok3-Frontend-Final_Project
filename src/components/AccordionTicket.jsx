@@ -226,17 +226,45 @@ const AccordionTicket = ({
         <div>
           <hr className="my-1 border-[#8A8A8A] w-2/3 mx-auto " />
         </div>
-        <div className="mb-2">
-          <div className="flex justify-between text-black">
-            <div className="text-sm">
-              <strong>{flight.arrival_time.slice(0, -3)}</strong>
+        <div className="text-[#4B1979] text-sm mb-4 mt-3">
+          <div className="mb-4 p-0">
+            <strong>Ticket Price</strong>
+          </div>
+          <div className="flex justify-between text-black mx-5">
+            <div className="flex flex-col justify-center items-center">
+              <img src="/adult.svg" alt="Adult Icon" />
+              <h1 className="mt-[-15px] font-bold">
+                {formatPrice(flight.price)}
+              </h1>
             </div>
-            <div className="text-sm font-semibold" style={{ color: "#A06ECE" }}>
-              Kedatangan
+            <div className="flex flex-col justify-center items-center">
+              <img src="/childern.svg" alt="Infant Icon" />
+              <h1 className="mt-[-15px] font-bold">
+                {formatPrice(flight.price_for_child)}
+              </h1>
+            </div>
+            <div className="flex flex-col justify-center items-center">
+              <img src="/baby.svg" alt="Baby Icon" />
+              <h1 className="mt-[-15px] font-bold">
+                {formatPrice(flight.price_for_infant)}
+              </h1>
             </div>
           </div>
-          <div className="text-sm">{formatDate(flight.arrival_date)}</div>
-          <div className="text-sm">{flight.arrival_airport_name}</div>
+        </div>
+        <div>
+          <hr className="my-1 border-[#8A8A8A] w-2/3 mx-auto " />
+        </div>
+        <div className="mb-2 mt-4 flex justify-between items-center">
+          <div className=" text-black">
+            <div className="text-sm font-bold">
+              {flight.arrival_time.slice(0, -3)}
+            </div>
+            <div className="text-sm">{formatDate(flight.arrival_date)}</div>
+            <div className="text-sm">{flight.arrival_airport_name}</div>
+          </div>
+          <div className="text-xs font-semibold" style={{ color: "#A06ECE" }}>
+            Kedatangan
+          </div>
         </div>
       </div>
     </motion.div>
