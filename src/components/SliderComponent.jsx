@@ -3,7 +3,7 @@ import React from "react";
 const SliderComponent = ({ checked, onChange }) => {
   return (
     <div className="flex flex-col ml-3">
-      <label className="flex items-center cursor-pointer mb-16">
+      <label className="flex items-center cursor-pointer">
         <input
           type="checkbox"
           checked={checked}
@@ -12,12 +12,12 @@ const SliderComponent = ({ checked, onChange }) => {
         />
         <div className="relative gap-5">
           <div
-            className={`block w-14 h-8 rounded-full transition-colors ${
+            className={`block w-10 h-6 md:w-12 md:h-7 rounded-full transition-colors ${
               checked ? "bg-[#7126B5]" : "bg-gray-300"
             }`}
           ></div>
           <div
-            className={`dot absolute left-1 top-1 w-6 h-6 rounded-full transition-transform bg-white ${
+            className={`dot absolute left-1 top-1 w-4 h-4 md:w-5 md:h-5 rounded-full transition-transform bg-white ${
               checked ? "transform translate-x-full" : ""
             }`}
           ></div>

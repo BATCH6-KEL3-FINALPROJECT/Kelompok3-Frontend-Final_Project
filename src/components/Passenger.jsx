@@ -13,27 +13,25 @@ function Passenger({ onChange }) {
   }, [adultCount, childCount, infantCount, onChange]);
 
   return (
-    <div className="flex items-center gap-4 flex-wrap ml-4">
-      <div className="flex flex-col mb-4 gap-3 ml-6">
+    <div className="flex md:items-center gap-4 flex-wrap md:ml-4 relative">
+      <div className="md:flex md:flex-col mb-3 md:mb-4 gap-3 md:ml-6">
         <label
           htmlFor="passengers"
-          className="block text-xs font-semibold text-gray-600 ml-20"
+          className="block text-xs font-semibold text-gray-600 md:ml-20 "
         >
           Passengers
         </label>
         <div className="flex items-center gap-5 flex-wrap">
-          <img src="seat.svg" alt="Passengers" />
-          <label className="block text-xs font-semibold text-gray-600">
+          <img src="seat.svg" alt="Passengers" className="hidden md:block" />
+          <label className="md:block text-xs font-semibold text-gray-600 hidden">
             To
           </label>
-          <div className="relative max-w-[200px]">
+          <div className=" md:max-w-[200px]">
             <button
               type="button"
               onClick={() => setShowPassenger(true)}
-              className="appearance-none w-full text-gray-700 border-b-4 border-gray-300 rounded-t py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-black"
+              className="appearance-none text-sm md:text-base  w-[130px]   font-semibold md:w-full text-gray-700 border-b-4 border-gray-300 rounded-t  py-3 md:py-3 md:px-4 leading-tight focus:outline-none focus:bg-white focus:border-black"
               style={{
-                width: "180px",
-                height: "45px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",

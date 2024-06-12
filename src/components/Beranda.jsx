@@ -7,11 +7,14 @@ import Passenger from "./Passenger";
 import SeatClass from "./SeatClass";
 import Destinasi from "./Destinasi";
 import airportOptions from "../data/airports.json";
+import { FaPerson } from "react-icons/fa6";
 
 function Beranda() {
   const [searchParams] = useSearchParams();
   const [fromCity, setFromCity] = useState("");
   const [toCity, setToCity] = useState("");
+  const [activeInput, setActiveInput] = useState(null);
+  const [isRotated, setIsRotated] = useState(false);
   const [departureDate, setDepartureDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
   const [passengerCounts, setPassengerCounts] = useState({
@@ -27,9 +30,10 @@ function Beranda() {
   };
 
   const handleSwitchCities = () => {
-    const tempCity = toCity;
-    setToCity(fromCity);
-    setFromCity(tempCity);
+    const temp = fromCity;
+    setFromCity(toCity);
+    setToCity(temp);
+    setIsRotated(!isRotated);
   };
 
   const handleSliderChange = () => {
@@ -91,12 +95,15 @@ function Beranda() {
         <div className="content max-w-[1098px] w-full mx-auto -mt-12 relative z-20 pt-6 bg-white rounded-lg shadow-md">
           <h2 className="text-xl md:text-2xl font-bold mb-4 text-gray-800 px-8 ">
             Pilih Jadwal Penerbangan spesial di
-            <span className="text-purple-600 bg-white px-2 py-1 rounded">
-              Tiketku
+            <span className="text-[#7126B5] bg-white px-2 py-1 rounded">
+              SkyPass
             </span>
           </h2>
           {/* form */}
-          <form className="grid grid-cols-1 gap-8" onSubmit={handleSearch}>
+          <form
+            className="grid grid-cols-1 gap-4 md:gap-8"
+            onSubmit={handleSearch}
+          >
             {/* fligh */}
             <div className="flex items-center justify-between px-8 flex-wrap">
               {/* flight From */}
@@ -108,27 +115,28 @@ function Beranda() {
                 >
                   From
                 </label>
-                <div
-                  className="relative w-full font-bold"
-                  style={{ maxWidth: "300px" }}
-                >
+                <div className="relative  font-bold w-full md:w-[340px]">
                   <InputComponent
                     id="from"
                     value={fromCity}
                     onChange={(e) => setFromCity(e.target.value)}
-                    placeholder="Jakarta (JKTA)"
+                    placeholder="Please select a location ..."
                     airportOptions={airportOptions}
+                    activeInput={activeInput}
+                    setActiveInput={setActiveInput}
                   />
                 </div>
               </div>
               {/* Button Switch */}
-              <div className="justify-center">
+              <div className="flex justify-center items-start">
                 <button
                   type="button"
                   onClick={handleSwitchCities}
-                  className="text-gray-600 font-semibold hover:text-gray-800 focus:outline-none"
+                  className={`text-gray-600 font-semibold hover:text-gray-800 focus:outline-none transition-transform duration-5000 ${
+                    isRotated ? "rotate-180" : "-rotate-180"
+                  }`}
                 >
-                  <img src="return.png" alt="Switch" className="w-6 h-6" />
+                  <img src="return.png" alt="Switch" className="w-8 h-8" />
                 </button>
               </div>
               {/* Flight TO */}
@@ -140,19 +148,31 @@ function Beranda() {
                 >
                   To
                 </label>
-                <div
-                  className="relative w-full font-bold"
-                  style={{ maxWidth: "300px" }}
-                >
+                <div className="relative font-bold w-full md:w-[340px]">
                   <InputComponent
-                    type="text"
                     id="to"
                     value={toCity}
                     onChange={(e) => setToCity(e.target.value)}
-                    placeholder="Melbourne (MLBA)"
+                    placeholder="Please select a location ..."
                     airportOptions={airportOptions}
+                    activeInput={activeInput}
+                    setActiveInput={setActiveInput}
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* Slider */}
+            <div className="mt-1 md:hidden flex items-center justify-between  px-8">
+              {" "}
+              <div>
+                <p className="text-[#7126B5] text-sm">Round Trip</p>
+              </div>
+              <div>
+                <SliderComponent
+                  checked={sliderChecked}
+                  onChange={handleSliderChange}
+                />
               </div>
             </div>
 
@@ -161,66 +181,80 @@ function Beranda() {
             {/* Depature */}
             <div className="flex items-center justify-between px-8 flex-wrap">
               {/* Date and Return */}
-              <div className="flex items-center gap-4">
-                <img src="date1.svg" alt="From" />
-                <label
-                  htmlFor="from"
-                  className="block text-xs font-semibold text-gray-600"
-                >
-                  Date
-                </label>
-                <div className="flex flex-col">
-                  <label
-                    htmlFor="departure"
-                    className="block text-xs font-semibold text-gray-600 mb-3"
-                  >
-                    Departure
-                  </label>
-                  <DatePickerComponent
-                    type="date"
-                    id="departure"
-                    value={departureDate}
-                    onChange={(date) => setDepartureDate(date)}
-                    className="w-36 h-10 border border-gray-300 rounded px-2 focus:outline-none"
-                  />
-                </div>
-              </div>
-              {/* Return */}
-              <div className="flex items-center gap-4">
-                <div className="flex flex-col ml-3">
-                  <label
-                    htmlFor="return"
-                    className="block text-xs font-semibold text-gray-600 mb-3"
-                  >
-                    Return
-                  </label>
-                  <DatePickerComponent
-                    id="return"
-                    value={returnDate}
-                    onChange={(date) => setReturnDate(date)}
-                    disabled={!sliderChecked}
-                    className="w-36 h-10 border border-gray-300 rounded px-2 focus:outline-none"
-                  />
-                </div>
-              </div>
-              {/* Slider */}
-              <SliderComponent
-                checked={sliderChecked}
-                onChange={handleSliderChange}
-              />
-
-              {/* Passengers and Seat Class */}
-              <div className="flex items-center justify-between flex-wrap">
-                {/* Passengers */}
+              <div className="flex md:flex-row justify-between w-full md:w-auto ">
                 <div className="flex items-center gap-4">
+                  <img
+                    src="date1.svg"
+                    alt="From"
+                    className=" hidden md:block"
+                  />
+                  <label
+                    htmlFor="from"
+                    className=" hidden md:block text-xs font-semibold text-gray-600"
+                  >
+                    Date
+                  </label>
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="departure"
+                      className="block text-xs font-semibold text-gray-600 mb-3"
+                    >
+                      Departure
+                    </label>
+                    <DatePickerComponent
+                      type="date"
+                      id="departure"
+                      value={departureDate}
+                      onChange={(date) => setDepartureDate(date)}
+                      className="w-36 h-10 border border-gray-300 rounded px-2 focus:outline-none"
+                    />
+                  </div>
+                </div>
+                {/* Return */}
+                <div className="flex items-center gap-4">
+                  <div className="flex flex-col ml-3">
+                    <label
+                      htmlFor="return"
+                      className="block text-xs font-semibold text-gray-600 mb-3"
+                    >
+                      Return
+                    </label>
+                    <DatePickerComponent
+                      id="return"
+                      value={returnDate}
+                      onChange={(date) => setReturnDate(date)}
+                      disabled={!sliderChecked}
+                      className="w-36 h-10 border border-gray-300 rounded px-2 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Slider */}
+              <div className="hidden md:block mt-3">
+                {" "}
+                <SliderComponent
+                  checked={sliderChecked}
+                  onChange={handleSliderChange}
+                />
+              </div>
+
+              {/* <div className="ml-5 flex flex-row items-center gap-5">
+                {" "}
+                <img src="seat.svg" alt="Passengers" />
+                <label className="block text-xs font-semibold text-gray-600">
+                  To
+                </label>
+              </div> */}
+              {/* Passengers and Seat Class */}
+              <div className="flex md:items-center justify-between md:flex-wrap w-full md:w-auto">
+                {/* Passengers */}
+                <div className="flex items-center md:gap-4">
                   <Passenger onChange={setPassengerCounts} />
                 </div>
 
                 {/* Seat Class */}
-                <div
-                  className="flex items-center gap-4"
-                  style={{ maxWidth: "200px", marginLeft: "auto" }}
-                >
+                <div className="flex items-center md:gap-4">
                   <SeatClass
                     seatClass={seatClass}
                     handleSeatClassChange={handleSeatClassChange}
@@ -244,7 +278,10 @@ function Beranda() {
             </button>
           </form>
         </div>
-        <Destinasi />
+        <div className="mt-4">
+          {" "}
+          <Destinasi />
+        </div>
       </div>
     </div>
   );
