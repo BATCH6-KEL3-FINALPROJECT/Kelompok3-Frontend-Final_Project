@@ -13,26 +13,37 @@ const InputComponent = ({
 }) => {
   const [showSelect, setShowSelect] = useState(false);
   const [inputValue, setInputValue] = useState(value);
-  const [filteredOptions, setFilteredOptions] = useState(airportOptions);
+  const [filteredOptions, setFilteredOptions] = useState([]);
   const [locationNotFound, setLocationNotFound] = useState(false);
+  const [prevValue, setPrevValue] = useState(value);
   const inputRef = useRef(null);
 
   useEffect(() => {
-    setInputValue(value); // Update inputValue when value prop changes
+    setInputValue(value);
   }, [value]);
 
   useEffect(() => {
     if (activeInput === id) {
-      inputRef.current.focus();
+      inputRef.current?.focus();
     } else {
+      if (
+        !filteredOptions.some(
+          (airport) => `${airport.city} (${airport.code})` === inputValue
+        )
+      ) {
+        setInputValue(prevValue);
+      }
       setShowSelect(false);
     }
-  }, [activeInput, id]);
+  }, [activeInput, id, inputValue, filteredOptions, prevValue]);
 
   const handleInputClick = () => {
+    setPrevValue(inputValue);
     setActiveInput(id);
     setShowSelect(true);
-    inputRef.current.focus();
+    setFilteredOptions(airportOptions);
+    setLocationNotFound(false);
+    inputRef.current?.focus();
   };
 
   const handleInputChange = (e) => {
@@ -47,17 +58,12 @@ const InputComponent = ({
         airport.city.toLowerCase().includes(inputValue.toLowerCase())
     );
 
-    if (matchedOptions.length > 0) {
-      setFilteredOptions(matchedOptions);
-      setLocationNotFound(false);
-    } else {
-      setLocationNotFound(true);
-    }
+    setFilteredOptions(matchedOptions);
+    setLocationNotFound(matchedOptions.length === 0);
     setShowSelect(true);
   };
 
-  const handleSelectChange = (e) => {
-    const selectedValue = e.target.value;
+  const handleSelectChange = (selectedValue) => {
     setInputValue(selectedValue);
     onChange({ target: { value: selectedValue } });
     setShowSelect(false);
@@ -94,28 +100,26 @@ const InputComponent = ({
               onChange={handleInputChange}
               ref={inputRef}
             />
-            <div>
-              <button
-                className="bg-white font-poppins"
-                onClick={() => setShowSelect(false)}
+            <button
+              className="bg-white font-poppins"
+              onClick={() => setActiveInput(null)}
+            >
+              <svg
+                stroke="currentColor"
+                fill="none"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-[32px] w-[32px]"
+                height="1em"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <svg
-                  stroke="currentColor"
-                  fill="none"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-[32px] w-[32px]"
-                  height="1em"
-                  width="1em"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
-            </div>
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
           </div>
           <div className="overflow-y-scroll pt-3" style={{ height: "238px" }}>
             {locationNotFound ? (
@@ -123,14 +127,12 @@ const InputComponent = ({
                 <h1>Location not found...</h1>
               </div>
             ) : (
-              filteredOptions.map((airport) => (
+              filteredOptions.map((airport, index) => (
                 <div
-                  key={airport.code}
+                  key={`${airport.code}-${index}`}
                   className="cursor-pointer hover:bg-gray-200 p-2"
                   onClick={() =>
-                    handleSelectChange({
-                      target: { value: `${airport.city} (${airport.code})` },
-                    })
+                    handleSelectChange(`${airport.city} (${airport.code})`)
                   }
                 >
                   {airport.name} - {airport.city} ({airport.code})
