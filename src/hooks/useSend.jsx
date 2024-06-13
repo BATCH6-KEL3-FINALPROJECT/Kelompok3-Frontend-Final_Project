@@ -9,7 +9,8 @@ const useSend = () => {
     method,
     body = null,
     token = null,
-    json = false
+    json = false,
+    formData = false
   ) => {
     const BASE_URL = "https://airline.azkazk11.my.id";
     let data = null,
@@ -26,6 +27,10 @@ const useSend = () => {
 
       if (json) {
         headers["Content-Type"] = "application/json";
+      }
+
+      if (formData) {
+        headers["Content-Type"] = "multipart/form-data";
       }
 
       const response = await axios({
