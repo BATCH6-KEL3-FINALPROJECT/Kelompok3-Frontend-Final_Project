@@ -25,3 +25,24 @@ html {
   border-radius: 0.5rem 0 0 0.5rem;
   background-color: #f9fafb;
 }
+
+.react-calendar__tile--now.react-calendar__tile--active {
+  background-color: #6b46c1;
+  color: white;
+  border-radius: 10px;
+}
+.react-calendar__tile.react-calendar__tile--active.react-calendar__tile--range.react-calendar__tile--rangeStart.react-calendar__tile--rangeEnd.react-calendar__tile--rangeBothEnds.react-calendar__month-view__days__day.react-calendar__month-view__days__day--weekend {
+  background-color: #6b46c1;
+  color: white;
+  border-radius: 10px;
+}
+.react-calendar__tile--active {
+  background-color: #6b46c1;
+  color: white;
+  border-radius: 10px;
+}
+
+.react-calendar__tile:hover {
+  background-color: #7126b580 !important;
+  border-radius: 10px;
+}
