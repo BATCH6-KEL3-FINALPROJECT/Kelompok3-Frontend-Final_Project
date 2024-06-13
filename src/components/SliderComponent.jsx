@@ -2,7 +2,7 @@ import React from "react";
 
 const SliderComponent = ({ checked, onChange }) => {
   return (
-    <div className="flex flex-col ml-3">
+    <div className="flex flex-col ">
       <label className="flex items-center cursor-pointer">
         <input
           type="checkbox"

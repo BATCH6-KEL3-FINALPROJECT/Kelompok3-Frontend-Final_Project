@@ -15,8 +15,8 @@ function Beranda() {
   const [toCity, setToCity] = useState("");
   const [activeInput, setActiveInput] = useState(null);
   const [isRotated, setIsRotated] = useState(false);
-  const [departureDate, setDepartureDate] = useState("");
-  const [returnDate, setReturnDate] = useState("");
+  const [departureDate, setDepartureDate] = useState(new Date());
+  const [returnDate, setReturnDate] = useState(null);
   const [passengerCounts, setPassengerCounts] = useState({
     adult: 0,
     child: 0,
@@ -39,8 +39,24 @@ function Beranda() {
   const handleSliderChange = () => {
     setSliderChecked(!sliderChecked);
     if (!sliderChecked) {
-      setReturnDate(""); // Reset return date if slider is unchecked
+      setReturnDate(null); // Reset return date if slider is unchecked
     }
+  };
+
+  const formatToBackend = (date) => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const handleReturnDateChange = (date) => {
+    setReturnDate(date);
+  };
+
+  const handleDepartureDateChange = (date) => {
+    setDepartureDate(date);
   };
 
   const handleSearch = (e) => {
@@ -62,8 +78,8 @@ function Beranda() {
     const searchData = {
       fromCity,
       toCity,
-      departureDate,
-      returnDate: sliderChecked ? returnDate : null,
+      departureDate: formatToBackend(departureDate),
+      returnDate: sliderChecked ? formatToBackend(returnDate) : null,
       passengerCounts,
       seatClass,
       totalPrice,
@@ -83,8 +99,8 @@ function Beranda() {
               <img
                 src="img_banner.png"
                 alt="Background"
-                className="w-full h-40 md:w-[1213px] md:h-[232px] md:top-[116px] md:left-[128px] border-r-20 rounded-r-20"
-                style={{ borderRadius: "0px 20px 20px 0px", width: "1350px" }}
+                className="w-full md:w-full md:max-w-[1213px] h-40 md:h-[232px] md:top-[116px] md:left-[128px] border-r-20 rounded-r-20"
+                style={{ borderRadius: "20px", maxWidth: "100%" }}
               />
             </div>
           </div>
@@ -181,8 +197,6 @@ function Beranda() {
             </div>
 
             {/* date */}
-            {/* <div className="flex items-center justify-between w-full sm:w-auto sm:flex-row px-8 flex-wrap"> */}
-            {/* Depature */}
             <div className="flex items-center justify-between px-8 flex-wrap">
               {/* Date and Return */}
               <div className="flex md:flex-row justify-between w-full md:w-auto ">
@@ -209,7 +223,7 @@ function Beranda() {
                       type="date"
                       id="departure"
                       value={departureDate}
-                      onChange={(date) => setDepartureDate(date)}
+                      onChange={handleDepartureDateChange}
                       className="w-36 h-10 border border-gray-300 rounded px-2 focus:outline-none"
                     />
                   </div>
@@ -226,8 +240,10 @@ function Beranda() {
                     <DatePickerComponent
                       id="return"
                       value={returnDate}
-                      onChange={(date) => setReturnDate(date)}
+                      onChange={handleReturnDateChange}
                       disabled={!sliderChecked}
+                      departureDate={departureDate}
+                      isReturn={true}
                       className="w-36 h-10 border border-gray-300 rounded px-2 focus:outline-none"
                     />
                   </div>
@@ -243,14 +259,6 @@ function Beranda() {
                 />
               </div>
 
-              {/* <div className="ml-5 flex flex-row items-center gap-5">
-                {" "}
-                <img src="seat.svg" alt="Passengers" />
-                <label className="block text-xs font-semibold text-gray-600">
-                  To
-                </label>
-              </div> */}
-              {/* Passengers and Seat Class */}
               <div className="flex md:items-center justify-between md:flex-wrap w-full md:w-auto">
                 {/* Passengers */}
                 <div className="flex items-center md:gap-4">
@@ -266,9 +274,6 @@ function Beranda() {
                 </div>
               </div>
             </div>
-
-            {/* </div> */}
-            {/* //button */}
             <button
               className="bg-[#7126B5] hover:bg-[#7126B5] text-white font-semibold py-3 rounded w-full flex"
               type="submit"

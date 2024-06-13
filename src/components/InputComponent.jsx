@@ -80,7 +80,7 @@ const InputComponent = ({
         onClick={handleInputClick}
         placeholder={placeholder}
         ref={inputRef}
-        className="w-full px-4 py-2 border rounded outline-none"
+        className="w-full px-4 py-2 border-2 rounded outline-none"
         readOnly={readOnly}
         style={style}
       />
