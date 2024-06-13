@@ -124,6 +124,8 @@ function Beranda() {
                     airportOptions={airportOptions}
                     activeInput={activeInput}
                     setActiveInput={setActiveInput}
+                    readOnly={true}
+                    style={{ cursor: "pointer" }}
                   />
                 </div>
               </div>
@@ -157,6 +159,8 @@ function Beranda() {
                     airportOptions={airportOptions}
                     activeInput={activeInput}
                     setActiveInput={setActiveInput}
+                    readOnly={true}
+                    style={{ cursor: "pointer" }}
                   />
                 </div>
               </div>

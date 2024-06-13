@@ -8,6 +8,8 @@ const InputComponent = ({
   placeholder,
   activeInput,
   setActiveInput,
+  readOnly,
+  style = {},
 }) => {
   const [showSelect, setShowSelect] = useState(false);
   const [inputValue, setInputValue] = useState(value);
@@ -41,7 +43,8 @@ const InputComponent = ({
     const matchedOptions = airportOptions.filter(
       (airport) =>
         airport.name.toLowerCase().includes(inputValue.toLowerCase()) ||
-        airport.code.toLowerCase().includes(inputValue.toLowerCase())
+        airport.code.toLowerCase().includes(inputValue.toLowerCase()) ||
+        airport.city.toLowerCase().includes(inputValue.toLowerCase())
     );
 
     if (matchedOptions.length > 0) {
@@ -50,6 +53,7 @@ const InputComponent = ({
     } else {
       setLocationNotFound(true);
     }
+    setShowSelect(true);
   };
 
   const handleSelectChange = (e) => {
@@ -71,6 +75,8 @@ const InputComponent = ({
         placeholder={placeholder}
         ref={inputRef}
         className="w-full px-4 py-2 border rounded outline-none"
+        readOnly={readOnly}
+        style={style}
       />
       {showSelect && (
         <div
