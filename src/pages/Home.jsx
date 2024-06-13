@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import Beranda from "../components/Beranda";
-import Navbar from "../components/Navbar";
+import Topnav from "../components/Topnav";
 
 const Home = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -12,7 +12,11 @@ const Home = () => {
   useEffect(() => {
     const checkToken = cookies.get("token");
     if (checkToken) {
-      setIsLogin(true);
+      if (checkToken === "undefined") {
+        setIsLogin(false);
+      } else {
+        setIsLogin(true);
+      }
     } else {
       setIsLogin(false);
     }
@@ -20,7 +24,7 @@ const Home = () => {
 
   return (
     <>
-      <Navbar isLogin={isLogin} isSearch={true} />
+      <Topnav isLogin={isLogin} isSearch={true} />
       <Beranda />
     </>
   );

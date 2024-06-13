@@ -1,23 +1,103 @@
 import React from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { motion } from "framer-motion";
+import { jwtDecode } from "jwt-decode";
+import useSend from "../hooks/useSend";
+import Cookies from "universal-cookie";
+import { useNavigate } from "react-router-dom";
 
-const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
-  const handleSelect = () => {
-    console.log("Ticket selected:", flight);
+const AccordionTicket = ({
+  index,
+  flight,
+  isOpen,
+  toggleAccordion,
+  handleSelect,
+}) => {
+  const { loading, sendData } = useSend();
+  const navigate = useNavigate();
+  const cookies = new Cookies();
+
+  const handleSelectFlight = async () => {
+    try {
+      const checkToken = cookies.get("token");
+      if (checkToken && checkToken !== "undefined") {
+        const decoded = jwtDecode(checkToken);
+        console.log(decoded);
+        handleSelect(flight);
+      } else {
+        navigate("/account");
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(price);
+  };
+
+  const calculateDuration = (departureTime, arrivalTime) => {
+    const [depHours, depMinutes] = departureTime.split(":").map(Number);
+    const [arrHours, arrMinutes] = arrivalTime.split(":").map(Number);
+
+    const depDate = new Date(1970, 0, 1, depHours, depMinutes);
+    const arrDate = new Date(1970, 0, 1, arrHours, arrMinutes);
+
+    if (arrDate < depDate) {
+      arrDate.setDate(arrDate.getDate() + 1);
+    }
+
+    const durationMs = arrDate - depDate;
+    const durationHours = Math.floor(durationMs / (1000 * 60 * 60));
+    const durationMinutes = Math.floor(
+      (durationMs % (1000 * 60 * 60)) / (1000 * 60)
+    );
+
+    return `${durationHours}h ${durationMinutes}m`;
+  };
+
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return new Intl.DateTimeFormat("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(date);
+  };
+
+  const formatPlaneCode = (planeCode) => {
+    const airlineCode = planeCode.slice(0, 3);
+    const flightNumber = planeCode.slice(3);
+    return `${airlineCode} - ${flightNumber}`;
+  };
+
+  const flightDetails = JSON.parse(flight.flight_description);
+
   return (
-    <div className=" shadow-md border-2 rounded-3xl  bg-white  rounded-lg mb-4 transition-all duration-500 w-[95vw] sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-[640px] relative">
+    <motion.div
+      initial={{ opacity: 0, x: 100 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{
+        duration: 0.25,
+        delay: index * 0.25,
+      }}
+      viewport={{ once: true }}
+      className="p-3 shadow-md border-2 bg-white rounded-lg mb-4 transition-all duration-500 relative hover:border-[#7126B580]/50"
+    >
       <div
-        className={`px-4 py-3 text-left text-lg font-medium text-gray-900 bg-white flex items-center justify-between ${
+        className={` text-left text-lg font-medium text-gray-900 bg-white flex items-center justify-between ${
           isOpen ? "rounded-t-lg" : "rounded-lg"
         }`}
       >
         <div className="flex items-start">
           <img src="logoplane.svg" alt="Logo" className="h-6 mr-2" />
-          <div className="flex flex-col ml-2">
-            <span className="text-sm text-gray-500">
-              {flight.airline} - {flight.class}
+          <div className="flex flex-col ml-2 gap-5">
+            <span className="text-sm font-medium text-[#151515]">
+              {flight.airline_name} - {flight.seat_class}
             </span>
             <div
               className="grid grid-cols-3 gap-0 text-sm text-gray-500 mt-1"
@@ -28,46 +108,51 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
               }}
             >
               <div>
-                <strong className="text-black">{flight.departureTime}</strong>
+                <strong className="text-black">
+                  {flight.departure_time.slice(0, -3)}
+                </strong>
               </div>
-              <div className="text-sm text-center">Duration</div>
+              <div className="text-sm text-center">
+                {calculateDuration(flight.departure_time, flight.arrival_time)}
+              </div>
               <div>
-                <strong className="text-black">{flight.arrivalTime}</strong>
+                <strong className="text-black">
+                  {flight.arrival_time.slice(0, -3)}
+                </strong>
               </div>
               <div></div>
               <div className="text-center">
                 <img src="arrow.svg" alt="arrowicon" />
               </div>
               <div></div>
-              <div className="text-black">{flight.origin}</div>
+              <div className="text-black">{flight.departure_iata_code}</div>
               <div className="text-sm text-center">Direct</div>
-              <div className="text-black">{flight.destination}</div>
+              <div className="text-black">{flight.arrival_iata_code}</div>
             </div>
           </div>
         </div>
         <div>
           <img
-            className="hidden md:block me-10 "
+            className="hidden 2xs:block me-6 lg:me-10 "
             src="tas.svg"
             alt="iconticket"
           />
         </div>
         <div className="flex flex-col items-end">
-          <div className="md:text-[16px] text-sm text-purple-600 mt-4 md:mt-7 mb-1">
-            {flight.price}
+          <div className="md:text-[16px] text-sm font-bold text-[#7126B5] mt-4 md:mt-7 mb-1">
+            {formatPrice(flight.price)}
           </div>
           <button
-            className=" text-sm md:w-[100px] md:h-[32px] w-[70px] h-[20px] mr-2 px-4 py-2 bg-purple-600 text-white rounded mb-1 hover:bg-purple-700"
+            className=" text-sm px-8 py-2 bg-[#7126B5] text-white rounded mb-1 hover:bg-[#7126B5]/80"
             style={{
               borderRadius: "12px",
-              backgroundColor: "#4B1979",
               color: "white",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               transition: "background-color 0.3s ease",
             }}
-            onClick={handleSelect}
+            onClick={handleSelectFlight}
           >
             Pilih
           </button>
@@ -86,71 +171,103 @@ const AccordionTicket = ({ flight, isOpen, toggleAccordion }) => {
       <div
         className={`${
           isOpen ? "block" : "hidden"
-        } px-4 py-3 bg-gray-50 transition-all duration-500 rounded-b-lg border-t border-gray-300`}
+        } px-4 py-3 bg-gray-50 transition-all duration-500 rounded-b-lg border-t border-[#8A8A8A] mt-5`}
       >
-        <div className="mb-2">
+        <div className="mb-4 mt-2">
           <div
-            className="text-sm text-gray-500 font-semibold"
-            style={{ color: "#7126B5" }}
+            className="text-sm
+           text-[#4B1979] mb-1 font-bold"
           >
             Detail Penerbangan
           </div>
-          <div className="text-sm flex justify-between text-black">
-            <div>
-              <strong>{flight.departureTime}</strong>
+          <div className="flex flex-col gap-0.5">
+            <div className="text-md flex justify-between items-center text-black">
+              <strong className="text-base">
+                {flight.departure_time.slice(0, -3)}
+              </strong>
+              <div className="font-bold text-[#A06ECE] text-xs">
+                Keberangkatan
+              </div>
             </div>
-            <div className="font-semibold" style={{ color: "#A06ECE" }}>
-              Keberangkatan
+            <div className="text-sm font-normal">
+              {formatDate(flight.departure_date)}
+            </div>
+            <div className="text-sm font-medium">
+              {flight.departure_airport_name}
             </div>
           </div>
-          <div className="text-sm">{flight.departureDate}</div>
-          <div className="text-sm">{flight.originAirport}</div>
         </div>
         <div>
-          <hr className="my-1 border-gray-300" />
+          <hr className="my-1 border-[#8A8A8A] w-2/3 mx-auto " />
         </div>
-        <div className="text-black text-sm mb-2">
+        <div className="text-black text-sm mb-2 mt-3">
           <div className="mb-0 p-0">
             <strong>
-              {flight.airline} - {flight.class}
+              {flight.airline_name} - {flight.seat_class}
             </strong>
           </div>
           <div className="mt-0 pt-0">
-            <strong>kode pesawat (JT03)</strong>
+            <strong>{formatPlaneCode(flight.flight_code)}</strong>
           </div>
         </div>
-        <div className="mb-2 flex items-center">
+        <div className="mb-2 flex">
           <img src="logoplane.svg" alt="logo" className="h-6 mr-2" />
           <div className="flex flex-col ml-2">
             <div className="text-sm text-gray-500" style={{ color: "black" }}>
-              <strong>Informasi</strong>
-            </div>
-            <div className="text-sm">Baggage: {flight.baggage} kg</div>
-            <div className="text-sm">
-              Cabin Baggage: {flight.cabinBaggage} kg
-            </div>
-            <div className="text-sm">
-              In Flight Entertainment: {flight.entertainment ? "Yes" : "No"}
+              <strong>Informasi:</strong>
+              {flightDetails.details.map((detail) => (
+                <div key={detail.id} className="text-sm">
+                  {detail.description}
+                </div>
+              ))}
             </div>
           </div>
         </div>
         <div>
-          <hr className="my-1 border-gray-300" />
+          <hr className="my-1 border-[#8A8A8A] w-2/3 mx-auto " />
         </div>
-        <div className="mb-2">
-          <div className="flex justify-between text-black">
-            <div className="text-sm">
-              <strong>{flight.arrivalTime}</strong>
+        <div className="text-[#4B1979] text-sm mb-4 mt-3">
+          <div className="mb-4 p-0">
+            <strong>Ticket Price</strong>
+          </div>
+          <div className="flex justify-between text-black mx-5">
+            <div className="flex flex-col justify-center items-center">
+              <img src="/adult.svg" alt="Adult Icon" />
+              <h1 className="mt-[-15px] font-bold">
+                {formatPrice(flight.price)}
+              </h1>
             </div>
-            <div className="text-sm font-semibold" style={{ color: "#A06ECE" }}>
-              Kedatangan
+            <div className="flex flex-col justify-center items-center">
+              <img src="/childern.svg" alt="Infant Icon" />
+              <h1 className="mt-[-15px] font-bold">
+                {formatPrice(flight.price_for_child)}
+              </h1>
+            </div>
+            <div className="flex flex-col justify-center items-center">
+              <img src="/baby.svg" alt="Baby Icon" />
+              <h1 className="mt-[-15px] font-bold">
+                {formatPrice(flight.price_for_infant)}
+              </h1>
             </div>
           </div>
-          <div className="text-sm">{flight.arrivalDate}</div>
-          <div className="text-sm">{flight.destinationAirport}</div>
+        </div>
+        <div>
+          <hr className="my-1 border-[#8A8A8A] w-2/3 mx-auto " />
+        </div>
+        <div className="mb-2 mt-4 flex justify-between items-center">
+          <div className=" text-black">
+            <div className="text-sm font-bold">
+              {flight.arrival_time.slice(0, -3)}
+            </div>
+            <div className="text-sm">{formatDate(flight.arrival_date)}</div>
+            <div className="text-sm">{flight.arrival_airport_name}</div>
+          </div>
+          <div className="text-xs font-semibold" style={{ color: "#A06ECE" }}>
+            Kedatangan
+          </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

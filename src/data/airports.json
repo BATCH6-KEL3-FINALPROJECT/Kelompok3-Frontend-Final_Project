@@ -1,0 +1,109 @@
+[
+    {
+      "name": "Soekarno-Hatta International Airport",
+      "city": "Jakarta",
+      "code": "CGK"
+    },
+    {
+      "name": "Ngurah Rai International Airport",
+      "city": "Denpasar",
+      "code": "DPS"
+    },
+    {
+      "name": "Juanda International Airport",
+      "city": "Surabaya",
+      "code": "SUB"
+    },
+    {
+      "name": "Hang Nadim International Airport",
+      "city": "Batam",
+      "code": "BTH"
+    },
+    {
+      "name": "Sultan Hasanuddin International Airport",
+      "city": "Makassar",
+      "code": "UPG"
+    },
+    {
+      "name": "Adisumarmo International Airport",
+      "city": "Surakarta",
+      "code": "SOC"
+    },
+    {
+      "name": "Achmad Yani Airport",
+      "city": "Semarang",
+      "code": "SRG"
+    },
+    {
+      "name": "Adisucipto International Airport",
+      "city": "Yogyakarta",
+      "code": "JOG"
+    },
+    {
+      "name": "Adi Soemarmo International Airport",
+      "city": "Surakarta",
+      "code": "SOC"
+    },
+    {
+      "name": "Fatmawati Soekarno Airport",
+      "city": "Bengkulu",
+      "code": "BKS"
+    },
+    {
+      "name": "Pattimura Airport",
+      "city": "Ambon",
+      "code": "AMQ"
+    },
+    {
+      "name": "Sultan Aji Muhammad Sulaiman Airport",
+      "city": "Balikpapan",
+      "code": "BPN"
+    },
+    {
+      "name": "Sentani Airport",
+      "city": "Jayapura",
+      "code": "DJJ"
+    },
+    {
+      "name": "Sam Ratulangi Airport",
+      "city": "Manado",
+      "code": "MDC"
+    },
+    {
+      "name": "Sultan Iskandar Muda International Airport",
+      "city": "Banda Aceh",
+      "code": "BTJ"
+    },
+    {
+      "name": "Hasanuddin International Airport",
+      "city": "Makassar",
+      "code": "UPG"
+    },
+    {
+      "name": "Rendani Airport",
+      "city": "Manokwari",
+      "code": "MKW"
+    },
+    {
+      "name": "Pangkal Pinang Airport",
+      "city": "Pangkal Pinang",
+      "code": "PGK"
+    },
+    {
+      "name": "Adi Sumarmo Airport",
+      "city": "Surakarta",
+      "code": "SOC"
+    },
+
+    {
+      "name": "Husein Sastranegara International Airport",
+      "city": "Bandung",
+      "code": "BDO"
+    },
+    {
+      "name": "Juwata International Airport",
+      "city": "Tarakan",
+      "code": "TRK"
+    }
+  ]
+  

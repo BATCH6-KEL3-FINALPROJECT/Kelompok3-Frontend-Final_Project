@@ -1,35 +1,38 @@
 import React from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import { MdLogout } from "react-icons/md";
-import { IoSettingsOutline } from "react-icons/io5";
-import { FiEdit3 } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 const AccountItem = ({
-  handleLogout,
   handleChange,
   handleSubmit,
   profile,
   setProfile,
+  loading,
+  activeSection,
+  isVerify,
+  accountId,
 }) => {
+  const navigate = useNavigate();
+
+  const handleChangeVerify = () => {
+    navigate(`/otp`);
+  };
+
+  const handleProfileImageChange = (event) => {
+    const imageFile = event.target.files[0];
+    if (imageFile) {
+      setProfile((prevProfile) => ({
+        ...prevProfile,
+        current_image: URL.createObjectURL(imageFile),
+        images: imageFile,
+      }));
+    }
+  };
+
   return (
     <>
-      <div className="flex flex-col gap-4 font-medium text-base w-full md:w-1/3">
-        <button className="flex gap-4 items-center p-2 rounded-lg hover:bg-gray-200 hover:text-[#7126B5] transition-all duration-300">
-          <FiEdit3 className="text-[#7126B5] text-xl" /> <p>Ubah Profil</p>
-        </button>
-        <button className="flex gap-4 items-center p-2 rounded-lg hover:bg-gray-200 hover:text-[#7126B5] transition-all duration-300">
-          <IoSettingsOutline className="text-[#7126B5] text-xl" />
-          <p>Pengaturan Akun</p>
-        </button>
-        <button
-          onClick={handleLogout}
-          className="flex gap-4 items-center p-2 rounded-lg hover:bg-gray-200 hover:text-[#7126B5] transition-all duration-300"
-        >
-          <MdLogout className="text-[#7126B5] text-xl" /> <p>Keluar</p>
-        </button>
-      </div>
-      <div className="flex-grow">
+      {activeSection === "profile" ? (
         <div className="flex flex-col gap-5">
           <h1 className="text-xl font-bold text-center md:text-left">
             Ubah Data Profil
@@ -43,6 +46,23 @@ const AccountItem = ({
               className="bg-white border border-gray-300 p-4 rounded-b-xl"
             >
               <div className="flex flex-col gap-4 mb-5">
+                <div className="flex items-center gap-2 mx-auto">
+                  <div className="relative">
+                    <img
+                      src={profile.current_image}
+                      alt="Current Profile"
+                      className="w-40 h-40 rounded-full border-4 border-[#A06ECE] object-cover object-center"
+                    />
+                    <input
+                      type="file"
+                      id="images"
+                      name="images"
+                      accept="image/*"
+                      onChange={handleProfileImageChange}
+                      className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                    />
+                  </div>
+                </div>
                 <div className="flex flex-col">
                   <label
                     htmlFor="name"
@@ -98,15 +118,40 @@ const AccountItem = ({
               <div className="flex justify-center">
                 <button
                   type="submit"
-                  className="bg-[#4B1979] text-base font-medium text-white mx-auto px-12 p-3 rounded-xl hover:bg-[#7126B5] transition-all duration-300"
+                  className={`bg-[#4B1979] text-base font-medium text-white mx-auto px-12 p-3 rounded-xl transition-all duration-300 ${
+                    loading
+                      ? "cursor-not-allowed opacity-50"
+                      : "hover:bg-[#7126B5]"
+                  }`}
+                  disabled={loading}
                 >
-                  Simpan
+                  {loading ? "Loading..." : "Simpan"}
                 </button>
               </div>
             </form>
           </div>
         </div>
-      </div>
+      ) : (
+        activeSection == "settings" && (
+          <div className="flex flex-col gap-5">
+            <h1 className="text-xl font-bold text-center md:text-left">
+              Pengaturan Akun
+            </h1>
+            <div className="flex justify-between items-center mx-5">
+              <p>Verifikasi Akun Anda</p>
+              <button
+                disabled={isVerify}
+                onClick={handleChangeVerify}
+                className={`${
+                  isVerify ? "bg-green-500" : "bg-red-600"
+                } px-6 py-2 text-white rounded-lg`}
+              >
+                {isVerify ? "Verified" : "Not Verified"}
+              </button>
+            </div>
+          </div>
+        )
+      )}
     </>
   );
 };

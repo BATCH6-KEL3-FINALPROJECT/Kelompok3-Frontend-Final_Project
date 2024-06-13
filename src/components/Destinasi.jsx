@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import DestinasiFavoritBtn from "../components/DestinasiFavoritBtn";
-import DestinasiCard from "../components/DestinasiCard";
+import DestinasiFavoritBtn from "./DestinasiFavoritBtn";
+import DestinasiCard from "./DestinasiCard";
 import InputSearch from "./InputSearch";
 
-const Test = () => {
+const Destinasi = () => {
   const [selected, setSelected] = useState("Semua");
   const [searchInput, setSearchInput] = useState("");
   const [showDestinations, setShowDestinations] = useState(false);
@@ -65,7 +65,9 @@ const Test = () => {
   };
 
   const deleteSearchItem = (item) => {
-    setFilteredDestinations(filteredDestinations.filter((city) => city !== item));
+    setFilteredDestinations(
+      filteredDestinations.filter((city) => city !== item)
+    );
   };
 
   const deleteAllSearchItems = () => {
@@ -84,13 +86,13 @@ const Test = () => {
   }, [selected]);
 
   return (
-    <div className="content max-w-[1098px] w-full mx-auto -mt-12 relative pt-6 bg-none rounded-lg">
-      <h2 className="text-xl md:text-2xl font-bold mb-4 text-gray-800 px-5 mt-10 ml-3">
+    <div className="content max-w-[1098px] w-full mx-auto -mt-11 relative pt-1 bg-none rounded-lg">
+      <h2 className="text-xl md:text-2xl font-bold mb-2 text-gray-800 px-5 mt-10">
         Destinasi Favorit
       </h2>
       <div className="flex flex-col items-center">
         {/* Destinasi favorit */}
-        <div className="flex flex-wrap gap-5 mx-auto p-5 ml-3">
+        <div className="flex md:w-auto w-full overflow-x-auto md:overflow-hidden md:flex-wrap gap-5 mx-auto md:p-5 ml-3">
           {["Semua", "Asia", "Amerika", "Australia", "Eropa", "Afrika"].map(
             (text) => (
               <DestinasiFavoritBtn
@@ -102,58 +104,6 @@ const Test = () => {
             )
           )}
         </div>
-        {showDestinations && (
-          <div
-            className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[90%] sm:w-96 flex items-center justify-center z-20"
-            style={{ maxWidth: "600px" }}
-          >
-            <div
-              className="border border-gray-300 rounded-lg p-4 bg-white shadow-lg gap-2"
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                borderRadius: "20px",
-              }}
-              ref={destinationsRef}
-            >
-              {/* btn Input Seach */}
-              <div className="flex items-center mb-4">
-                <InputSearch
-                  placeholder="Masukan Kota atau Negara"
-                  value={searchInput}
-                  onChange={handleSearchInputChange}
-                  onReset={resetSearchInput}
-                />
-              </div>
-              {/* btn clear semua pencarian */}
-              <div className="flex justify-between items-center mb-4">
-                <span className="font-semibold">Pencarian Terkini</span>
-                <button
-                  className="text-red-500 hover:text-red-600 font-semibold py-1 px-2 rounded"
-                  onClick={deleteAllSearchItems}
-                >
-                  Hapus
-                </button>
-              </div>
-              {/* hapus per kota */}
-              {filteredDestinations.map((city) => (
-                <div
-                  key={city}
-                  className="border-b border-gray-300 py-2 flex justify-between items-center"
-                  style={{ borderRadius: "20px" }}
-                >
-                  <span className="ml-4 font-semibold">{city}</span>
-                  <button
-                    className="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-2 rounded mr-4"
-                    onClick={() => deleteSearchItem(city)}
-                  >
-                    X
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
       {/* Card Destinasin Favorite */}
       <div className="container mx-auto p-4 ml-3">
@@ -219,4 +169,4 @@ const Test = () => {
   );
 };
 
-export default Test;
+export default Destinasi;

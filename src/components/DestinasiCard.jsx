@@ -13,15 +13,15 @@ const DestinasiCard = ({
 }) => {
   return (
     <a
-      href="#"
+      href="/search"
       className="block bg-white shadow-2xl p-4 rounded-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-lg"
     >
       <img
-        src="/Example_Destinasi.png"
+        src="/Example_destinasi.svg"
         alt={tujuan}
-        className="w-full object-cover px-4"
+        className="w-full object-cover"
       />
-      <div className="px-4 mt-2">
+      <div className="py-4 mt-2">
         <h2 className="text-xs sm:text-sm font-medium mb-1">
           {asal} -{">"} {tujuan}
         </h2>

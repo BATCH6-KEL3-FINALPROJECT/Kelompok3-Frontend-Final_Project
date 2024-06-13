@@ -4,19 +4,73 @@ import { IoMdSearch, IoMdArrowRoundBack } from "react-icons/io";
 import { BiFilterAlt } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import Cookies from "universal-cookie";
-import Navbar from "../components/Navbar";
 import { motion } from "framer-motion";
+import Topnav from "../components/Topnav";
+import useSend from "../hooks/useSend";
+import { jwtDecode } from "jwt-decode";
 
 const Riwayat = () => {
+  const { loading, sendData } = useSend();
   const [isLogin, setIsLogin] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [dataRiwayat, setDataRiwayat] = useState([]);
+  const [accountId, setAccountId] = useState("");
+  const navigate = useNavigate();
+  const cookies = new Cookies();
+
+  useEffect(() => {
+    const checkToken = cookies.get("token");
+    if (checkToken) {
+      if (checkToken === "undefined") {
+        setIsLogin(false);
+        navigate("/");
+      } else {
+        setIsLogin(true);
+      }
+    } else {
+      setIsLogin(false);
+      navigate("/");
+    }
+
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const token = cookies.get("token");
+      if (token) {
+        const decoded = jwtDecode(token);
+        setAccountId(decoded.id);
+        const response = await sendData(`/api/v1/ticket`, "GET", null, token);
+        if (response) {
+          const filteredTickets = response.data.data.tickets.filter(
+            (ticket) => ticket.passenger_id === accountId
+          );
+          setDataRiwayat(filteredTickets);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <>
-      <Navbar isLogin={isLogin} isSearch={false} />
-      <div className="w-11/12 md:w-2/3 mx-auto flex flex-col gap-5 overflow-hidden">
+      <Topnav isLogin={isLogin} isSearch={false} />
+      <div className="w-11/12 md:w-2/3 mx-auto flex flex-col mt-28 gap-5 overflow-hidden">
         <motion.h1
           initial={{ opacity: 0, x: -75 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.75, delay: 0.25 }}
+          viewport={{ once: true }}
           className="text-xl font-bold"
         >
           Riwayat Pemesanan
@@ -26,6 +80,7 @@ const Riwayat = () => {
             initial={{ opacity: 0, x: -75 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.75, delay: 0.75 }}
+            viewport={{ once: true }}
             className="flex items-center flex-grow bg-[#A06ECE] text-white gap-5 p-2 rounded-lg"
           >
             <Link to="/">
@@ -37,6 +92,7 @@ const Riwayat = () => {
             initial={{ opacity: 0, x: 75 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.75, delay: 0.75 }}
+            viewport={{ once: true }}
             className="flex gap-2 items-center"
           >
             <button className="flex items-center text-base gap-2 border border-[#7126B5] p-1 px-2 rounded-full">

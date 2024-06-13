@@ -10,7 +10,7 @@ const InputSearch = ({ placeholder, value, onChange, onReset }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="hidden md:block">
       <div className="flex items-center relative">
         <input
           type="text"
@@ -22,12 +22,12 @@ const InputSearch = ({ placeholder, value, onChange, onReset }) => {
         />
         <button
           type="button"
-          className="absolute right-16 end-4 md:end-16"
+          className="absolute right-16 end-10 md:end-12"
           onClick={onReset}
         >
           <span className="text-red-500 font-bold">X</span>
         </button>
-        <button type="submit" className="absolute right-0 end-4 md:end-8">
+        <button type="submit" className="absolute right-0 end-2 md:end-4">
           <img
             src="/Input_Search_Icon.svg"
             alt="input icon"

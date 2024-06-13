@@ -1,108 +1,162 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
-import { useNavigate } from "react-router-dom";
-import Cookies from "universal-cookie";
-import Filter from "../components/Filter";
-import AccordionTicket from "../components/AccordionTicket";
-import ModalFilter from "../components/ModalFilter";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import { LuArrowUpDown } from "react-icons/lu";
+import Topnav from "../components/Topnav";
 import EditSearch from "../components/EditSearch";
 import ButtonSearchingDay from "../components/ButtonSearchingDay";
-import { LuArrowUpDown } from "react-icons/lu";
+import ModalFilter from "../components/ModalFilter";
+import TicketSoldOut from "../components/TicketSoldOut";
+import Loading from "../components/Loading";
+import Filter from "../components/Filter";
+import AccordionTicket from "../components/AccordionTicket";
+import Pagination from "../components/Pagination";
+import TicketEmpty from "../components/TicketEmpty";
+import useSend from "../hooks/useSend";
+import Cookies from "universal-cookie";
 
 const Search = () => {
+  const { loading, sendData } = useSend();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [pagination, setPagination] = useState(null);
+  const [isSeatAvailable, setIsSeatAvailable] = useState(true);
+  const [days, setDays] = useState([]);
+  const [dataFlight, setDataFlight] = useState([]);
+  const [searchParams] = useSearchParams();
   const [isLogin, setIsLogin] = useState(true);
-  const [isLoggedOut, setIsLoggedOut] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(
+    searchParams.get("departure_date")
+  );
   const navigate = useNavigate();
   const cookies = new Cookies();
 
-  const handleLogout = async (event) => {
-    cookies.remove("token");
-    setIsLoggedOut(true);
+  const ticketSearch = {
+    departure_city: searchParams.get("departure_city"),
+    arrival_city: searchParams.get("arrival_city"),
+    penumpang: searchParams.get("penumpang"),
+    seat_class: searchParams.get("seat_class"),
+    departure_date: searchParams.get("departure_date"),
+  };
+
+  const getDayName = (date) => {
+    const dayNames = [
+      "Minggu",
+      "Senin",
+      "Selasa",
+      "Rabu",
+      "Kamis",
+      "Jumat",
+      "Sabtu",
+    ];
+    return dayNames[new Date(date).getDay()];
+  };
+
+  const generateDays = (departureDate) => {
+    const days = [];
+    const currentDate = new Date(departureDate);
+    for (let i = -3; i <= 3; i++) {
+      const date = new Date(currentDate);
+      date.setDate(date.getDate() + i);
+      days.push({
+        date: date.toISOString().split("T")[0],
+        day: getDayName(date),
+      });
+    }
+    return days;
+  };
+
+  const formatDate = (dateString) => {
+    const [year, month, day] = dateString.split("-");
+    return `${day}/${month}/${year}`;
+  };
+
+  const handleClick = (date) => {
+    setSelectedDate(date);
+    const params = new URLSearchParams(searchParams);
+    params.set("departure_date", date);
+    navigate(`?${params.toString()}`);
+  };
+
+  const fetchData = async () => {
+    setDataFlight([]);
+    const response = await sendData(
+      `/api/v1/flight?seat_class=${searchParams.get(
+        "seat_class"
+      )}&departure_city=${searchParams.get(
+        "departure_city"
+      )}&arrival_city=${searchParams.get(
+        "arrival_city"
+      )}&departure_date=${searchParams.get(
+        "departure_date"
+      )}&limit=5&page=${currentPage}`,
+      "GET",
+      null,
+      null,
+      true
+    );
+    if (response.statusCode === 200) {
+      setDataFlight(response.data.data.flights);
+      setPagination(response.data.data.pagination);
+    } else {
+      console.error(response.message);
+    }
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+  };
+
+  const handlePageClick = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handleSelect = (flight) => {
+    // const seat = 0;
+    // if (seat > 0) {
+    //   setIsSeatAvailable(true);
+    //   navigate("/checkout");
+    // } else {
+    //   setIsSeatAvailable(false);
+    // }
+    if (flight.seats_available > 0) {
+      setIsSeatAvailable(true);
+      // navigate("/checkout");
+    } else {
+      setIsSeatAvailable(false);
+    }
   };
 
   useEffect(() => {
+    const departureDate =
+      searchParams.get("departure_date") ||
+      new Date().toISOString().split("T")[0];
+    const generatedDays = generateDays(departureDate);
+    setDays(generatedDays);
+  }, [selectedDate]);
+
+  useEffect(() => {
+    fetchData();
+  }, [searchParams, currentPage, selectedDate]);
+
+  useEffect(() => {
+    if (dataFlight && pagination) {
+      setTotalPages(pagination.totalPages);
+    }
+  }, [dataFlight]);
+
+  useEffect(() => {
     const checkToken = cookies.get("token");
-    if (checkToken) {
-      setIsLogin(true);
-    } else {
-      setIsLogin(false);
-    }
+    setIsLogin(!!checkToken);
 
-    if (isLoggedOut) {
-      const timer = setTimeout(() => {
-        navigate("/login");
-      }, 3000);
-      return () => clearTimeout(timer);
+    if (searchParams.size === 0) {
+      navigate("/");
     }
-  }, [isLoggedOut, navigate]);
-
-  const flightsDummy = [
-    {
-      airline: "Jet Air",
-      class: "Economy",
-      departureTime: "07:00",
-      arrivalTime: "11:00",
-      departureDate: "3 Maret 2023",
-      arrivalDate: "3 Maret 2023",
-      origin: "JKT",
-      destination: "MLB",
-      originAirport: "Soekarno Hatta - Terminal 1A Domestik",
-      destinationAirport: "Melbourne International Airport",
-      baggage: 20,
-      cabinBaggage: 7,
-      entertainment: true,
-      price: "IDR 4.950.000",
-    },
-    {
-      airline: "Jet Air",
-      class: "Economy",
-      departureTime: "08:00",
-      arrivalTime: "12:00",
-      departureDate: "3 Maret 2023",
-      arrivalDate: "3 Maret 2023",
-      origin: "JKT",
-      destination: "MLB",
-      originAirport: "Soekarno Hatta - Terminal 1A Domestik",
-      destinationAirport: "Melbourne International Airport",
-      baggage: 20,
-      cabinBaggage: 7,
-      entertainment: true,
-      price: "IDR 5.950.000",
-    },
-    {
-      airline: "Jet Air",
-      class: "Economy",
-      departureTime: "08:00",
-      arrivalTime: "12:00",
-      departureDate: "3 Maret 2023",
-      arrivalDate: "3 Maret 2023",
-      origin: "JKT",
-      destination: "MLB",
-      originAirport: "Soekarno Hatta - Terminal 1A Domestik",
-      destinationAirport: "Melbourne International Airport",
-      baggage: 20,
-      cabinBaggage: 7,
-      entertainment: true,
-      price: "IDR 5.950.000",
-    },
-    {
-      airline: "Jet Air",
-      class: "Economy",
-      departureTime: "08:00",
-      arrivalTime: "12:00",
-      departureDate: "3 Maret 2023",
-      arrivalDate: "3 Maret 2023",
-      origin: "JKT",
-      destination: "MLB",
-      originAirport: "Soekarno Hatta - Terminal 1A Domestik",
-      destinationAirport: "Melbourne International Airport",
-      baggage: 20,
-      cabinBaggage: 7,
-      entertainment: true,
-      price: "IDR 5.950.000",
-    },
-    // Add more flight objects as needed
-  ];
+  }, [navigate, searchParams, cookies]);
 
   const [openAccordion, setOpenAccordion] = useState(null);
 
@@ -110,28 +164,11 @@ const Search = () => {
     setOpenAccordion(openAccordion === index ? null : index);
   };
 
-  //   FILTER
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
   const [temporaryFilter, setTemporaryFilter] = useState("");
   const [flights, setFlights] = useState([]);
   const [filteredFlights, setFilteredFlights] = useState([]);
-
-  useEffect(() => {
-    // Fetch data from API
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("https://api.example.com/flights");
-        setFlights(response.data);
-        setFilteredFlights(response.data);
-      } catch (error) {
-        console.error("Error fetching flight data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   useEffect(() => {
     filterFlights();
@@ -187,100 +224,131 @@ const Search = () => {
     const parts = selectedFilter.split(" - ");
     return parts.length > 1 ? parts[1] : parts[0];
   };
-  //   Search data
-
-  const [selectedDate, setSelectedDate] = useState("02/03/2023"); // State for selected day
-
-  const handleClick = (date) => {
-    setSelectedDate(date);
-  };
-  const days = [
-    { day: "Selasa", date: "01/03/2023" },
-    { day: "Rabu", date: "02/03/2023" },
-    { day: "Kamis", date: "03/03/2023" },
-    { day: "Jumat", date: "04/03/2023" },
-    { day: "Sabtu", date: "05/03/2023" },
-    { day: "Minggu", date: "06/03/2023" },
-    { day: "Senin", date: "07/03/2023" },
-    { day: "Selasa", date: "08/03/2023" },
-  ];
 
   return (
-    <div>
-      <div>
-        <Navbar isLogin={isLogin} />
-      </div>
-      <div>
-        <div className=" mt-3 hidden md:block md:mt-10  md:ps-44 ">
-          <h1 className="text-lg">
-            <strong>Detail Penerbangan</strong>
-          </h1>
-        </div>
-        <div className=" flex flex-col items-center">
+    <>
+      <Topnav isLogin={isLogin} isSearch={true} />
+      <div className="w-11/12 md:w-2/3 mx-auto flex flex-col mt-28 gap-5 overflow-hidden pb-10">
+        <motion.h1
+          initial={{ opacity: 0, x: -75 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.75, delay: 0.25 }}
+          viewport={{ once: true }}
+          className="text-xl font-bold"
+        >
+          {!isSeatAvailable ? "Detail Penerbangan" : "Pilih Penerbangan"}
+        </motion.h1>
+        <div className="flex justify-between items-center gap-2 mx-4 relative">
           <EditSearch
-            origin="JKT"
-            destination="MLB"
-            passengers={2}
-            classType="Economy"
-            onEdit={() => console.log("Edit search clicked")}
+            origin={ticketSearch.departure_city}
+            destination={ticketSearch.arrival_city}
+            passengers={ticketSearch.penumpang}
+            classType={ticketSearch.seat_class}
           />
-          <div className="flex md:justify-center  w-screen md:w-auto overflow-scroll md:overflow-auto">
-            {days.map(({ day, date }) => (
-              <ButtonSearchingDay
-                key={day}
-                day={day}
-                date={date}
-                onClick={() => handleClick(date)}
-                isSelected={selectedDate === date}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/*  Filter Button dan Modal */}
-        <div className="flex ms-3 md:mt-8  mt-4 md:mb-2 md:justify-end me-36">
-          <button
-            className="flex justify-center items-center px-1 py-2 border border-purple-600 text-purple-600 rounded-full"
-            style={{ width: "110px", height: " 35px" }}
-            onClick={handleOpenModal}
+          <motion.button
+            initial={{ opacity: 0, x: 75 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.75, delay: 0.75 }}
+            viewport={{ once: true }}
+            onClick={() => navigate("/")}
+            className="text-white gap-5 p-2 md:p-3 px-5 rounded-lg bg-[#73CA5C]"
           >
-            <span className="ps-0 pe-1">
-              <LuArrowUpDown />
-            </span>
-            <span className="text-sm">{getButtonText()}</span>
-          </button>
-          <ModalFilter
-            isOpen={isModalOpen}
-            onClose={handleCloseModal}
-            selectedFilter={temporaryFilter}
-            onSelectFilter={handleSelectFilter}
-            onApplyFilter={handleApplyFilter}
-          />
+            Ubah Pencarian
+          </motion.button>
         </div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 2,
+            type: "spring",
+            ease: "easeOut",
+            delay: 0.75,
+          }}
+          className="flex justify-between mx-4 overflow-x-auto"
+        >
+          {days.map(({ day, date }, index) => (
+            <ButtonSearchingDay
+              key={index}
+              day={day}
+              date={formatDate(date)}
+              onClick={() => handleClick(date)}
+              isSelected={selectedDate === date}
+            />
+          ))}
+        </motion.div>
 
-        <div className="flex flex-col md:flex-row h-screen">
-          {/* Sidebar */}
-          <div className="w-1/3 p-4 ms-3 mt-6 justify-end md:flex hidden ">
-            <Filter></Filter>
-          </div>
+        {isSeatAvailable && (
+          <motion.div
+            initial={{ opacity: 0, x: 75 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.75, delay: 0.75 }}
+            className="flex justify-end"
+          >
+            <button
+              className="flex justify-center items-center gap-2 px-3 py-1 border border-[#A06ECE] text-[#7126B5] rounded-full mx-4"
+              onClick={handleOpenModal}
+            >
+              <span>
+                <LuArrowUpDown className="text-lg" />
+              </span>
+              <span className="text-base">{getButtonText()}</span>
+            </button>
+          </motion.div>
+        )}
 
-          {/* Flight List */}
-          <div className="w-3/4 ps-2">
-            {/* Flight Cards */}
-            <div className=" mx-auto md:mt-10 mt-5 md:ms-16">
-              {flightsDummy.map((flight, index) => (
-                <AccordionTicket
-                  key={index}
-                  flight={flight}
-                  isOpen={openAccordion === index}
-                  toggleAccordion={() => toggleAccordion(index)}
-                />
-              ))}
+        <ModalFilter
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          selectedFilter={temporaryFilter}
+          onSelectFilter={handleSelectFilter}
+          onApplyFilter={handleApplyFilter}
+        />
+
+        {!isSeatAvailable ? (
+          <TicketSoldOut />
+        ) : loading ? (
+          <Loading loading={loading} />
+        ) : (
+          <div className="flex flex-col md:flex-row gap-5 mx-4">
+            <motion.div
+              initial={{ opacity: 0, x: -75 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.75, delay: 0.25 }}
+              className="flex-col gap-4 font-medium none hidden md:flex text-base md:w-1/4"
+            >
+              <h1 className="font-medium text-base">Filter</h1>
+              <Filter />
+            </motion.div>
+            <div className="flex-grow">
+              {dataFlight.length !== 0 ? (
+                <>
+                  {dataFlight.map((flight, index) => (
+                    <AccordionTicket
+                      key={index}
+                      index={index}
+                      flight={flight}
+                      isOpen={openAccordion === index}
+                      toggleAccordion={() => toggleAccordion(index)}
+                      handleSelect={() => handleSelect(flight)}
+                    />
+                  ))}
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    handlePrevPage={handlePrevPage}
+                    handleNextPage={handleNextPage}
+                    handlePageClick={handlePageClick}
+                  />
+                </>
+              ) : (
+                <TicketEmpty />
+              )}
             </div>
           </div>
-        </div>
+        )}
       </div>
-    </div>
+    </>
   );
 };
 

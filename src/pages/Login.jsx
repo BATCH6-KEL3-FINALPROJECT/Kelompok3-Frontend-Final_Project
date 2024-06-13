@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import Cookies from "universal-cookie";
 
 const Login = () => {
-  const { loading, error, statusCode, sendData } = useSend();
+  const { loading, sendData } = useSend();
   const [isSuccess, setIsSuccess] = useState(null);
   const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -24,7 +24,7 @@ const Login = () => {
 
   useEffect(() => {
     const checkToken = cookies.get("token");
-    if (checkToken) {
+    if (checkToken && checkToken !== "undefined") {
       navigate("/");
     }
   }, []);
@@ -32,7 +32,7 @@ const Login = () => {
   useEffect(() => {
     if (isSuccess) {
       const timer = setTimeout(() => {
-        navigate("/");
+        navigate(`/`);
       }, 3000);
       return () => clearTimeout(timer);
     }
@@ -42,24 +42,20 @@ const Login = () => {
     event.preventDefault();
     try {
       const response = await sendData("/api/v1/auth/login", "POST", login);
-      if (response && response.token) {
-        cookies.set("token", response.token, {
+      if (response.data && response.data.data.token) {
+        cookies.set("token", response.data.data.token, {
           path: "/",
-          expires: new Date(Date.now() + 604800000),
+          expires: new Date(Date.now() + 43200000),
         });
         setIsSuccess(true);
-        setMessage("Login berhasil!");
+        setMessage(`${response.message}`);
         setErrors({ email: false, password: false });
       } else {
         setIsSuccess(false);
-        if (error == null) {
-          setMessage("Terjadi Kesalahan Ketika Login!");
-        } else {
-          setMessage(`${error}`);
-        }
-        if (statusCode === 401) {
+        setMessage(`${response.message}`);
+        if (response.statusCode === 401) {
           setErrors({ email: false, password: true });
-        } else if (statusCode === 404) {
+        } else if (response.statusCode === 400) {
           setErrors({ email: true, password: false });
         } else {
           setErrors({ email: true, password: true });
@@ -84,12 +80,12 @@ const Login = () => {
         className="hidden md:block w-1/2 h-screen"
       >
         <img
-          src="/Auth_Side_Background.png"
+          src="/Auth_Skypass_Background.png"
           alt="Auth Background"
           className="w-full h-full object-cover"
         />
       </motion.div>
-      {isSuccess && (
+      {/* {isSuccess && (
         <>
           <div className="fixed inset-0 bg-black opacity-50 z-40"></div>
           <motion.div
@@ -104,7 +100,7 @@ const Login = () => {
             </h2>
           </motion.div>
         </>
-      )}
+      )} */}
       <div className="w-full md:w-1/2 flex items-center justify-center bg-gradient-to-r from-purple-500 to-blue-500 md:from-white md:to-white h-screen">
         <motion.form
           initial={{ opacity: 0, x: 75 }}
@@ -165,7 +161,7 @@ const Login = () => {
               className="flex justify-between mb-2 text-xs text-black"
             >
               <p className="font-normal">Password</p>
-              <Link to="/reset-password" className="text-[#7126B5] font-medium">
+              <Link to="/send-email" className="text-[#7126B5] font-medium">
                 Lupa Kata Sandi
               </Link>
             </label>
@@ -195,12 +191,12 @@ const Login = () => {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 1.25 }}
             type="submit"
-            disabled={loading}
+            disabled={loading || isSuccess}
             className={`w-full text-white bg-[#7126B5] hover:bg-[#7126B5]/90 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center ${
-              loading ? "cursor-not-allowed" : ""
+              loading || isSuccess ? "cursor-not-allowed" : ""
             }`}
           >
-            {loading ? "Loading..." : "Masuk"}{" "}
+            {loading ? "Loading..." : "Masuk"}
           </motion.button>
           <motion.p
             initial={{ opacity: 0, x: 75 }}
