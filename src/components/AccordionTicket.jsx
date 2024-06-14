@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 const AccordionTicket = ({
   index,
   flight,
+  setIsVerified,
   isOpen,
   toggleAccordion,
   handleSelect,
@@ -17,13 +18,19 @@ const AccordionTicket = ({
   const navigate = useNavigate();
   const cookies = new Cookies();
 
-  const handleSelectFlight = async () => {
+  const handleSelectFlight = async (event) => {
+    event.preventDefault();
     try {
       const checkToken = cookies.get("token");
       if (checkToken && checkToken !== "undefined") {
         const decoded = jwtDecode(checkToken);
         console.log(decoded);
-        handleSelect(flight);
+        if (decoded.isVerified) {
+          setIsVerified(true);
+          handleSelect(flight);
+        } else {
+          setIsVerified(false);
+        }
       } else {
         navigate("/account");
       }

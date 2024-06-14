@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { LuArrowUpDown } from "react-icons/lu";
+import { jwtDecode } from "jwt-decode";
 import Topnav from "../components/Topnav";
 import EditSearch from "../components/EditSearch";
 import ButtonSearchingDay from "../components/ButtonSearchingDay";
@@ -24,6 +25,7 @@ const Search = () => {
   const [days, setDays] = useState([]);
   const [dataFlight, setDataFlight] = useState([]);
   const [searchParams] = useSearchParams();
+  const [isVerified, setIsVerified] = useState(true);
   const [isLogin, setIsLogin] = useState(true);
   const [selectedDate, setSelectedDate] = useState(
     searchParams.get("departure_date")
@@ -31,12 +33,37 @@ const Search = () => {
   const navigate = useNavigate();
   const cookies = new Cookies();
 
+  useEffect(() => {
+    const checkToken = cookies.get("token");
+    setIsLogin(!!checkToken);
+
+    if (
+      searchParams.size === 0 ||
+      !searchParams.get("departure_city") ||
+      !searchParams.get("arrival_city") ||
+      !searchParams.get("departure_date") ||
+      !searchParams.get("penumpang")
+    ) {
+      navigate("/");
+    }
+  }, [navigate, searchParams, cookies]);
+
+  const dewasa = searchParams.get("penumpang")
+    ? searchParams.get("penumpang").split(".")[0]
+    : "0";
+  const anak = searchParams.get("penumpang")
+    ? searchParams.get("penumpang").split(".")[1]
+    : "0";
+  const bayi = searchParams.get("penumpang")
+    ? searchParams.get("penumpang").split(".")[2]
+    : "0";
   const ticketSearch = {
     departure_city: searchParams.get("departure_city"),
     arrival_city: searchParams.get("arrival_city"),
-    penumpang: searchParams.get("penumpang"),
+    penumpang: parseInt(dewasa) + parseInt(anak) + parseInt(bayi),
     seat_class: searchParams.get("seat_class"),
     departure_date: searchParams.get("departure_date"),
+    return_date: searchParams.get("return_date"),
   };
 
   const getDayName = (date) => {
@@ -116,16 +143,9 @@ const Search = () => {
   };
 
   const handleSelect = (flight) => {
-    // const seat = 0;
-    // if (seat > 0) {
-    //   setIsSeatAvailable(true);
-    //   navigate("/checkout");
-    // } else {
-    //   setIsSeatAvailable(false);
-    // }
     if (flight.seats_available > 0) {
       setIsSeatAvailable(true);
-      // navigate("/checkout");
+      navigate("/checkout");
     } else {
       setIsSeatAvailable(false);
     }
@@ -148,15 +168,6 @@ const Search = () => {
       setTotalPages(pagination.totalPages);
     }
   }, [dataFlight]);
-
-  useEffect(() => {
-    const checkToken = cookies.get("token");
-    setIsLogin(!!checkToken);
-
-    if (searchParams.size === 0) {
-      navigate("/");
-    }
-  }, [navigate, searchParams, cookies]);
 
   const [openAccordion, setOpenAccordion] = useState(null);
 
@@ -225,10 +236,34 @@ const Search = () => {
     return parts.length > 1 ? parts[1] : parts[0];
   };
 
+  const [isReturnFlight, setIsReturnFlight] = useState(false);
+
+  const toggleReturnFlight = () => {
+    setIsReturnFlight((prev) => !prev);
+  };
+
   return (
     <>
       <Topnav isLogin={isLogin} isSearch={true} />
-      <div className="w-11/12 md:w-2/3 mx-auto flex flex-col mt-28 gap-5 overflow-hidden pb-10">
+      {!isVerified && (
+        <div className="bg-red-500 opacity-90 w-[100vw] fixed z-40 top-24 p-2 flex justify-between">
+          <div
+            className="w-4/5
+           mx-auto flex justify-between items-center"
+          >
+            <h1 className="text-white font-bold">Akun Anda Belum Verified</h1>
+            <button className="bg-white px-4 py-1 rounded-xl font-semibold">
+              Verified
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div
+        className={`w-11/12 md:w-2/3 mx-auto flex flex-col ${
+          !isVerified ? "mt-36" : "mt-28"
+        } gap-5 overflow-hidden pb-10`}
+      >
         <motion.h1
           initial={{ opacity: 0, x: -75 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -319,6 +354,35 @@ const Search = () => {
             >
               <h1 className="font-medium text-base">Filter</h1>
               <Filter />
+              {ticketSearch.return_date && (
+                <div className="my-4 mx-4">
+                  <h2 className="text-lg font-semibold mb-2">
+                    Pesawat yang Anda Pilih
+                  </h2>
+                  <div className="flex flex-col gap-4">
+                    <div className="bg-gray-100 p-4 rounded-lg">
+                      <h3 className="font-semibold">Perjalanan Berangkat</h3>
+                      <p className="text-sm">
+                        {ticketSearch.departure_city} -{" "}
+                        {ticketSearch.arrival_city}
+                      </p>
+                      <p className="text-sm">
+                        {formatDate(ticketSearch.departure_date)}
+                      </p>
+                    </div>
+                    <div className="bg-gray-100 p-4 rounded-lg">
+                      <h3 className="font-semibold">Perjalanan Kembali</h3>
+                      <p className="text-sm">
+                        {ticketSearch.arrival_city} -{" "}
+                        {ticketSearch.departure_city}
+                      </p>
+                      <p className="text-sm">
+                        {formatDate(ticketSearch.return_date)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </motion.div>
             <div className="flex-grow">
               {dataFlight.length !== 0 ? (
@@ -328,6 +392,7 @@ const Search = () => {
                       key={index}
                       index={index}
                       flight={flight}
+                      setIsVerified={setIsVerified}
                       isOpen={openAccordion === index}
                       toggleAccordion={() => toggleAccordion(index)}
                       handleSelect={() => handleSelect(flight)}

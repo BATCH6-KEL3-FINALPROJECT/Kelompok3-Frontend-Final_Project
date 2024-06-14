@@ -17,6 +17,13 @@ const ModalPassenger = ({
     }
   };
 
+  const handleInputChange = (setter, e) => {
+    const value = parseInt(e.target.value, 10);
+    if (!isNaN(value) && value >= 0) {
+      setter(value);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -73,21 +80,27 @@ const ModalPassenger = ({
                 height: "40px",
                 width: "40px",
               }}
-              onClick={() => decrement(setAdults, adults, 1)}
+              onClick={(e) => {
+                e.preventDefault();
+                decrement(setAdults, adults, 1);
+              }}
             >
               -
             </button>
-            <span
+            <input
+              type="number"
+              value={adults}
+              onChange={(e) => handleInputChange(setAdults, e)}
               className="mx-4 flex items-center justify-center bg-gray-100 border rounded"
               style={{
                 width: "60px",
                 height: "40px",
                 borderRadius: "4px",
                 border: "1px solid #4B1979",
+                textAlign: "center",
               }}
-            >
-              {adults}
-            </span>
+              min="0"
+            />
             <button
               className="px-2 py-1 rounded"
               style={{
@@ -95,7 +108,10 @@ const ModalPassenger = ({
                 height: "40px",
                 width: "40px",
               }}
-              onClick={() => increment(setAdults, adults)}
+              onClick={(e) => {
+                e.preventDefault();
+                increment(setAdults, adults);
+              }}
             >
               +
             </button>
@@ -122,21 +138,27 @@ const ModalPassenger = ({
                 height: "40px",
                 width: "40px",
               }}
-              onClick={() => decrement(setChildrens, childrens)}
+              onClick={(e) => {
+                e.preventDefault();
+                decrement(setChildrens, childrens);
+              }}
             >
               -
             </button>
-            <span
+            <input
+              type="number"
+              value={childrens}
+              onChange={(e) => handleInputChange(setChildrens, e)}
               className="mx-4 flex items-center justify-center bg-gray-100 border rounded"
               style={{
                 width: "60px",
                 height: "40px",
                 borderRadius: "4px",
                 border: "1px solid #4B1979",
+                textAlign: "center",
               }}
-            >
-              {childrens}
-            </span>
+              min="0"
+            />
             <button
               className="px-2 py-1 rounded"
               style={{
@@ -144,7 +166,10 @@ const ModalPassenger = ({
                 height: "40px",
                 width: "40px",
               }}
-              onClick={() => increment(setChildrens, childrens)}
+              onClick={(e) => {
+                e.preventDefault();
+                increment(setChildrens, childrens);
+              }}
             >
               +
             </button>
@@ -171,21 +196,27 @@ const ModalPassenger = ({
                 height: "40px",
                 width: "40px",
               }}
-              onClick={() => decrement(setInfants, infants)}
+              onClick={(e) => {
+                e.preventDefault();
+                decrement(setInfants, infants);
+              }}
             >
               -
             </button>
-            <span
+            <input
+              type="number"
+              value={infants}
+              onChange={(e) => handleInputChange(setInfants, e)}
               className="mx-4 flex items-center justify-center bg-gray-100 border rounded"
               style={{
                 width: "60px",
                 height: "40px",
                 borderRadius: "4px",
                 border: "1px solid #4B1979",
+                textAlign: "center",
               }}
-            >
-              {infants}
-            </span>
+              min="0"
+            />
             <button
               className="px-2 py-1 rounded"
               style={{
@@ -193,7 +224,10 @@ const ModalPassenger = ({
                 height: "40px",
                 width: "40px",
               }}
-              onClick={() => increment(setInfants, infants)}
+              onClick={(e) => {
+                e.preventDefault();
+                increment(setInfants, infants);
+              }}
             >
               +
             </button>

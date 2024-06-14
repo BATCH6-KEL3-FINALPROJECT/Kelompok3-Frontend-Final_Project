@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import InputComponent from "./InputComponent";
 import DatePickerComponent from "./DatePicker";
 import SliderComponent from "./SliderComponent";
@@ -7,10 +9,8 @@ import Passenger from "./Passenger";
 import SeatClass from "./SeatClass";
 import Destinasi from "./Destinasi";
 import airportOptions from "../data/airports.json";
-import { FaPerson } from "react-icons/fa6";
 
 function Beranda() {
-  const [searchParams] = useSearchParams();
   const [fromCity, setFromCity] = useState("");
   const [toCity, setToCity] = useState("");
   const [activeInput, setActiveInput] = useState(null);
@@ -24,6 +24,7 @@ function Beranda() {
   });
   const [seatClass, setSeatClass] = useState("Economy");
   const [sliderChecked, setSliderChecked] = useState(false);
+  const navigate = useNavigate();
 
   const handleSeatClassChange = (event) => {
     setSeatClass(event.target.value);
@@ -59,8 +60,43 @@ function Beranda() {
     setDepartureDate(date);
   };
 
+  const validateForm = () => {
+    if (!fromCity) {
+      toast.error("Kota keberangkatan harus diisi.");
+      return false;
+    }
+    if (!toCity) {
+      toast.error("Kota tujuan harus diisi.");
+      return false;
+    }
+    if (fromCity === toCity) {
+      toast.error("Kota keberangkatan dan tujuan tidak boleh sama.");
+      return false;
+    }
+    if (!departureDate) {
+      toast.error("Tanggal keberangkatan harus diisi.");
+      return false;
+    }
+    if (sliderChecked && !returnDate) {
+      toast.error("Tanggal kembali harus diisi.");
+      return false;
+    }
+    if (
+      passengerCounts.adult + passengerCounts.child + passengerCounts.infant ===
+      0
+    ) {
+      toast.error("Jumlah penumpang harus diisi.");
+      return false;
+    }
+    return true;
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
 
     const prices = {
       Economy: 4950000,
@@ -75,9 +111,12 @@ function Beranda() {
 
     const totalPrice = totalAdultPrice + totalChildPrice + totalInfantPrice;
 
+    const fromCityName = fromCity.split(" (")[0];
+    const toCityName = toCity.split(" (")[0];
+
     const searchData = {
-      fromCity,
-      toCity,
+      fromCity: fromCityName,
+      toCity: toCityName,
       departureDate: formatToBackend(departureDate),
       returnDate: sliderChecked ? formatToBackend(returnDate) : null,
       passengerCounts,
@@ -85,7 +124,22 @@ function Beranda() {
       totalPrice,
     };
 
-    console.log("Mencari penerbangan dengan kriteria:", searchData);
+    const penumpang = `${passengerCounts.adult}.${passengerCounts.child}.${passengerCounts.infant}`;
+
+    navigate(
+      `/search?departure_city=${searchData.fromCity}&arrival_city=${
+        searchData.toCity
+      }&penumpang=${penumpang}&seat_class=${seatClass}&departure_date=${formatToBackend(
+        departureDate
+      )}${sliderChecked ? `&return_date=${formatToBackend(returnDate)}` : ""}`
+    );
+    // console.log(
+    //   `/search?departure_city=${searchData.fromCity}&arrival_city=${
+    //     searchData.toCity
+    //   }&penumpang=${penumpang}&seat_class=${seatClass}&departure_date=${formatToBackend(
+    //     departureDate
+    //   )}${sliderChecked ? `&return_date=${formatToBackend(returnDate)}` : ""}`
+    // );
   };
 
   return (
@@ -108,7 +162,7 @@ function Beranda() {
         {/* End Banner */}
 
         {/* Search */}
-        <div className="content max-w-[1098px] w-full mx-auto -mt-12 relative z-20 pt-6 bg-white rounded-lg shadow-md">
+        <div className="content max-w-[1098px] w-full mx-auto -mt-12 relative z-20 pt-6 bg-white rounded-xl shadow-md">
           <h2 className="text-xl md:text-2xl font-bold mb-4 text-gray-800 px-8 ">
             Pilih Jadwal Penerbangan spesial di
             <span className="text-[#7126B5] bg-white px-2 py-1 rounded">
@@ -274,16 +328,12 @@ function Beranda() {
                 </div>
               </div>
             </div>
+
             <button
-              className="bg-[#7126B5] hover:bg-[#7126B5] text-white font-semibold py-3 rounded w-full flex"
+              className="bg-[#7126B5] hover:bg-[#7126B5] text-white font-semibold py-3 rounded-b-xl w-full flex"
               type="submit"
             >
-              <Link
-                to="/search?departure_city=Makassar&arrival_city=Bali&penumpang=2&seat_class=Economy&departure_date=2024-06-05"
-                className="w-full"
-              >
-                Cari Penerbangan
-              </Link>
+              <div className="w-full">Cari Penerbangan</div>
             </button>
           </form>
         </div>
@@ -292,6 +342,7 @@ function Beranda() {
           <Destinasi />
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 }
