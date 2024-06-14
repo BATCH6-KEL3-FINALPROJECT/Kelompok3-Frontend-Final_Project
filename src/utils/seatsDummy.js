@@ -1,3 +1,16 @@
+export const getSeats = async () => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      try {
+        const result = getSeatsData();
+        resolve(result);
+      } catch (error) {
+        reject("Gagal mendapatkan data!");
+      }
+    }, 1000);
+  });
+};
+
 export const getSeatsData = () => [
   {
     seat_id: 1,
