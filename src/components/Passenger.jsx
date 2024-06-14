@@ -30,7 +30,7 @@ function Passenger({ onChange }) {
             <button
               type="button"
               onClick={() => setShowPassenger(true)}
-              className="appearance-none text-sm md:text-base  w-[130px]   font-semibold md:w-full text-gray-700 border-b-4 border-gray-300 rounded-t  py-3 md:py-3 md:px-4 leading-tight focus:outline-none focus:bg-white focus:border-black"
+              className="appearance-none text-sm md:text-base  w-[130px] font-semibold md:w-full text-gray-700 border-b-4 border-gray-300 rounded-t  py-3 md:py-3 md:px-4 leading-tight focus:outline-none focus:bg-white focus:border-black"
               style={{
                 display: "flex",
                 alignItems: "center",

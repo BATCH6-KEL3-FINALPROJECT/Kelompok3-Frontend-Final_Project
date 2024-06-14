@@ -28,7 +28,7 @@ const ModalPassenger = ({
 
   return (
     <div
-      className="absolute  bg-white p-6 rounded-lg shadow-lg flex flex-col z-10 ms-1 md:ms-0  w-[380px] md:w-[400px] md:h-[306px]"
+      className="absolute bg-white p-6 rounded-lg shadow-lg flex flex-col z-10 ms-1 md:ms-0  w-[380px] md:w-[400px] md:h-[306px]"
       style={{
         borderRadius: "20px",
         padding: "24px 0",

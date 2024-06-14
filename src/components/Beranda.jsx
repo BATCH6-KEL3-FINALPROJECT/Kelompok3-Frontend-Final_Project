@@ -105,12 +105,6 @@ function Beranda() {
       "First Class": 87620000,
     };
 
-    const totalAdultPrice = passengerCounts.adult * prices[seatClass];
-    const totalChildPrice = passengerCounts.child * (prices[seatClass] * 0.75); // anak anak hanya membanyar 75% dari harga dewasa
-    const totalInfantPrice = passengerCounts.infant * (prices[seatClass] * 0.5); // balita hanya membanyar 50% dari harga dewasa
-
-    const totalPrice = totalAdultPrice + totalChildPrice + totalInfantPrice;
-
     const fromCityName = fromCity.split(" (")[0];
     const toCityName = toCity.split(" (")[0];
 
@@ -121,7 +115,6 @@ function Beranda() {
       returnDate: sliderChecked ? formatToBackend(returnDate) : null,
       passengerCounts,
       seatClass,
-      totalPrice,
     };
 
     const penumpang = `${passengerCounts.adult}.${passengerCounts.child}.${passengerCounts.infant}`;

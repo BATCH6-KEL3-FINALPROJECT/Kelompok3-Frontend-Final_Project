@@ -13,6 +13,9 @@ import { passenger } from "../utils/generatePassanger";
 import CheckoutPricing from "../components/CheckoutPricing";
 import { getSeats } from "../utils/seatsDummy";
 import { FormProvider, useForm } from "react-hook-form";
+import Topnav from "../components/Topnav";
+import { useNavigate } from "react-router-dom";
+import Cookies from "universal-cookie";
 
 const Checkout = () => {
   const [datas, setDatas] = useState([]);
@@ -23,6 +26,10 @@ const Checkout = () => {
   const [isLogin, setIsLogin] = useState(false);
   const [passengerInfo, setPassengerInfo] = useState([]);
   const methods = useForm();
+  const [countdown, setCountdown] = useState(900);
+  const [timer, setTimer] = useState(null);
+  const navigate = useNavigate();
+  const cookies = new Cookies();
 
   const onSubmit = methods.handleSubmit((data) => {
     const passengersData = [];
@@ -49,6 +56,19 @@ const Checkout = () => {
   });
 
   useEffect(() => {
+    const checkToken = cookies.get("token");
+    if (checkToken) {
+      if (checkToken === "undefined") {
+        setIsLogin(false);
+      } else {
+        setIsLogin(true);
+      }
+    } else {
+      setIsLogin(false);
+    }
+  }, [navigate]);
+
+  useEffect(() => {
     try {
       getSeats()
         .then((res) => setDatas(res))
@@ -60,6 +80,18 @@ const Checkout = () => {
     setFlightDetail(flightDetails());
     setPassengerInfo(passenger.sort());
   }, []);
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timerId = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+
+      return () => {
+        clearInterval(timerId);
+      };
+    }
+  }, [countdown]);
 
   function handleCustomerBtn() {
     if (isCustomerFamilyName) {
@@ -75,15 +107,31 @@ const Checkout = () => {
     );
   }
 
+  const formatTime = (seconds) => {
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${min.toString().padStart(2, "0")}:${sec
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
   return (
     <>
-      <Navbar isLogin={isLogin} />
+      <Topnav isLogin={isLogin} isSearch={false} />
       <Breadcrumbs isPayment={isDataSaved} isSuccess={false} />
-
       {isDataSaved ? (
         <CheckoutAlert type="Success" message="Data anda berhasil disimpan!" />
+      ) : countdown > 0 ? (
+        <CheckoutAlert
+          type="Danger"
+          message={`Selesaikan dalam ${formatTime(countdown)}`}
+        />
       ) : (
-        <CheckoutAlert type="Danger" message="Selesaikan dalam 00:15:00" />
+        <CheckoutAlert
+          type="Danger"
+          message="Maaf, Waktu pemesanan habis. Silahkan ulangi lagi!"
+          timeOver={true}
+        />
       )}
 
       <div className="my-5 flex flex-col lg:flex-row md:justify-center md:items-center lg:items-start lg:justify-center gap-10">
