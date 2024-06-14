@@ -79,8 +79,17 @@ const ModalSeatClass = ({ isOpen, closeModal, seatClass, setSeatClass }) => {
               onMouseLeave={() => setHoveredOption(null)}
             >
               <div>
-                <div className="font-semibold">{option.label}</div>
-                <div className="text-gray-500">{option.price}</div>
+                <div className="font-medium">{option.label}</div>
+                <div
+                  className={`${
+                    selectedOption === option.value ||
+                    hoveredOption === option.value
+                      ? "text-white"
+                      : "text-[#7126B5]"
+                  }`}
+                >
+                  {option.price}
+                </div>
               </div>
               {(selectedOption === option.value ||
                 hoveredOption === option.value) && (

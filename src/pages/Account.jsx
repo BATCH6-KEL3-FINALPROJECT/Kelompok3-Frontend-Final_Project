@@ -143,9 +143,8 @@ const Account = () => {
         toast.success("Profile saved successfully");
       }, 3000);
     } catch (error) {
-      console.error("Error updating profile:", error);
       setTimeout(() => {
-        toast.error("Failed to update profile");
+        toast.error(error.response.message);
         setWaiting(false);
       }, 3000);
     }
