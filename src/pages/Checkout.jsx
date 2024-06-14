@@ -14,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import CheckoutSuccess from "../../public/Checkout_Success.svg";
 import { Link } from "react-router-dom";
-import Topnav from "../components/Topnav";
 
 const Checkout = () => {
   const [isCustomerFamilyName, setIsCustomerFamilyName] = useState(false);
