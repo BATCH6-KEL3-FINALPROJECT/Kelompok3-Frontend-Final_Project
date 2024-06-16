@@ -13,6 +13,7 @@ import Notification from "./pages/Notification";
 import Account from "./pages/Account";
 import Test from "./pages/Test";
 import Succes from "./pages/Succes";
+import Payment from "./pages/Payment";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/riwayat-pesanan" element={<Riwayat />}></Route>
         <Route path="/notification" element={<Notification />}></Route>
         <Route path="/account" element={<Account />}></Route>
+        <Route path="/payment" element={<Payment></Payment>}></Route>
         <Route path="/payment-succes" element={<Succes></Succes>}></Route>
         <Route path="/test" element={<Test />}></Route>
         <Route
