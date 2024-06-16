@@ -158,7 +158,7 @@ const Riwayat = () => {
             </div>
           )}
           <div className="px-5 lg:px-0">
-            <FlightDetails flightDetail={flightDetail} />
+            <FlightDetails flightDetail={flightDetail} isPayment={true} />
             <CheckoutPricing passengerInfo={passengerInfo} />
           </div>
         </div>
