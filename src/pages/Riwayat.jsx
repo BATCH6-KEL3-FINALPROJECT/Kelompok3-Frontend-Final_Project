@@ -9,10 +9,8 @@ import Topnav from "../components/Topnav";
 import useSend from "../hooks/useSend";
 import { jwtDecode } from "jwt-decode";
 import RiwayatCard from "../components/RiwayatCard";
-import FlightDetails from "../components/FlightDetails";
-import CheckoutPricing from "../components/CheckoutPricing";
-import { flightDetails } from "../utils/flightDummy";
-import { passenger } from "../utils/generatePassanger";
+import HistoryEmpty from "../components/HistoryEmpty";
+import Loading from "../components/Loading";
 
 const Riwayat = () => {
   const { loading, sendData } = useSend();
@@ -20,6 +18,7 @@ const Riwayat = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [dataRiwayat, setDataRiwayat] = useState([]);
   const [accountId, setAccountId] = useState("");
+  const [selectedTicket, setSelectedTicket] = useState(null);
   const navigate = useNavigate();
   const cookies = new Cookies();
 
@@ -46,6 +45,7 @@ const Riwayat = () => {
 
   const fetchData = async () => {
     try {
+      setIsLoading(true);
       const token = cookies.get("token");
       if (token) {
         const decoded = jwtDecode(token);
@@ -57,10 +57,15 @@ const Riwayat = () => {
           );
           // setDataRiwayat(filteredTickets);
           setDataRiwayat(response.data.data.tickets);
+          if (filteredTickets.length > 0) {
+            setSelectedTicket(filteredTickets[0]);
+          }
         }
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -69,8 +74,10 @@ const Riwayat = () => {
   }, [accountId]);
 
   useEffect(() => {
-    console.log(dataRiwayat);
-  }, [dataRiwayat]);
+    if (dataRiwayat.length > 0 && !selectedTicket) {
+      setSelectedTicket(dataRiwayat[0]); // Set the first ticket as selected if no ticket is selected
+    }
+  }, [dataRiwayat, selectedTicket]);
 
   const groupByMonthYear = (tickets) => {
     return tickets.reduce((acc, ticket) => {
@@ -87,14 +94,6 @@ const Riwayat = () => {
   };
 
   const groupedTickets = groupByMonthYear(dataRiwayat);
-
-  const [flightDetail, setFlightDetail] = useState([]);
-  const [passengerInfo, setPassengerInfo] = useState([]);
-
-  useEffect(() => {
-    setFlightDetail(flightDetails());
-    setPassengerInfo(passenger.sort());
-  }, []);
 
   return (
     <>
@@ -137,10 +136,14 @@ const Riwayat = () => {
             </button>
           </motion.div>
         </div>
-        <div className="flex gap-10">
-          {Object.keys(groupedTickets).length > 0 ? (
+        <div className="flex gap-3 flex-col md:flex-row">
+          {isLoading ? (
+            <div className="flex justify-center items-center w-full h-64">
+              <Loading></Loading>
+            </div>
+          ) : Object.keys(groupedTickets).length > 0 ? (
             Object.entries(groupedTickets).map(([monthYear, tickets]) => (
-              <div key={monthYear} className="flex-grow mx-">
+              <div key={monthYear} className="flex-grow md:mx-10">
                 <h2 className="text-lg font-semibold mb-2">
                   {new Date(`${monthYear}-01`).toLocaleString("default", {
                     year: "numeric",
@@ -148,18 +151,193 @@ const Riwayat = () => {
                   })}
                 </h2>
                 {tickets.map((ticket) => (
-                  <RiwayatCard key={ticket.ticket_id} ticket={ticket} />
+                  <RiwayatCard
+                    key={ticket.ticket_id}
+                    ticket={ticket}
+                    selected={selectedTicket?.ticket_id === ticket.ticket_id}
+                    onClick={() => setSelectedTicket(ticket)}
+                  />
                 ))}
               </div>
             ))
           ) : (
             <div className="flex-grow">
-              <p>No booking history found.</p>
+              <HistoryEmpty />
             </div>
           )}
-          <div className="px-5 lg:px-0">
-            <FlightDetails flightDetail={flightDetail} isPayment={true} />
-            <CheckoutPricing passengerInfo={passengerInfo} />
+          <div>
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between gap-5">
+                <h3 className="text-gray-900 font-poppins text-lg font-bold">
+                  Detail Pesanan
+                </h3>
+                <p className="flex items-center justify-center rounded-full p-1 bg-[#73CA5C] px-4 text-center text-sm text-white">
+                  Issued
+                </p>
+              </div>
+              <div className="flex">
+                <h4 className="text-gray-900 font-poppins text-lg font-bold">
+                  <span className="font-normal text-gray-900">
+                    Booking Code:
+                  </span>
+                  <span className="text-[#7126B5]">6723y2GHK</span>
+                </h4>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-15px">
+              <div className="flex items-start">
+                <div className="flex flex-1 flex-col items-start">
+                  <h5 className="text-gray-900 font-poppins w-33% text-sm font-bold leading-5 md:w-full">
+                    <span className="text-base text-gray-900">19:10</span>
+                    <br />
+                    <span className="font-normal text-gray-900">
+                      5 Maret 2023
+                    </span>
+                  </h5>
+                  <p className="text-gray-900 font-poppins text-sm font-medium">
+                    Soekarno Hatta - Terminal 1A Domestik
+                  </p>
+                </div>
+                <div className="relative ml-[-78px] flex">
+                  <h6 className="text-gray-900 font-poppins text-xs font-bold text-deep_purple-300">
+                    Keberangkatan
+                  </h6>
+                </div>
+              </div>
+              <img
+                className="h-px"
+                src="images/img_divider.svg"
+                alt="divider"
+                loading="lazy"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2 pt-2">
+              <div className="flex">
+                <div className="flex flex-col justify-center py-16 md:py-5">
+                  <img
+                    className="h-24px object-cover"
+                    src="logoplane.svg"
+                    alt="Logo"
+                    loading="lazy"
+                  />
+                </div>
+                <p className="text-gray-900 font-poppins w-93% text-xs font-medium leading-18px">
+                  <span className="text-sm font-bold text-gray-900">
+                    Jet Air - Economy
+                    <br />
+                    JT - 203
+                    <br />
+                  </span>
+                  <span className="text-sm font-bold text-gray-900">
+                    Informasi:
+                  </span>
+                  <br />
+                  <span className="text-sm text-purple-900">
+                    Penumpang 1: Mr. Harry Potter
+                  </span>
+                  <br />
+                  <span className="text-sm font-normal text-gray-900">
+                    ID: 1234567
+                  </span>
+                  <br />
+                  <span className="text-sm text-purple-900">
+                    Penumpang 2: Miss Hermione
+                  </span>
+                  <br />
+                  <span className="text-sm font-normal text-gray-900">
+                    ID: 789658
+                  </span>
+                </p>
+              </div>
+              <img
+                className="h-px"
+                src="images/img_divider.svg"
+                alt="divider"
+                loading="lazy"
+              />
+            </div>
+
+            <div className="flex flex-col gap-3.5 pt-3">
+              <div>
+                <div className="flex items-start">
+                  <div className="flex flex-1 flex-col items-start gap-0.5">
+                    <p className="text-gray-900 font-poppins w-41% text-sm font-bold leading-5 md:w-full">
+                      <span className="text-gray-900">21:10</span>
+                      <br />
+                      <span className="font-normal text-gray-900">
+                        5 Maret 2023
+                      </span>
+                    </p>
+                    <p className="text-gray-900 font-poppins text-sm font-medium">
+                      Melbourne International Airport
+                    </p>
+                  </div>
+                  <div className="relative ml-[-24px] flex">
+                    <p className="text-gray-900 font-poppins text-xs font-bold text-deep_purple-300">
+                      Kedatangan
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <img
+                className="h-px"
+                src="images/img_divider.svg"
+                alt="divider"
+                loading="lazy"
+              />
+            </div>
+
+            <div className="flex flex-col gap-0.5 py-2">
+              <div className="flex">
+                <p className="text-gray-900 font-poppins text-sm font-bold">
+                  Rincian Harga
+                </p>
+              </div>
+              <div className="flex justify-between gap-5">
+                <div className="flex flex-1">
+                  <p className="text-gray-900 font-poppins text-sm font-normal">
+                    2 Adults
+                  </p>
+                </div>
+                <div className="flex">
+                  <p className="text-gray-900 font-poppins text-sm font-normal">
+                    IDR 9.550.000
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <div className="flex flex-1">
+                  <p className="text-gray-900 font-poppins text-sm font-normal">
+                    1 Baby
+                  </p>
+                </div>
+                <p className="text-gray-900 font-poppins text-sm font-normal">
+                  IDR 0
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <div className="flex flex-1">
+                  <p className="text-gray-900 font-poppins text-sm font-normal">
+                    Tax
+                  </p>
+                </div>
+                <p className="text-gray-900 font-poppins text-sm font-normal">
+                  IDR 300.000
+                </p>
+              </div>
+              <div className="flex items-center gap-2 border-t border-solid border-blue-gray-100 py-2.5">
+                <div className="flex flex-1">
+                  <h6 className="text-gray-900 font-poppins text-base font-bold">
+                    Total
+                  </h6>
+                </div>
+                <h6 className="text-gray-900 font-poppins text-lg font-bold text-deep_purple-500">
+                  IDR 9.850.000
+                </h6>
+              </div>
+            </div>
           </div>
         </div>
       </div>

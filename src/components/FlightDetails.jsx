@@ -17,7 +17,7 @@ const FlightDetails = ({ flightDetail, isPayment }) => {
             <h3 className="text-lg font-bold">
               Booking Code :{" "}
               <span className="font-semibold text-[#A06ECE]">
-                Isi Booking Code
+                ISI Booking code
               </span>
             </h3>
           ) : (
