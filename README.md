@@ -1,5 +1,6 @@
 ﻿<h1 align="center">
   <img src="./public/skypass.png" alt="SkypassLogo" width="300"/>
+  <br/>
   Finaltask Binar Academy Frontend Skypass
 </h1>
 
