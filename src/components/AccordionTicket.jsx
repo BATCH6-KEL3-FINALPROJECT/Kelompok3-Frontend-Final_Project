@@ -2,7 +2,6 @@ import React from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
-import useSend from "../hooks/useSend";
 import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
 
@@ -14,7 +13,6 @@ const AccordionTicket = ({
   toggleAccordion,
   handleSelect,
 }) => {
-  const { loading, sendData } = useSend();
   const navigate = useNavigate();
   const cookies = new Cookies();
 
@@ -24,7 +22,6 @@ const AccordionTicket = ({
       const checkToken = cookies.get("token");
       if (checkToken && checkToken !== "undefined") {
         const decoded = jwtDecode(checkToken);
-        console.log(decoded);
         if (decoded.isVerified) {
           setIsVerified(true);
           handleSelect(flight);
@@ -32,7 +29,8 @@ const AccordionTicket = ({
           setIsVerified(false);
         }
       } else {
-        navigate("/account");
+        // navigate("/account");
+        console.log("woi");
       }
     } catch (err) {
       console.log(err);

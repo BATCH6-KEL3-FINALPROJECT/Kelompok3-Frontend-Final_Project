@@ -10,10 +10,13 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import CheckoutPricing from "../components/CheckoutPricing";
 import { FormProvider, useForm } from "react-hook-form";
 import Topnav from "../components/Topnav";
-import { useNavigate } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
 import Cookies from "universal-cookie";
-import CheckoutSuccess from "../../public/Checkout_Success.svg";
-import { Link } from "react-router-dom";
 
 const Checkout = () => {
   const [isCustomerFamilyName, setIsCustomerFamilyName] = useState(false);
@@ -24,18 +27,25 @@ const Checkout = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const methods = useForm();
   const [countdown, setCountdown] = useState(900);
-  const [timer, setTimer] = useState(null);
   const navigate = useNavigate();
   const cookies = new Cookies();
-
-  const FLIGHT_ID = "ee0bd130-7da9-4b0f-bd57-66efae5ab218";
-  const SEAT_CLASS = "economy";
-  const PASSENGER = ["Adult", "Adult", "Child", "Child"];
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    setPassengerInfo(PASSENGER.sort());
-    setIsPassengerFamilyName(new Array(PASSENGER.length).fill(false));
-  }, []);
+    const searchParams = new URLSearchParams(location.search);
+    const penumpang = searchParams.get("penumpang") || "0.0.0";
+    const [adults, children, infants] = penumpang.split(".").map(Number);
+
+    const passengers = [
+      ...Array(adults).fill("Dewasa"),
+      ...Array(children).fill("Anak-Anak"),
+      ...Array(infants).fill("Bayi"),
+    ];
+
+    setPassengerInfo(passengers);
+    setIsPassengerFamilyName(new Array(passengers.length).fill(false));
+  }, [location.search]);
 
   useEffect(() => {
     const checkToken = cookies.get("token");
@@ -80,20 +90,16 @@ const Checkout = () => {
       passengersData[index][key.split("_")[0]] = data[key];
     }
 
-    // Nanti di update
     const objectData = {
       customerData,
       passengersData: passengersData,
     };
     setIsDataSaved(true);
+    console.log(objectData);
   });
 
   function handleCustomerBtn() {
-    if (isCustomerFamilyName) {
-      setIsCustomerFamilyName(false);
-    } else {
-      setIsCustomerFamilyName(true);
-    }
+    setIsCustomerFamilyName(!isCustomerFamilyName);
   }
 
   function handlePassengerBtn(id) {
@@ -124,7 +130,7 @@ const Checkout = () => {
         <div className="flex justify-center items-center text-center py-20">
           <div className="flex flex-col gap-10 items-center">
             <img
-              src={CheckoutSuccess}
+              src="/Checkout_Success.svg"
               alt="floating-people"
               width={204}
               height={208}
@@ -397,8 +403,7 @@ const Checkout = () => {
               <div className="flex flex-col gap-5 px-2">
                 <CheckoutCards>
                   <Seats
-                    flightID={FLIGHT_ID}
-                    seatClass={SEAT_CLASS}
+                    flightID={searchParams.get("flight_id")}
                     maxSeatsSelected={passengerInfo.length}
                   />
                 </CheckoutCards>
@@ -416,7 +421,7 @@ const Checkout = () => {
           </form>
         </FormProvider>
         <div className="px-5 lg:px-0">
-          <FlightDetails flightID={FLIGHT_ID} />
+          <FlightDetails flightID={searchParams.get("flight_id")} />
           <CheckoutPricing passengerInfo={passengerInfo} />
           {isDataSaved && (
             <button

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { LuArrowUpDown } from "react-icons/lu";
-import { jwtDecode } from "jwt-decode";
 import Topnav from "../components/Topnav";
 import EditSearch from "../components/EditSearch";
 import ButtonSearchingDay from "../components/ButtonSearchingDay";
@@ -145,7 +144,12 @@ const Search = () => {
   const handleSelect = (flight) => {
     if (flight.seats_available > 0) {
       setIsSeatAvailable(true);
-      navigate("/checkout");
+      console.log(flight.flight_id);
+      navigate(
+        `/checkout?flight_id=${flight.flight_id}&penumpang=${searchParams.get(
+          "penumpang"
+        )}&seat_class=${flight.seat_class}`
+      );
     } else {
       setIsSeatAvailable(false);
     }
@@ -252,9 +256,11 @@ const Search = () => {
            mx-auto flex justify-between items-center"
           >
             <h1 className="text-white font-bold">Akun Anda Belum Verified</h1>
-            <button className="bg-white px-4 py-1 rounded-xl font-semibold">
-              Verified
-            </button>
+            <Link to="/otp">
+              <button className="bg-white px-4 py-1 rounded-xl font-semibold">
+                Verified
+              </button>
+            </Link>
           </div>
         </div>
       )}

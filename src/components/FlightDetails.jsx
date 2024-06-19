@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import logo from "../../public/Checkout_Plane_Logo.png";
 import {
   formatDate,
   formatFlightCode,
@@ -75,7 +74,7 @@ const FlightDetails = ({ flightID }) => {
                 <p> {formatFlightCode(flightData.flight_code)} </p>
               </div>
               <div className="flex gap-2">
-                <img src={logo} className="w-6 h-6" />
+                <img src="/Checkout_Plane_Logo.png" className="w-6 h-6" />
                 <div className="text-sm ">
                   <p className="font-bold"> Informasi : </p>
                   {flightData.flight_description && (

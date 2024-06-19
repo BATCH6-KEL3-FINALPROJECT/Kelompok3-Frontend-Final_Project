@@ -1,29 +1,51 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import SeatItem from "./SeatItem";
-import axios from "axios";
+import useSend from "../hooks/useSend";
 
-const Seats = ({ maxSeatsSelected, flightID, seatClass }) => {
+const Seats = ({ maxSeatsSelected, flightID }) => {
+  const { loading, sendData } = useSend();
   const [collumn, setCollumn] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [rowItems, setRowItems] = useState([]);
   const [seatRows, setSeatRows] = useState([]);
   const [isMaxSeats, setIsMaxSeats] = useState(false);
   const [fetchedSeat, setFetchedSeat] = useState([]);
-
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState();
-
-  const URL = "https://airline.azkazk11.my.id/api/v1";
-  const LIMIT = 500;
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     const fetchSeats = async () => {
       setIsLoading(true);
       try {
-        const res = await axios.get(
-          `${URL}/seat?flight_id=${flightID}&limit=${LIMIT}&seat_class=${seatClass}`
+        const {
+          data: {
+            data: {
+              pagination: { totalData },
+            },
+          },
+        } = await sendData(
+          `/api/v1/seat?flight_id=${searchParams.get(
+            "flight_id"
+          )}&seat_class=${searchParams.get("seat_class").toLowerCase()}`,
+          "GET"
         );
-        setFetchedSeat(res.data.data.seats);
+        const {
+          data: {
+            data: { seats },
+          },
+        } = await sendData(
+          `/api/v1/seat?flight_id=${searchParams.get(
+            "flight_id"
+          )}&seat_class=${searchParams
+            .get("seat_class")
+            .toLowerCase()}&limit=${totalData}`,
+          "GET"
+        );
+        console.log(seats);
+        console.log(seats.filter((seat) => seat.is_available === "A").length);
+        setFetchedSeat(seats);
       } catch (error) {
         setIsError(error);
       } finally {
@@ -31,7 +53,7 @@ const Seats = ({ maxSeatsSelected, flightID, seatClass }) => {
       }
     };
     fetchSeats();
-  }, [flightID, seatClass]);
+  }, [flightID, searchParams.get("seat_class")]);
 
   useEffect(() => {
     if (fetchedSeat.length > 0) {
@@ -145,7 +167,7 @@ const Seats = ({ maxSeatsSelected, flightID, seatClass }) => {
         <>
           <div className="w-full px-3 py-2 bg-[#73CA5C] text-center font-semibold rounded-md mt-4 text-white">
             {fetchedSeat.filter((seat) => seat.is_available === "A").length}{" "}
-            Seats Available - {seatClass}
+            Seats Available - {searchParams.get("seat_class")}
           </div>
           <div className="flex gap-3 justify-center">
             {rowItems.map((items, rowsIndex) => {
