@@ -8,9 +8,8 @@ import SliderComponent from "./SliderComponent";
 import Passenger from "./Passenger";
 import SeatClass from "./SeatClass";
 import Destinasi from "./Destinasi";
-import airportOptions from "../data/airports.json";
 
-function Beranda() {
+function  Beranda({ airport }) {
   const [fromCity, setFromCity] = useState("");
   const [toCity, setToCity] = useState("");
   const [activeInput, setActiveInput] = useState(null);
@@ -126,13 +125,6 @@ function Beranda() {
         departureDate
       )}${sliderChecked ? `&return_date=${formatToBackend(returnDate)}` : ""}`
     );
-    // console.log(
-    //   `/search?departure_city=${searchData.fromCity}&arrival_city=${
-    //     searchData.toCity
-    //   }&penumpang=${penumpang}&seat_class=${seatClass}&departure_date=${formatToBackend(
-    //     departureDate
-    //   )}${sliderChecked ? `&return_date=${formatToBackend(returnDate)}` : ""}`
-    // );
   };
 
   return (
@@ -184,7 +176,7 @@ function Beranda() {
                     value={fromCity}
                     onChange={(e) => setFromCity(e.target.value)}
                     placeholder="Please select a location ..."
-                    airportOptions={airportOptions}
+                    airportOptions={airport}
                     activeInput={activeInput}
                     setActiveInput={setActiveInput}
                     readOnly={true}
@@ -219,7 +211,7 @@ function Beranda() {
                     value={toCity}
                     onChange={(e) => setToCity(e.target.value)}
                     placeholder="Please select a location ..."
-                    airportOptions={airportOptions}
+                    airportOptions={airport}
                     activeInput={activeInput}
                     setActiveInput={setActiveInput}
                     readOnly={true}

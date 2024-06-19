@@ -3,9 +3,12 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import Beranda from "../components/Beranda";
 import Topnav from "../components/Topnav";
+import useSend from "../hooks/useSend";
 
 const Home = () => {
+  const { loading, sendData } = useSend();
   const [isLogin, setIsLogin] = useState(true);
+  const [airport, setAirport] = useState([]);
   const navigate = useNavigate();
   const cookies = new Cookies();
 
@@ -22,10 +25,34 @@ const Home = () => {
     }
   }, [navigate]);
 
+  const fetchSearchForm = async () => {
+    try {
+      const {
+        data: {
+          data: {
+            pagination: { totalData },
+          },
+        },
+      } = await sendData("/api/v1/airport/?limit=1", "GET");
+      const {
+        data: {
+          data: { airport },
+        },
+      } = await sendData(`/api/v1/airport/?limit=${totalData}`, "GET");
+      setAirport(airport);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchSearchForm();
+  }, []);
+
   return (
     <>
       <Topnav isLogin={isLogin} isSearch={true} />
-      <Beranda />
+      <Beranda airport={airport} />
     </>
   );
 };

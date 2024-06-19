@@ -66,7 +66,7 @@ const DatePickerComponent = ({
         className={`text-center  appearance-none  text-sm md:text-base block w-full md:w-[150px] bg-gray-100 text-gray-700 border-0 border-b border-gray-300 rounded py-2 leading-tight focus:outline-none focus:bg-white focus:border-purple-500 cursor-pointer ${
           !disabled ? "placeholder-purple-500" : ""
         }`}
-        placeholder={!disabled ? "Choose Date" : ""}
+        placeholder={!disabled ? "Pilih Tanggal" : ""}
         disabled={disabled}
         readOnly
       />

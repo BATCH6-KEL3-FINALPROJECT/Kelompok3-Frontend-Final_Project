@@ -85,6 +85,7 @@ const Checkout = () => {
       customerData,
       passengersData: passengersData,
     };
+    setIsDataSaved(true);
   });
 
   function handleCustomerBtn() {

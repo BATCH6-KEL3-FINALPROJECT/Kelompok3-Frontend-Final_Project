@@ -12,6 +12,14 @@ function Passenger({ onChange }) {
     onChange({ adult: adultCount, child: childCount, infant: infantCount });
   }, [adultCount, childCount, infantCount, onChange]);
 
+  const handleSetAdultCount = (count) => {
+    if (count < 1) {
+      setAdultCount(1);
+    } else {
+      setAdultCount(count);
+    }
+  };
+
   return (
     <div className="flex md:items-center gap-4 flex-wrap md:ml-4 relative">
       <div className="md:flex md:flex-col mb-3 md:mb-4 gap-3 md:ml-6">
