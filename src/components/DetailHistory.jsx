@@ -3,7 +3,7 @@ import StatusButton from "./StatusButton";
 
 const DetailHistory = ({ ticket }) => {
   if (!ticket) {
-    return <div>No ticket </div>;
+    return <div> Detail Pesanan : Kosong</div>;
   }
 
   const getStatusStyle = (status) => {

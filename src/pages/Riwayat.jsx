@@ -184,9 +184,13 @@ const Riwayat = () => {
               <HistoryEmpty />
             </div>
           )}
-          <div className="md:w-1/3">
-            <DetailHistory ticket={selectedTicket} />
-          </div>
+          {Object.keys(groupedTickets).length > 0 ? (
+            <div className="md:w-1/3">
+              <DetailHistory ticket={selectedTicket} />
+            </div>
+          ) : (
+            <div className="hidden"></div>
+          )}
         </div>
 
         {/* MOBILE VERSION */}
