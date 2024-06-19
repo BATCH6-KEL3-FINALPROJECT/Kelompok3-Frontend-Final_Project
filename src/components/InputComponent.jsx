@@ -103,7 +103,8 @@ const InputComponent = ({
               ref={inputRef}
             />
             <button
-              className="bg-red-500 font-poppins"
+              className="bg-white font-poppins"
+              type="button"
               onClick={() => setActiveInput(null)}
             >
               <svg

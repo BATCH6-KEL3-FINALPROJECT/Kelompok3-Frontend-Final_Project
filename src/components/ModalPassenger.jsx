@@ -11,6 +11,7 @@ const ModalPassenger = ({
   setInfants,
 }) => {
   const increment = (setter, count) => setter(count + 1);
+
   const decrement = (setter, count, min = 0) => {
     if (count > min) {
       setter(count - 1);
@@ -28,7 +29,7 @@ const ModalPassenger = ({
 
   return (
     <div
-      className="absolute bg-white p-6 rounded-lg shadow-lg flex flex-col z-10 ms-1 md:ms-0  w-[380px] md:w-[400px] md:h-[306px]"
+      className="absolute bg-white p-6 rounded-lg shadow-lg flex flex-col z-10 ms-1 md:ms-0 w-[380px] md:w-[400px] md:h-[306px]"
       style={{
         borderRadius: "20px",
         padding: "24px 0",
@@ -99,7 +100,7 @@ const ModalPassenger = ({
                 border: "1px solid #4B1979",
                 textAlign: "center",
               }}
-              min="0"
+              min="1"
             />
             <button
               className="px-2 py-1 rounded"

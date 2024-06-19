@@ -9,7 +9,7 @@ import Passenger from "./Passenger";
 import SeatClass from "./SeatClass";
 import Destinasi from "./Destinasi";
 
-function Beranda({ airport }) {
+function  Beranda({ airport }) {
   const [fromCity, setFromCity] = useState("");
   const [toCity, setToCity] = useState("");
   const [activeInput, setActiveInput] = useState(null);

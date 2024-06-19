@@ -5,16 +5,12 @@ import CheckoutForm from "../components/CheckoutForm";
 import CheckoutInput from "../components/CheckoutInput";
 import { AnimatePresence, motion } from "framer-motion";
 import FlightDetails from "../components/FlightDetails";
-<<<<<<< Updated upstream
-=======
-import { flightDetails } from "../utils/flightDummy";
->>>>>>> Stashed changes
 import CheckoutAlert from "../components/CheckoutAlert";
 import Breadcrumbs from "../components/Breadcrumbs";
 import CheckoutPricing from "../components/CheckoutPricing";
 import { FormProvider, useForm } from "react-hook-form";
 import Topnav from "../components/Topnav";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import CheckoutSuccess from "../../public/Checkout_Success.svg";
 import { Link } from "react-router-dom";
@@ -28,9 +24,8 @@ const Checkout = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const methods = useForm();
   const [countdown, setCountdown] = useState(900);
-  const [totalPrice, setTotalPrice] = useState(0);
+  const [timer, setTimer] = useState(null);
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const cookies = new Cookies();
 
   const FLIGHT_ID = "ee0bd130-7da9-4b0f-bd57-66efae5ab218";
@@ -90,52 +85,15 @@ const Checkout = () => {
       customerData,
       passengersData: passengersData,
     };
-
     setIsDataSaved(true);
   });
 
-<<<<<<< Updated upstream
-=======
-  useEffect(() => {
-    const checkToken = cookies.get("token");
-    setIsLogin(checkToken && checkToken !== "undefined");
-  }, [navigate]);
-
-  useEffect(() => {
-    getSeats()
-      .then((res) => setDatas(res))
-      .catch((err) => console.log(err));
-
-    setFlightDetail(flightDetails());
-
-    const param = searchParams.get("penumpang");
-    if (param) {
-      const [adult, child, infant] = param.split(".").map(Number);
-      const passengers = [
-        ...Array(adult).fill("Dewasa"),
-        ...Array(child).fill("Anak-anak"),
-        ...Array(infant).fill("Bayi"),
-      ];
-      setPassengerInfo(passengers);
-      setIsPassengerFamilyName(Array(passengers.length).fill(false));
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    if (countdown > 0) {
-      const timerId = setInterval(() => {
-        setCountdown((prev) => prev - 1);
-      }, 1000);
-
-      return () => {
-        clearInterval(timerId);
-      };
-    }
-  }, [countdown]);
-
->>>>>>> Stashed changes
   function handleCustomerBtn() {
-    setIsCustomerFamilyName(!isCustomerFamilyName);
+    if (isCustomerFamilyName) {
+      setIsCustomerFamilyName(false);
+    } else {
+      setIsCustomerFamilyName(true);
+    }
   }
 
   function handlePassengerBtn(id) {
@@ -152,7 +110,6 @@ const Checkout = () => {
       .padStart(2, "0")}`;
   };
 
-<<<<<<< Updated upstream
   if (isSuccess) {
     return (
       <div className="h-[100dvh]">
@@ -193,11 +150,6 @@ const Checkout = () => {
       </div>
     );
   }
-=======
-  const handleTotalPriceChange = (total) => {
-    setTotalPrice(total);
-  };
->>>>>>> Stashed changes
 
   return (
     <div>
@@ -464,7 +416,6 @@ const Checkout = () => {
           </form>
         </FormProvider>
         <div className="px-5 lg:px-0">
-<<<<<<< Updated upstream
           <FlightDetails flightID={FLIGHT_ID} />
           <CheckoutPricing passengerInfo={passengerInfo} />
           {isDataSaved && (
@@ -474,23 +425,6 @@ const Checkout = () => {
             >
               Lanjut Bayar
             </button>
-=======
-          <FlightDetails
-            flightDetail={flightDetail}
-            isSavedData={isDataSaved}
-          />
-          <CheckoutPricing
-            passengerInfo={passengerInfo}
-            ticketPrice={4950000}
-            onTotalPriceChange={handleTotalPriceChange}
-          />
-          {isDataSaved && (
-            <Link to={`/payment?penumpang=${searchParams.get("penumpang")}`}>
-              <button className="bg-[#FF0000] font-medium py-4 w-full text-white rounded-xl mt-4">
-                Lanjut Bayar
-              </button>
-            </Link>
->>>>>>> Stashed changes
           )}
         </div>
       </div>
