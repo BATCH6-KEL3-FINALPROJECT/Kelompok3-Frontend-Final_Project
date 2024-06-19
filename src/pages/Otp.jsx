@@ -12,7 +12,9 @@ const Otp = () => {
   const { loading, sendData } = useSend();
   const [email, setEmail] = useState(null);
   const [otp, setOtp] = useState(new Array(6).fill(""));
-  const [countdown, setCountdown] = useState(60);
+  const [countdown, setCountdown] = useState(0);
+  const [message, setMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(null);
   const navigate = useNavigate();
   const cookies = new Cookies();
 
@@ -51,6 +53,15 @@ const Otp = () => {
     return `${localPart.charAt(0)}*****@${domain}`;
   };
 
+  useEffect(() => {
+    if (isSuccess) {
+      const timer = setTimeout(() => {
+        navigate(`/account`);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isSuccess, navigate]);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -62,7 +73,11 @@ const Otp = () => {
         sendVerify
       );
       if (response && response.statusCode === 200) {
-        navigate("/account");
+        setIsSuccess(true);
+        setMessage(`${response.message}`);
+      } else {
+        setIsSuccess(false);
+        setMessage(`${response.message}`);
       }
     } catch (err) {
       console.log(err);
@@ -134,6 +149,22 @@ const Otp = () => {
             </form>
           </div>
         </div>
+        {isSuccess !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.25 }}
+            className="flex justify-center mt-4"
+          >
+            <div
+              className={`${
+                isSuccess ? "bg-[#73CA5C]" : "bg-[#FF0000]"
+              } text-center text-white text-sm font-medium px-6 py-4 rounded-xl inline-block`}
+            >
+              <h1>{message}</h1>
+            </div>
+          </motion.div>
+        )}
       </div>
     </>
   );
