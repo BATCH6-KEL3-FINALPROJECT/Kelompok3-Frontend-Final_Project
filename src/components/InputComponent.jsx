@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import airportOptions from "../data/airports.json";
 
 const InputComponent = ({
   id,
@@ -10,6 +9,7 @@ const InputComponent = ({
   setActiveInput,
   readOnly,
   style = {},
+  airportOptions,
 }) => {
   const [showSelect, setShowSelect] = useState(false);
   const [inputValue, setInputValue] = useState(value);
@@ -17,6 +17,8 @@ const InputComponent = ({
   const [locationNotFound, setLocationNotFound] = useState(false);
   const [prevValue, setPrevValue] = useState(value);
   const inputRef = useRef(null);
+
+  console.log(airportOptions);
 
   useEffect(() => {
     setInputValue(value);
@@ -28,7 +30,7 @@ const InputComponent = ({
     } else {
       if (
         !filteredOptions.some(
-          (airport) => `${airport.city} (${airport.code})` === inputValue
+          (airport) => `${airport.city} (${airport.iata_code})` === inputValue
         )
       ) {
         setInputValue(prevValue);
@@ -53,8 +55,8 @@ const InputComponent = ({
 
     const matchedOptions = airportOptions.filter(
       (airport) =>
-        airport.name.toLowerCase().includes(inputValue.toLowerCase()) ||
-        airport.code.toLowerCase().includes(inputValue.toLowerCase()) ||
+        airport.airport_name.toLowerCase().includes(inputValue.toLowerCase()) ||
+        airport.iata_code.toLowerCase().includes(inputValue.toLowerCase()) ||
         airport.city.toLowerCase().includes(inputValue.toLowerCase())
     );
 
@@ -101,7 +103,7 @@ const InputComponent = ({
               ref={inputRef}
             />
             <button
-              className="bg-white font-poppins"
+              className="bg-red-500 font-poppins"
               onClick={() => setActiveInput(null)}
             >
               <svg
@@ -129,13 +131,13 @@ const InputComponent = ({
             ) : (
               filteredOptions.map((airport, index) => (
                 <div
-                  key={`${airport.code}-${index}`}
-                  className="cursor-pointer hover:bg-gray-200 p-2"
+                  key={`${airport.iata_code}-${index}`}
+                  className="cursor-pointer hover:bg-[#7126B5] hover:text-white p-2"
                   onClick={() =>
-                    handleSelectChange(`${airport.city} (${airport.code})`)
+                    handleSelectChange(`${airport.city} (${airport.iata_code})`)
                   }
                 >
-                  {airport.name} - {airport.city} ({airport.code})
+                  {airport.airport_name} - {airport.city} ({airport.iata_code})
                 </div>
               ))
             )}
