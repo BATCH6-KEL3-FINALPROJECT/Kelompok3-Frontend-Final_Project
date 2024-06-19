@@ -6,7 +6,7 @@ import PaymentSucces from "../components/PaymentSucces";
 import Breadcrumbs from "../components/Breadcrumbs";
 import CheckoutAlert from "../components/CheckoutAlert";
 
-const Succes = () => {
+const Success = () => {
   const [isLogin, setIsLogin] = useState(true);
   const navigate = useNavigate();
   const cookies = new Cookies();
@@ -27,14 +27,16 @@ const Succes = () => {
   return (
     <div>
       <Topnav isLogin={isLogin} isSearch={true}></Topnav>
-      <Breadcrumbs isPayment={true} isSuccess={true}></Breadcrumbs>
-      <CheckoutAlert
-        type="Success"
-        message="Terimakasih atas pembayaran transaksi"
-      ></CheckoutAlert>
+      <div className="shadow-md py-4 mt-24 w-11/12 mx-auto md:w-full">
+        <Breadcrumbs isPayment={true} isSuccess={true}></Breadcrumbs>
+        <CheckoutAlert
+          type="Success"
+          message="Terimakasih atas pembayaran transaksi"
+        ></CheckoutAlert>
+      </div>
       <PaymentSucces></PaymentSucces>
     </div>
   );
 };
 
-export default Succes;
+export default Success;

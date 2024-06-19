@@ -24,7 +24,6 @@ const Checkout = () => {
   const [isDataSaved, setIsDataSaved] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [passengerInfo, setPassengerInfo] = useState([]);
-  const [isSuccess, setIsSuccess] = useState(false);
   const methods = useForm();
   const [countdown, setCountdown] = useState(900);
   const navigate = useNavigate();
@@ -116,51 +115,10 @@ const Checkout = () => {
       .padStart(2, "0")}`;
   };
 
-  if (isSuccess) {
-    return (
-      <div className="h-[100dvh]">
-        <Topnav isLogin={isLogin} isSearch={false} />
-        <div className="shadow-md py-4">
-          <Breadcrumbs isPayment={true} isSuccess={isSuccess} />
-          <CheckoutAlert
-            type="Success"
-            message="Terimakasih atas pembayaran transaksi"
-          />
-        </div>
-        <div className="flex justify-center items-center text-center py-20">
-          <div className="flex flex-col gap-10 items-center">
-            <img
-              src="/Checkout_Success.svg"
-              alt="floating-people"
-              width={204}
-              height={208}
-            />
-            <div className="flex flex-col gap-1">
-              <p className="text-sm text-[#7126B5] font-semibold"> Selamat!</p>
-              <p className="text-sm font-semibold">
-                Transaksi Pembayaran Tiket Sukses!
-              </p>
-            </div>
-            <div className="flex flex-col gap-4">
-              <button className="w-80 px-4 py-3 bg-[#7126B5] rounded-xl text-white">
-                Terbitkan Tiket
-              </button>
-              <Link to="/">
-                <button className="w-80 px-4 py-3 bg-[#D0B7E6] rounded-xl text-white">
-                  Cari Penerbangan Lain
-                </button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div>
       <Topnav isLogin={isLogin} isSearch={false} />
-      <div className="shadow-md py-4 mt-24">
+      <div className="shadow-md py-4 mt-24 w-11/12 mx-auto md:w-full">
         <Breadcrumbs isPayment={isDataSaved} isSuccess={false} />
 
         {isDataSaved ? (
@@ -182,7 +140,7 @@ const Checkout = () => {
         )}
       </div>
 
-      <div className="my-5 flex flex-col lg:flex-row md:justify-center md:items-center lg:items-start lg:justify-center gap-10">
+      <div className="my-5 flex flex-col lg:flex-row md:justify-center md:items-center lg:items-start lg:justify-center gap-10 w-11/12 mx-auto md:w-full">
         <FormProvider {...methods}>
           <form onSubmit={(e) => e.preventDefault()} noValidate>
             <div className="flex flex-col gap-10">
@@ -424,12 +382,11 @@ const Checkout = () => {
           <FlightDetails flightID={searchParams.get("flight_id")} />
           <CheckoutPricing passengerInfo={passengerInfo} />
           {isDataSaved && (
-            <button
-              onClick={() => setIsSuccess(!isSuccess)}
-              className="bg-[#FF0000] font-medium py-4 w-full text-white rounded-xl mt-4"
-            >
-              Lanjut Bayar
-            </button>
+            <Link to="/payment">
+              <button className="bg-[#FF0000] font-medium py-4 w-full text-white rounded-xl mt-4">
+                Lanjut Bayar
+              </button>
+            </Link>
           )}
         </div>
       </div>

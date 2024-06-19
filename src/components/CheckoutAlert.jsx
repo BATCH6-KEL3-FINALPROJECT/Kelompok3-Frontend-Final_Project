@@ -11,9 +11,9 @@ const CheckoutAlert = ({ type, message, timeOver = false }) => {
   return (
     <>
       {timeOver && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50" />
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-40" />
       )}
-      <div className="w-full flex justify-center px-3 relative z-50">
+      <div className="w-full flex justify-center px-3 relative z-40">
         <div
           className={`w-[850px] max-w-[850px] ${
             type === "Danger" ? "bg-[#FF0000]" : "bg-[#73CA5C]"
