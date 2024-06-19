@@ -34,7 +34,7 @@ const RiwayatCard = ({ ticket, selected, onClick }) => {
         {ticket.ticket_status.charAt(0).toUpperCase() +
           ticket.ticket_status.slice(1)}
       </div>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-1">
         <div className="text-center">
           <h3 className="text-md font-bold text-gray-900">
             <span className="inline-block">
