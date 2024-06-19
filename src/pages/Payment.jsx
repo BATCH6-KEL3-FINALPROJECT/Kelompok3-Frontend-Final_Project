@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Cookies from "universal-cookie";
 import PaymentMethod from "../components/PaymentMethod";
 import Topnav from "../components/Topnav";
@@ -13,6 +13,8 @@ import Passenger from "../components/Passenger";
 
 const Payment = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const cookies = new Cookies();
 
@@ -37,6 +39,10 @@ const Payment = () => {
     setPassengerInfo(passenger.sort());
   }, []);
 
+  const handleTotalPriceChange = (total) => {
+    setTotalPrice(total);
+  };
+
   return (
     <div>
       <Topnav isLogin={isLogin} isSearch={true}></Topnav>
@@ -51,7 +57,11 @@ const Payment = () => {
         </div>
         <div className="px-5 lg:px-0">
           <FlightDetails flightDetail={flightDetail} isPayment={true} />
-          <CheckoutPricing passengerInfo={passengerInfo} />
+          <CheckoutPricing
+            passengerInfo={passengerInfo}
+            ticketPrice={4950000}
+            onTotalPriceChange={handleTotalPriceChange}
+          />
         </div>
       </div>
     </div>
