@@ -7,9 +7,6 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import CheckoutAlert from "../components/CheckoutAlert";
 import FlightDetails from "../components/FlightDetails";
 import CheckoutPricing from "../components/CheckoutPricing";
-import { flightDetails } from "../utils/flightDummy";
-import { passenger } from "../utils/generatePassanger";
-import Passenger from "../components/Passenger";
 
 const Payment = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -17,6 +14,9 @@ const Payment = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const cookies = new Cookies();
+
+  const FLIGHT_ID = "ee0bd130-7da9-4b0f-bd57-66efae5ab218";
+  const PASSENGER = ["Adult", "Adult", "Child", "Child"];
 
   useEffect(() => {
     const checkToken = cookies.get("token");
@@ -47,10 +47,12 @@ const Payment = () => {
     <div>
       <Topnav isLogin={isLogin} isSearch={true}></Topnav>
       <Breadcrumbs isPayment={true} isSuccess={false} />
-      <CheckoutAlert
-        type="Danger"
-        message="Selesaikan Pembayaran sampai [10 Maret 2023 12:00]"
-      />
+      <div className="mt-16 mb-10">
+        <CheckoutAlert
+          type="Danger"
+          message="Selesaikan Pembayaran sampai [10 Maret 2023 12:00]"
+        />
+      </div>
       <div className="my-5 flex flex-col md:flex-row md:justify-center md:items-center lg:items-start lg:justify-center gap-10">
         <div className="flex flex-col gap-10">
           <PaymentMethod />

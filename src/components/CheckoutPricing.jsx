@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { formatPrice } from "../utils/formatPrice";
+import { formatPrice } from "../utils/checkoutUtils";
 
 const CheckoutPricing = ({
   passengerInfo,
@@ -10,6 +10,7 @@ const CheckoutPricing = ({
   const [adultPassengers, setAdultPassengers] = useState([]);
   const [childPassengers, setChildPassengers] = useState([]);
   const [infantPassengers, setInfantPassengers] = useState([]);
+
   const TICKET_PRICE = 4950000;
 
   useEffect(() => {
@@ -64,6 +65,10 @@ const CheckoutPricing = ({
                 </p>
               </div>
             )}
+            <div className="flex justify-between text-sm">
+              <p> Tax </p>
+              <p>IDR 300.000</p>
+            </div>
           </div>
           <div className="flex justify-between mx-2">
             <h3 className="font-bold">Total</h3>
@@ -72,7 +77,8 @@ const CheckoutPricing = ({
               {formatPrice(
                 TICKET_PRICE * adultPassengers.length +
                   TICKET_PRICE * 0.5 * childPassengers.length +
-                  TICKET_PRICE * 0.1 * infantPassengers.length
+                  TICKET_PRICE * 0.1 * infantPassengers.length +
+                  300000
               )}
             </h3>
           </div>
