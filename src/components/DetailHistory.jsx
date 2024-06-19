@@ -68,12 +68,7 @@ const DetailHistory = ({ ticket }) => {
             </h6>
           </div>
         </div>
-        <img
-          className="h-px"
-          src="images/img_divider.svg"
-          alt="divider"
-          loading="lazy"
-        />
+        <hr className="border-t-2 border-gray-300 " />
       </div>
 
       <div className="flex flex-col gap-2 pt-2">
@@ -110,12 +105,7 @@ const DetailHistory = ({ ticket }) => {
             Penumpang 1 2 3 4
           </p>
         </div>
-        <img
-          className="h-px"
-          src="images/img_divider.svg"
-          alt="divider"
-          loading="lazy"
-        />
+        <hr className="border-t-2 border-gray-300 " />
       </div>
 
       <div className="flex flex-col gap-3.5 pt-3">
@@ -144,12 +134,7 @@ const DetailHistory = ({ ticket }) => {
             </div>
           </div>
         </div>
-        <img
-          className="h-px"
-          src="images/img_divider.svg"
-          alt="divider"
-          loading="lazy"
-        />
+        <hr className="border-t-2 border-gray-300 " />
       </div>
 
       <div className="flex flex-col gap-0.5 py-2">
@@ -200,6 +185,7 @@ const DetailHistory = ({ ticket }) => {
             {/* IDR {ticket.tax} */}
           </p>
         </div>
+        <hr className="border-t-2 border-gray-300 " />
         <div className="flex items-center gap-2 border-t border-solid border-blue-gray-100 py-2.5">
           <div className="flex flex-1">
             <h6 className="text-gray-900 font-poppins text-base font-bold">

@@ -48,7 +48,11 @@ const RiwayatCard = ({ ticket, selected, onClick }) => {
         <div className="text-center">
           <p className="text-gray-700 text-sm">4h 0m</p>
           <p>
-            <img src="arrow.svg" className="w-[200px]" alt="ARROW ICON" />
+            <img
+              src="arrow.svg"
+              className="w-[120px] md:w-[250px]"
+              alt="ARROW ICON"
+            />
           </p>
         </div>
         <div className="text-center">
@@ -72,7 +76,7 @@ const RiwayatCard = ({ ticket, selected, onClick }) => {
         </div>
         <div>
           <h3 className="text-md font-bold text-gray-900">Class:</h3>
-          <p className="text-gray-700 text-sm">Economy</p>
+          <p className="text-gray-700 text-sm pe-3 md:pe-0">Economy</p>
         </div>
         <div className="text-right">
           <h3 className="text-md font-bold text-[#A06ECE] ">IDR 9.850.000</h3>

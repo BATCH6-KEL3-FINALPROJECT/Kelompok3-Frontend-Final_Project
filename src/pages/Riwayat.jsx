@@ -11,8 +11,8 @@ import { jwtDecode } from "jwt-decode";
 import RiwayatCard from "../components/RiwayatCard";
 import HistoryEmpty from "../components/HistoryEmpty";
 import Loading from "../components/Loading";
-import DetailPesanan from "../components/DetailPesanan"; // Import the new component
 import DetailHistory from "../components/DetailHistory";
+import ModalDetailHistory from "../components/ModalDetailHistory";
 
 const Riwayat = () => {
   const { loading, sendData } = useSend();
@@ -95,8 +95,20 @@ const Riwayat = () => {
       return acc;
     }, {});
   };
-
   const groupedTickets = groupByMonthYear(dataRiwayat);
+
+  const [selectedTicketMobile, setSelectedTicketMobile] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleCardClick = (ticket) => {
+    setSelectedTicketMobile(ticket);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedTicketMobile(null);
+  };
 
   return (
     <>
@@ -139,7 +151,9 @@ const Riwayat = () => {
             </button>
           </motion.div>
         </div>
-        <div className="flex gap-3 flex-col md:flex-row">
+
+        {/* DESKTOP VERSION */}
+        <div className="hidden md:flex gap-3 flex-col md:flex-row">
           {isLoading ? (
             <div className="flex justify-center items-center w-full h-64">
               <Loading />
@@ -173,6 +187,48 @@ const Riwayat = () => {
           <div className="md:w-1/3">
             <DetailHistory ticket={selectedTicket} />
           </div>
+        </div>
+
+        {/* MOBILE VERSION */}
+        <div className="flex gap-3 flex-col md:flex-row md:hidden">
+          {isLoading ? (
+            <div className="flex justify-center items-center w-full h-64">
+              <Loading />
+            </div>
+          ) : Object.keys(groupedTickets).length > 0 ? (
+            <div className="flex-grow md:mx-10">
+              {Object.entries(groupedTickets).map(([monthYear, tickets]) => (
+                <div key={monthYear}>
+                  <h2 className="text-lg font-semibold mb-2">
+                    {new Date(`${monthYear}-01`).toLocaleString("default", {
+                      year: "numeric",
+                      month: "long",
+                    })}
+                  </h2>
+                  {tickets.map((ticket) => (
+                    <RiwayatCard
+                      key={ticket.ticket_id}
+                      ticket={ticket}
+                      selected={
+                        selectedTicketMobile?.ticket_id === ticket.ticket_id
+                      }
+                      onClick={() => handleCardClick(ticket)}
+                    />
+                  ))}
+                </div>
+              ))}
+              {isModalOpen && selectedTicketMobile && (
+                <ModalDetailHistory
+                  ticket={selectedTicketMobile}
+                  onClose={handleCloseModal}
+                />
+              )}
+            </div>
+          ) : (
+            <div className="flex-grow">
+              <HistoryEmpty />
+            </div>
+          )}
         </div>
       </div>
     </>
