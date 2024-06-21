@@ -1,75 +1,185 @@
 import React, { useEffect, useState } from "react";
 import { formatPrice } from "../utils/checkoutUtils";
+import axios from "axios";
+import { useSearchParams } from "react-router-dom";
 
-const CheckoutPricing = ({ passengerInfo }) => {
-  const [passengers, setPassengers] = useState([]);
-  const [adultPassengers, setAdultPassengers] = useState([]);
-  const [childPassengers, setChildPassengers] = useState([]);
-  const [infantPassengers, setInfantPassengers] = useState([]);
+const CheckoutPricing = ({ passengerInfo, flightID, onTotalPriceChange }) => {
+  const [priceData, setPriceData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [searchParams] = useSearchParams();
 
-  const TICKET_PRICE = 4950000;
+  const URL = "https://airline.azkazk11.my.id/api/v1";
+  const TAX_AMOUNT = 300000;
+
+  const calculateTotalPrice = () => {
+    let totalPrice = 0;
+
+    if (priceData.length > 0) {
+      totalPrice =
+        priceData.find(
+          (price) =>
+            price.seat_class === searchParams.get("seat_class").toLowerCase()
+        ).price *
+          passengerInfo.filter((passenger) => passenger === "Dewasa").length +
+        priceData.find(
+          (price) =>
+            price.seat_class === searchParams.get("seat_class").toLowerCase()
+        ).price_for_child *
+          passengerInfo.filter((passenger) => passenger === "Anak-Anak")
+            .length +
+        priceData.find(
+          (price) =>
+            price.seat_class === searchParams.get("seat_class").toLowerCase()
+        ).price_for_infant *
+          passengerInfo.filter((passenger) => passenger === "Bayi").length;
+    }
+
+    totalPrice += TAX_AMOUNT;
+
+    return totalPrice;
+  };
 
   useEffect(() => {
-    setPassengers(passengerInfo);
-  }, [passengerInfo]);
+    const fetchFlightData = async () => {
+      setIsLoading(true);
+      try {
+        const res = await axios.get(`${URL}/flight/${flightID}`);
+        setPriceData(res.data.data.flight.Prices);
+      } catch (error) {
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFlightData();
+  }, [flightID]);
 
   useEffect(() => {
-    setAdultPassengers(passengers.filter((passenger) => passenger === "Adult"));
-    setChildPassengers(passengers.filter((passenger) => passenger === "Child"));
-    setInfantPassengers(
-      passengers.filter((passenger) => passenger === "Infant")
-    );
-  }, [passengers]);
+    const total = calculateTotalPrice();
+    onTotalPriceChange(total);
+  }, [passengerInfo, priceData]);
 
   return (
     <>
-      {passengers.length > 0 && (
-        <>
-          <div className="my-2 border-0 border-y-2 border-y-gray-300 py-2 mx-2">
-            <h3 className="text-sm font-bold mb-1"> Rincian Harga </h3>
-            {adultPassengers.length > 0 && (
-              <div className="flex justify-between text-sm">
-                <p>{adultPassengers.length} Adult</p>
-                <p>IDR {formatPrice(TICKET_PRICE * adultPassengers.length)}</p>
-              </div>
-            )}
-            {childPassengers.length > 0 && (
-              <div className="flex justify-between text-sm">
-                <p>{childPassengers.length} Child </p>
-                <p>
-                  IDR {formatPrice(TICKET_PRICE * 0.5 * childPassengers.length)}
-                </p>
-              </div>
-            )}
-            {infantPassengers.length > 0 && (
-              <div className="flex justify-between text-sm">
-                <p>{infantPassengers.length} Infant </p>
-                <p>
-                  IDR{" "}
-                  {formatPrice(TICKET_PRICE * 0.1 * infantPassengers.length)}
-                </p>
-              </div>
-            )}
-            <div className="flex justify-between text-sm">
-              <p> Tax </p>
-              <p>IDR 300.000</p>
-            </div>
-          </div>
-          <div className="flex justify-between mx-2">
-            <h3 className="font-bold"> Total </h3>
-            <h3 className="font-bold text-lg text-[#7126B5]">
-              IDR{" "}
-              {formatPrice(
-                TICKET_PRICE * adultPassengers.length +
-                  TICKET_PRICE * 0.5 * childPassengers.length +
-                  TICKET_PRICE * 0.1 * infantPassengers.length +
-                  300000
+      {passengerInfo.length > 0 && (
+        <div className="border p-2 rounded-b-xl border-gray-400">
+          <h3 className="text-lg font-bold mb-2">Rincian Harga</h3>
+          {isLoading && <LoadingSkeleton />}
+          {isError && (
+            <p className="font-semibold py-5 text-center text-red-500">
+              Terjadi kesalahan saat memuat data. Silakan coba lagi nanti.
+            </p>
+          )}
+          {!isLoading && !isError && (
+            <>
+              {passengerInfo.filter((passenger) => passenger === "Dewasa")
+                .length > 0 && (
+                <div className="flex justify-between text-sm mb-2">
+                  <p>
+                    {
+                      passengerInfo.filter(
+                        (passenger) => passenger === "Dewasa"
+                      ).length
+                    }{" "}
+                    Dewasa
+                  </p>
+                  <p>
+                    IDR{" "}
+                    {formatPrice(
+                      priceData.find((price) => price.seat_class === "economy")
+                        .price *
+                        passengerInfo.filter(
+                          (passenger) => passenger === "Dewasa"
+                        ).length
+                    )}
+                  </p>
+                </div>
               )}
-            </h3>
-          </div>
-        </>
+              {passengerInfo.filter((passenger) => passenger === "Anak-Anak")
+                .length > 0 && (
+                <div className="flex justify-between text-sm mb-2">
+                  <p>
+                    {
+                      passengerInfo.filter(
+                        (passenger) => passenger === "Anak-Anak"
+                      ).length
+                    }{" "}
+                    Anak-Anak
+                  </p>
+                  <p>
+                    IDR{" "}
+                    {formatPrice(
+                      priceData.find((price) => price.seat_class === "economy")
+                        .price_for_child *
+                        passengerInfo.filter(
+                          (passenger) => passenger === "Anak-Anak"
+                        ).length
+                    )}
+                  </p>
+                </div>
+              )}
+              {passengerInfo.filter((passenger) => passenger === "Bayi")
+                .length > 0 && (
+                <div className="flex justify-between text-sm mb-2">
+                  <p>
+                    {
+                      passengerInfo.filter((passenger) => passenger === "Bayi")
+                        .length
+                    }{" "}
+                    Bayi
+                  </p>
+                  <p>
+                    IDR{" "}
+                    {formatPrice(
+                      priceData.find((price) => price.seat_class === "economy")
+                        .price_for_infant *
+                        passengerInfo.filter(
+                          (passenger) => passenger === "Bayi"
+                        ).length
+                    )}
+                  </p>
+                </div>
+              )}
+              <div className="flex justify-between text-sm mb-2">
+                <p>Tax</p>
+                <p>IDR {formatPrice(TAX_AMOUNT)}</p>
+              </div>
+              <div className="flex justify-between text-sm font-bold mt-4">
+                <p>Total</p>
+                <p>IDR {formatPrice(calculateTotalPrice())}</p>
+              </div>
+            </>
+          )}
+        </div>
       )}
     </>
+  );
+};
+
+const LoadingSkeleton = () => {
+  return (
+    <div className="animate-pulse duration-700 w-full md:w-auto">
+      <div className="flex flex-col gap-3">
+        <div className="flex justify-between gap-5">
+          <div className="bg-gray-300 w-[130px] rounded-lg h-4"></div>
+          <div className="bg-gray-300 rounded-lg w-[80px] h-4"></div>
+        </div>
+        <div className="flex justify-between gap-5">
+          <div className="bg-gray-300 w-[130px] rounded-lg h-4"></div>
+          <div className="bg-gray-300 rounded-lg w-[80px] h-4"></div>
+        </div>
+        <div className="flex justify-between gap-5">
+          <div className="bg-gray-300 w-[130px] rounded-lg h-4"></div>
+          <div className="bg-gray-300 rounded-lg w-[80px] h-4"></div>
+        </div>
+        <div className="flex justify-between gap-5">
+          <div className="bg-gray-300 w-[130px] rounded-lg h-4"></div>
+          <div className="bg-gray-300 rounded-lg w-[80px] h-4"></div>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -7,7 +7,7 @@ import {
 import axios from "axios";
 import { motion } from "framer-motion";
 
-const FlightDetails = ({ flightID }) => {
+const FlightDetails = ({ flightID, typeTicket }) => {
   const [flightData, setFlightData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState();
@@ -32,7 +32,10 @@ const FlightDetails = ({ flightID }) => {
   }, [flightID]);
 
   return (
-    <div id="flight-wrapper" className="max-w-[370px] w-[360px]">
+    <div
+      id="flight-wrapper"
+      className="border p-2 rounded-t-xl border-gray-400"
+    >
       {isLoading && <LoadingSkeleton />}
       <motion.div
         initial={{ opacity: 0, x: 20 }}
@@ -47,7 +50,10 @@ const FlightDetails = ({ flightID }) => {
         )}
         {Object.keys(flightData).length > 1 && !isLoading && (
           <>
-            <h3 className="text-lg font-bold"> Detail Penerbangan </h3>
+            <h3 className="text-lg font-bold">
+              {" "}
+              Detail Penerbangan {typeTicket}
+            </h3>
             <div id="departure-info">
               <div className="flex w-full justify-between items-center">
                 <p className="font-bold text">
@@ -79,7 +85,7 @@ const FlightDetails = ({ flightID }) => {
                   <p className="font-bold"> Informasi : </p>
                   {flightData.flight_description && (
                     <>
-                      {JSON.parse(flightData.flight_description).details.map(
+                      {flightData.flight_description.details.map(
                         (item, index) => (
                           <p key={index}> {item.description}</p>
                         )
@@ -112,7 +118,7 @@ export default FlightDetails;
 
 const LoadingSkeleton = () => {
   return (
-    <div className="animate-pulse duration-700">
+    <div className="animate-pulse duration-700 w-full md:w-auto">
       <div className="h-4 bg-slate-300 w-[200px] rounded-lg mb-2"> </div>
       <div className="flex flex-col gap-1">
         <div className="flex justify-between gap-5">

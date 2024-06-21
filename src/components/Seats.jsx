@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import SeatItem from "./SeatItem";
 import useSend from "../hooks/useSend";
 
-const Seats = ({ maxSeatsSelected, flightID }) => {
+const Seats = ({ maxSeatsSelected, flightID, Text }) => {
   const { loading, sendData } = useSend();
   const [collumn, setCollumn] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
@@ -26,9 +26,9 @@ const Seats = ({ maxSeatsSelected, flightID }) => {
             },
           },
         } = await sendData(
-          `/api/v1/seat?flight_id=${searchParams.get(
-            "flight_id"
-          )}&seat_class=${searchParams.get("seat_class").toLowerCase()}`,
+          `/api/v1/seat?flight_id=${flightID}&seat_class=${searchParams
+            .get("seat_class")
+            .toLowerCase()}`,
           "GET"
         );
         const {
@@ -36,15 +36,11 @@ const Seats = ({ maxSeatsSelected, flightID }) => {
             data: { seats },
           },
         } = await sendData(
-          `/api/v1/seat?flight_id=${searchParams.get(
-            "flight_id"
-          )}&seat_class=${searchParams
+          `/api/v1/seat?flight_id=${flightID}&seat_class=${searchParams
             .get("seat_class")
             .toLowerCase()}&limit=${totalData}`,
           "GET"
         );
-        console.log(seats);
-        console.log(seats.filter((seat) => seat.is_available === "A").length);
         setFetchedSeat(seats);
       } catch (error) {
         setIsError(error);
@@ -155,7 +151,7 @@ const Seats = ({ maxSeatsSelected, flightID }) => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold"> Pilih Kursi </h2>
+      <h2 className="text-2xl font-bold"> Pilih Kursi ({Text})</h2>
       {isLoading && <LoadingSkeleton />}
       {isError && isError.message === "Network Error" && (
         <p className="text-center mt-1 font-semibold">

@@ -24,6 +24,8 @@ const Checkout = () => {
   const [isDataSaved, setIsDataSaved] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [passengerInfo, setPassengerInfo] = useState([]);
+  const [totalHargaBerangkat, setTotalHargaBerangkat] = useState(0);
+  const [totalHargaPulang, setTotalHargaPulang] = useState(0);
   const methods = useForm();
   const [countdown, setCountdown] = useState(900);
   const navigate = useNavigate();
@@ -361,9 +363,17 @@ const Checkout = () => {
               <div className="flex flex-col gap-5 px-2">
                 <CheckoutCards>
                   <Seats
-                    flightID={searchParams.get("flight_id")}
+                    flightID={searchParams.get("departure_id")}
                     maxSeatsSelected={passengerInfo.length}
+                    Text={"Berangkat"}
                   />
+                  {searchParams.get("return_id") && (
+                    <Seats
+                      flightID={searchParams.get("return_id")}
+                      maxSeatsSelected={passengerInfo.length}
+                      Text={"Pulang"}
+                    />
+                  )}
                 </CheckoutCards>
                 <button
                   className={`py-4 text-center w-full ${
@@ -378,9 +388,39 @@ const Checkout = () => {
             </div>
           </form>
         </FormProvider>
-        <div className="px-5 lg:px-0">
-          <FlightDetails flightID={searchParams.get("flight_id")} />
-          <CheckoutPricing passengerInfo={passengerInfo} />
+        <div className="w-full md:w-auto px-5 flex flex-col gap-4 lg:px-0">
+          <div>
+            <FlightDetails
+              flightID={searchParams.get("departure_id")}
+              typeTicket={"Berangkat"}
+            />
+            <CheckoutPricing
+              passengerInfo={passengerInfo}
+              flightID={searchParams.get("departure_id")}
+              onTotalPriceChange={setTotalHargaBerangkat}
+            />
+          </div>
+          {searchParams.get("return_id") && (
+            <div>
+              <FlightDetails
+                flightID={searchParams.get("return_id")}
+                typeTicket={"Pulang"}
+              />
+              <CheckoutPricing
+                passengerInfo={passengerInfo}
+                flightID={searchParams.get("return_id")}
+                onTotalPriceChange={setTotalHargaPulang}
+              />
+            </div>
+          )}
+          <div className="flex justify-between mx-2">
+            <h3 className="font-bold"> Total </h3>
+            <h3 className="font-bold text-lg text-[#7126B5]">
+              IDR{" "}
+              {(totalHargaPulang + totalHargaBerangkat).toLocaleString("id-ID")}
+            </h3>
+          </div>
+
           {isDataSaved && (
             <Link to="/payment">
               <button className="bg-[#FF0000] font-medium py-4 w-full text-white rounded-xl mt-4">
