@@ -8,40 +8,19 @@ import NotificationItemSkeleton from "../components/NotificationItemSkeleton";
 import NotificationItem from "../components/NotificationItem";
 import { motion } from "framer-motion";
 import Topnav from "../components/Topnav";
+import useSend from "../hooks/useSend";
 
 const Notification = () => {
+  const { loading, sendData } = useSend();
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
+  const [notifications, setNotifications] = useState([]);
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
   const [isFilterDropdownVisible, setIsFilterDropdownVisible] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const navigate = useNavigate();
   const cookies = new Cookies();
-
-  const notifikasi = [
-    {
-      title: "Promosi",
-      date: "20 Maret, 14:04",
-      message: "Dapatkan Potongan 50% Tiket!",
-      extraMessage: "Syarat dan Ketentuan berlaku!",
-      iconColor: "bg-[#73CA5C]",
-    },
-    {
-      title: "Notifikasi",
-      date: "5 Maret, 14:04",
-      message:
-        "Terdapat perubahan pada jadwal penerbangan kode booking 45GT6. Cek jadwal perjalanan Anda disini!",
-      iconColor: "bg-[#FA2C5A]",
-    },
-    {
-      title: "Notifikasi",
-      date: "5 Maret, 14:04",
-      message:
-        "Terdapat perubahan pada jadwal penerbangan kode booking 45GT6. Cek jadwal perjalanan Anda disini!",
-      iconColor: "bg-[#FA2C5A]",
-    },
-  ];
 
   useEffect(() => {
     const checkToken = cookies.get("token");
@@ -64,6 +43,28 @@ const Notification = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await sendData(
+        `/api/v1/notification`,
+        "GET",
+        null,
+        cookies.get("token")
+      );
+      const notifications = response.data.data.notification.filter(
+        (notif) => notif.user_id !== null
+      );
+      console.log(notifications);
+      setNotifications(notifications);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const handleFilterChange = (newFilter) => {
     setFilter(newFilter);
     setIsFilterDropdownVisible(false);
@@ -73,18 +74,33 @@ const Notification = () => {
     setSearch(event.target.value);
   };
 
-  const filteredNotifications = notifikasi.filter((notification) => {
-    const matchesFilter = filter === "All" || notification.title === filter;
+  const formatNotificationType = (type) => {
+    return type
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  };
+
+  const filteredNotifications = notifications.filter((notification) => {
+    const matchesFilter =
+      filter === "All" ||
+      formatNotificationType(notification.notification_type) === filter;
     const matchesSearch = notification.message
       .toLowerCase()
       .includes(search.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
-  const uniqueTitles = [...new Set(notifikasi.map((notif) => notif.title))];
-  const filterOptions = uniqueTitles.map((title) => ({
-    label: title,
-    value: title,
+  const uniqueTypes = [
+    ...new Set(
+      notifications.map((notif) =>
+        formatNotificationType(notif.notification_type)
+      )
+    ),
+  ];
+
+  const filterOptions = uniqueTypes.map((type) => ({
+    label: type,
+    value: type,
   }));
 
   return (
@@ -131,35 +147,46 @@ const Notification = () => {
               <p>Filter</p>
             </button>
             {isFilterDropdownVisible && (
-              <div className="absolute top-12 right-0 z-10 bg-white shadow-lg rounded-md">
-                <motion.button
-                  initial={{ opacity: 0, x: 75 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{
-                    duration: 0.75,
-                    delay: 0.25,
-                  }}
-                  className="block w-full text-center px-9 py-2 rounded-lg text-black bg-[#A06ECE] hover:text-white hover:bg-[#8A4FC9] border-b"
-                  onClick={() => handleFilterChange("All")}
-                >
-                  All
-                </motion.button>
-                {filterOptions.map((option, index) => (
-                  <motion.button
-                    key={option.value}
-                    initial={{ opacity: 0, x: 75 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{
-                      duration: 0.75,
-                      delay: 0.25 * (index + 1),
+              <>
+                <div className="fixed inset-0 bg-black opacity-50 z-10"></div>
+                <div className="fixed inset-0 flex items-center justify-center z-10 m-10">
+                  <div
+                    className="bg-white rounded-lg shadow-lg flex flex-col gap-2 z-10 ms-1 md:ms-0 w-11/12 md:w-[400px] md:h-[306px] overflow-y-scroll overflow-x-hidden"
+                    style={{
+                      borderRadius: "20px",
+                      padding: "24px 0",
                     }}
-                    className="block w-full text-center px-9 py-2 rounded-lg text-black bg-[#A06ECE] hover:text-white hover:bg-[#8A4FC9] border-b"
-                    onClick={() => handleFilterChange(option.value)}
                   >
-                    {option.label}
-                  </motion.button>
-                ))}
-              </div>
+                    <motion.button
+                      initial={{ opacity: 0, x: 75 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{
+                        duration: 0.75,
+                        delay: 0.25,
+                      }}
+                      className="block w-4/5 m-auto text-center px-9 py-2 rounded-lg text-black bg-white hover:text-white hover:bg-[#8A4FC9] border-b"
+                      onClick={() => handleFilterChange("All")}
+                    >
+                      All
+                    </motion.button>
+                    {filterOptions.map((option, index) => (
+                      <motion.button
+                        key={option.value}
+                        initial={{ opacity: 0, x: 75 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{
+                          duration: 0.75,
+                          delay: 0.25 * (index + 1) + 0.25,
+                        }}
+                        className="block w-4/5 m-auto text-center px-9 py-2 rounded-lg text-black bg-white hover:text-white hover:bg-[#8A4FC9] border-b"
+                        onClick={() => handleFilterChange(option.value)}
+                      >
+                        {option.label}
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+              </>
             )}
             <button
               onClick={() => {
@@ -184,18 +211,18 @@ const Notification = () => {
           </motion.div>
         </div>
         <div>
-          {isLoading
-            ? notifikasi.map((_, index) => (
+          {isLoading && !loading
+            ? notifications.map((_, index) => (
                 <NotificationItemSkeleton key={index} />
               ))
             : filteredNotifications.map((notification, index) => (
                 <NotificationItem
                   key={index}
-                  title={notification.title}
-                  date={notification.date}
+                  title={formatNotificationType(notification.notification_type)}
+                  date={notification.updatedAt}
                   message={notification.message}
                   extraMessage={notification.extraMessage}
-                  iconColor={notification.iconColor}
+                  is_read={notification.is_read}
                 />
               ))}
         </div>
