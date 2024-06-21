@@ -71,29 +71,35 @@ const DatePickerComponent = ({
         readOnly
       />
       {isCalendarOpen && (
-        <div
-          className={`absolute top-12 z-10 bg-white p-2 rounded-lg shadow-lg ${
-            isReturn ? "-translate-x-1/2" : ""
-          }`}
-        >
-          <Calendar
-            onChange={handleDateChange}
-            value={initialValue}
-            className="react-calendar rounded-lg w-[300px] md:w-[330px]"
-            tileClassName={({ date, view }) => {
-              const isSelected =
-                view === "month" &&
-                value &&
-                date.getTime() === new Date(value).getTime();
-              return isSelected ? "bg-[#6b46c1] text-white rounded-lg" : "";
-            }}
-            prevLabel="‹"
-            nextLabel="›"
-            next2Label={null}
-            prev2Label={null}
-            tileDisabled={tileDisabled}
-          />
-        </div>
+        <>
+          <div
+            className="fixed inset-0 bg-black opacity-50 z-10"
+            onClick={() => setIsCalendarOpen(false)}
+          ></div>
+          <div
+            className={`absolute top-12 z-10 bg-white p-2 rounded-lg shadow-lg ${
+              isReturn ? "-translate-x-1/2" : ""
+            }`}
+          >
+            <Calendar
+              onChange={handleDateChange}
+              value={initialValue}
+              className="react-calendar rounded-lg w-[300px] md:w-[330px]"
+              tileClassName={({ date, view }) => {
+                const isSelected =
+                  view === "month" &&
+                  value &&
+                  date.getTime() === new Date(value).getTime();
+                return isSelected ? "bg-[#6b46c1] text-white rounded-lg" : "";
+              }}
+              prevLabel="‹"
+              nextLabel="›"
+              next2Label={null}
+              prev2Label={null}
+              tileDisabled={tileDisabled}
+            />
+          </div>
+        </>
       )}
     </div>
   );

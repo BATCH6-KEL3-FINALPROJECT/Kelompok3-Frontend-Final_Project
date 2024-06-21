@@ -9,7 +9,7 @@ import Passenger from "./Passenger";
 import SeatClass from "./SeatClass";
 import Destinasi from "./Destinasi";
 
-function  Beranda({ airport }) {
+function Beranda({ airport }) {
   const [fromCity, setFromCity] = useState("");
   const [toCity, setToCity] = useState("");
   const [activeInput, setActiveInput] = useState(null);
@@ -130,7 +130,7 @@ function  Beranda({ airport }) {
   return (
     <div className="relative mt-20">
       <div className="absolute top-10 mt-3 left-0 right-0 h-[150px] bg-[#7126B580] -z-10"></div>
-      <div className="container px-4 md:px-8 mx-auto relative z-10">
+      <div className="px-3 md:container md:px-8 mx-auto relative z-10">
         {/* Banner */}
         <div className="flex justify-center items-center">
           <div className="relative mt-6 md:mt-15">
@@ -138,7 +138,7 @@ function  Beranda({ airport }) {
               <img
                 src="img_banner.png"
                 alt="Background"
-                className="w-full md:w-full md:max-w-[1213px] h-40 md:h-[232px] md:top-[116px] md:left-[128px] border-r-20 rounded-r-20"
+                className="w-full md:w-full md:max-w-[1213px] h-40 md:h-[232px] md:top-[116px] md:left-[128px] border-r-20 rounded-r-20 object-cover md:object-fill object-left"
                 style={{ borderRadius: "20px", maxWidth: "100%" }}
               />
             </div>

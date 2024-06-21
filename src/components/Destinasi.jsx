@@ -92,7 +92,7 @@ const Destinasi = () => {
       </h2>
       <div className="flex flex-col items-center">
         {/* Destinasi favorit */}
-        <div className="flex md:w-auto w-full overflow-x-auto md:overflow-hidden md:flex-wrap gap-5 mx-auto md:p-5 ml-3">
+        <div className="flex w-full overflow-x-auto overflow-y-hidden gap-5 mx-auto p-2">
           {["Semua", "Asia", "Amerika", "Australia", "Eropa", "Afrika"].map(
             (text) => (
               <DestinasiFavoritBtn
@@ -106,7 +106,7 @@ const Destinasi = () => {
         </div>
       </div>
       {/* Card Destinasin Favorite */}
-      <div className="container mx-auto p-4 ml-3">
+      <div className="w-11/12 md:container mx-auto p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           <DestinasiCard
             asal="Jakarta"
