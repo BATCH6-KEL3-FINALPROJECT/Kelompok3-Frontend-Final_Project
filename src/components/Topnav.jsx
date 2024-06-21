@@ -4,14 +4,19 @@ import { IoMdSearch, IoMdPerson, IoIosList } from "react-icons/io";
 import { FiBell } from "react-icons/fi";
 import NavbarItems from "./NavbarItems";
 import InputSearch from "./InputSearch";
+import useSend from "../hooks/useSend";
+import Cookies from "universal-cookie";
 
 const Topnav = ({ isLogin = false, isSearch, isOTP = false }) => {
+  const { loading, sendData } = useSend();
   const [searchText, setSearchText] = useState("");
   const [isOpen, setIsOpen] = useState(true);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(true);
+  const [notifications, setNotifications] = useState([]);
   const dialogRef = useRef();
   const searchRef = useRef();
+  const cookies = new Cookies();
 
   const handleResize = () => {
     if (window.innerWidth >= 768) {
@@ -32,6 +37,28 @@ const Topnav = ({ isLogin = false, isSearch, isOTP = false }) => {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await sendData(
+          `/api/v1/notification`,
+          "GET",
+          null,
+          cookies.get("token")
+        );
+        const notifications = response.data.data.notification.filter(
+          (notif) => notif.user_id !== null
+        );
+        setNotifications(notifications.length);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    if (isLogin) {
+      fetchData();
+    }
   }, []);
 
   const clickOutsideModal = (e) => {
@@ -157,7 +184,7 @@ const Topnav = ({ isLogin = false, isSearch, isOTP = false }) => {
                     <FiBell className="text-2xl" />
                     <span className="sr-only">Notifications</span>
                     <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-3 -end-3 dark:border-gray-900">
-                      2
+                      {notifications}
                     </div>
                   </Link>
                   <Link to="/account">

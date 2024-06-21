@@ -12,6 +12,7 @@ const AccordionTicket = ({
   isOpen,
   toggleAccordion,
   handleSelect,
+  isLogin,
 }) => {
   const navigate = useNavigate();
   const cookies = new Cookies();
@@ -28,9 +29,6 @@ const AccordionTicket = ({
         } else {
           setIsVerified(false);
         }
-      } else {
-        // navigate("/account");
-        console.log("woi");
       }
     } catch (err) {
       console.log(err);
@@ -80,7 +78,7 @@ const AccordionTicket = ({
     return `${airlineCode} - ${flightNumber}`;
   };
 
-  const flightDetails = JSON.parse(flight.flight_description);
+  const flightDetails = flight.flight_description;
 
   return (
     <motion.div
@@ -157,6 +155,7 @@ const AccordionTicket = ({
               justifyContent: "center",
               transition: "background-color 0.3s ease",
             }}
+            disabled={!isLogin}
             onClick={handleSelectFlight}
           >
             Pilih

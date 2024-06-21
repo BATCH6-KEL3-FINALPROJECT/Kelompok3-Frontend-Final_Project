@@ -17,35 +17,29 @@ import Cookies from "universal-cookie";
 
 const Search = () => {
   const { loading, sendData } = useSend();
+  const navigate = useNavigate();
+  const cookies = new Cookies();
+  const [searchParams] = useSearchParams();
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pagination, setPagination] = useState(null);
   const [isSeatAvailable, setIsSeatAvailable] = useState(true);
   const [days, setDays] = useState([]);
   const [dataFlight, setDataFlight] = useState([]);
-  const [searchParams] = useSearchParams();
   const [isVerified, setIsVerified] = useState(true);
   const [isLogin, setIsLogin] = useState(true);
   const [selectedDate, setSelectedDate] = useState(
     searchParams.get("departure_date")
   );
-  const navigate = useNavigate();
-  const cookies = new Cookies();
-
-  useEffect(() => {
-    const checkToken = cookies.get("token");
-    setIsLogin(!!checkToken);
-
-    if (
-      searchParams.size === 0 ||
-      !searchParams.get("departure_city") ||
-      !searchParams.get("arrival_city") ||
-      !searchParams.get("departure_date") ||
-      !searchParams.get("penumpang")
-    ) {
-      navigate("/");
-    }
-  }, [navigate, searchParams, cookies]);
+  const [openAccordion, setOpenAccordion] = useState(null);
+  const [selectedFilter, setSelectedFilter] = useState("");
+  const [filteredFlights, setFilteredFlights] = useState([]);
+  const [isFilteredFlights, setIsFilteredFlights] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [temporaryFilter, setTemporaryFilter] = useState("");
+  const [selectedDeparture, setSelectedDeparture] = useState(null);
+  const [selectedReturn, setSelectedReturn] = useState(null);
 
   const dewasa = searchParams.get("penumpang")
     ? searchParams.get("penumpang").split(".")[0]
@@ -56,6 +50,7 @@ const Search = () => {
   const bayi = searchParams.get("penumpang")
     ? searchParams.get("penumpang").split(".")[2]
     : "0";
+
   const ticketSearch = {
     departure_city: searchParams.get("departure_city"),
     arrival_city: searchParams.get("arrival_city"),
@@ -121,9 +116,31 @@ const Search = () => {
       null,
       true
     );
+    const {
+      data: {
+        data: { flights },
+      },
+    } = await sendData(
+      `/api/v1/flight?seat_class=${searchParams.get(
+        "seat_class"
+      )}&departure_city=${searchParams.get(
+        "departure_city"
+      )}&arrival_city=${searchParams.get(
+        "arrival_city"
+      )}&departure_date=${searchParams.get("departure_date")}&limit=${
+        response.data.data.pagination.totalData
+      }`,
+      "GET",
+      null,
+      null,
+      true
+    );
     if (response.statusCode === 200) {
       setDataFlight(response.data.data.flights);
       setPagination(response.data.data.pagination);
+      setFilteredFlights(flights);
+      setSelectedFilter("Others");
+      setIsFilteredFlights(true);
     } else {
       console.error(response.message);
     }
@@ -141,53 +158,61 @@ const Search = () => {
     setCurrentPage(pageNumber);
   };
 
+  const calculateDuration = (departureTime, arrivalTime) => {
+    const [depHours, depMinutes] = departureTime.split(":").map(Number);
+    const [arrHours, arrMinutes] = arrivalTime.split(":").map(Number);
+
+    const depDate = new Date(1970, 0, 1, depHours, depMinutes);
+    const arrDate = new Date(1970, 0, 1, arrHours, arrMinutes);
+
+    if (arrDate < depDate) {
+      arrDate.setDate(arrDate.getDate() + 1);
+    }
+
+    const durationMs = arrDate - depDate;
+    const durationHours = Math.floor(durationMs / (1000 * 60 * 60));
+    const durationMinutes = Math.floor(
+      (durationMs % (1000 * 60 * 60)) / (1000 * 60)
+    );
+
+    return `${durationHours}h ${durationMinutes}m`;
+  };
+
   const handleSelect = (flight) => {
     if (flight.seats_available > 0) {
       setIsSeatAvailable(true);
-      console.log(flight.flight_id);
-      navigate(
-        `/checkout?flight_id=${flight.flight_id}&penumpang=${searchParams.get(
-          "penumpang"
-        )}&seat_class=${flight.seat_class}`
-      );
+
+      if (!searchParams.get("return_date")) {
+        navigate(
+          `/checkout?departure_id=${
+            flight.flight_id
+          }&penumpang=${searchParams.get("penumpang")}&seat_class=${
+            flight.seat_class
+          }`
+        );
+      }
+
+      if (!selectedDeparture) {
+        setSelectedDeparture(flight);
+      } else if (!selectedReturn) {
+        setSelectedReturn(flight);
+      }
     } else {
       setIsSeatAvailable(false);
     }
   };
 
-  useEffect(() => {
-    const departureDate =
-      searchParams.get("departure_date") ||
-      new Date().toISOString().split("T")[0];
-    const generatedDays = generateDays(departureDate);
-    setDays(generatedDays);
-  }, [selectedDate]);
-
-  useEffect(() => {
-    fetchData();
-  }, [searchParams, currentPage, selectedDate]);
-
-  useEffect(() => {
-    if (dataFlight && pagination) {
-      setTotalPages(pagination.totalPages);
+  const handleRemoveSelection = (type) => {
+    if (type === "departure") {
+      setSelectedDeparture(null);
+    } else if (type === "return") {
+      setSelectedReturn(null);
     }
-  }, [dataFlight]);
-
-  const [openAccordion, setOpenAccordion] = useState(null);
+  };
 
   const toggleAccordion = (index) => {
     setOpenAccordion(openAccordion === index ? null : index);
   };
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState("");
-  const [temporaryFilter, setTemporaryFilter] = useState("");
-  const [flights, setFlights] = useState([]);
-  const [filteredFlights, setFilteredFlights] = useState([]);
-
-  useEffect(() => {
-    filterFlights();
-  }, [selectedFilter, flights]);
 
   const handleOpenModal = () => {
     setTemporaryFilter(selectedFilter);
@@ -207,58 +232,67 @@ const Search = () => {
     setIsModalOpen(false);
   };
 
-  const filterFlights = () => {
-    let sortedFlights = [...flights];
-    switch (selectedFilter) {
-      case "Harga - Termurah":
-        sortedFlights.sort((a, b) => a.price - b.price);
-        break;
-      case "Durasi - Terpendek":
-        sortedFlights.sort((a, b) => a.duration - b.duration);
-        break;
-      case "Keberangkatan - Paling Awal":
-        sortedFlights.sort((a, b) => a.departure.localeCompare(b.departure));
-        break;
-      case "Keberangkatan - Paling Akhir":
-        sortedFlights.sort((a, b) => b.departure.localeCompare(a.departure));
-        break;
-      case "Kedatangan - Paling Awal":
-        sortedFlights.sort((a, b) => a.arrival.localeCompare(b.arrival));
-        break;
-      case "Kedatangan - Paling Akhir":
-        sortedFlights.sort((a, b) => b.arrival.localeCompare(a.arrival));
-        break;
-      default:
-        break;
-    }
-    setFilteredFlights(sortedFlights);
-  };
-
   const getButtonText = () => {
     if (!selectedFilter) return "Others";
     const parts = selectedFilter.split(" - ");
     return parts.length > 1 ? parts[1] : parts[0];
   };
 
-  const [isReturnFlight, setIsReturnFlight] = useState(false);
+  useEffect(() => {
+    const checkToken = cookies.get("token");
+    setIsLogin(!!checkToken);
 
-  const toggleReturnFlight = () => {
-    setIsReturnFlight((prev) => !prev);
-  };
+    if (
+      searchParams.size === 0 ||
+      !searchParams.get("departure_city") ||
+      !searchParams.get("arrival_city") ||
+      !searchParams.get("departure_date") ||
+      !searchParams.get("penumpang")
+    ) {
+      navigate("/");
+    }
+  }, [navigate, searchParams, cookies]);
+
+  useEffect(() => {
+    const departureDate =
+      searchParams.get("departure_date") ||
+      new Date().toISOString().split("T")[0];
+    setDays(generateDays(departureDate));
+  }, [selectedDate]);
+
+  useEffect(() => {
+    fetchData();
+  }, [searchParams, currentPage, selectedDate]);
+
+  useEffect(() => {
+    if (dataFlight && pagination) {
+      setTotalPages(pagination.totalPages);
+    }
+  }, [dataFlight]);
 
   return (
     <>
       <Topnav isLogin={isLogin} isSearch={true} />
       {!isVerified && (
         <div className="bg-red-500 opacity-90 w-[100vw] fixed z-40 top-24 p-2 flex justify-between">
-          <div
-            className="w-4/5
-           mx-auto flex justify-between items-center"
-          >
+          <div className="w-4/5 mx-auto flex justify-between items-center">
             <h1 className="text-white font-bold">Akun Anda Belum Verified</h1>
             <Link to="/otp">
               <button className="bg-white px-4 py-1 rounded-xl font-semibold">
                 Verified
+              </button>
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {!isLogin && (
+        <div className="bg-red-500 opacity-90 w-[100vw] fixed z-40 top-24 p-2 flex justify-between">
+          <div className="w-4/5 mx-auto flex justify-between items-center">
+            <h1 className="text-white font-bold">Anda Belum Login</h1>
+            <Link to="/login">
+              <button className="bg-white px-4 py-1 rounded-xl font-semibold">
+                Login
               </button>
             </Link>
           </div>
@@ -324,15 +358,87 @@ const Search = () => {
             initial={{ opacity: 0, x: 75 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.75, delay: 0.75 }}
-            className="flex justify-end"
+            className="flex justify-between md:justify-end items-center gap-2"
           >
+            <div className="flex">
+              {selectedDeparture && (
+                <div className="border rounded-md p-4">
+                  <h2 className="text-lg font-bold mb-2">Berangkat</h2>
+                  <p>
+                    {selectedDeparture.airline_name} -{" "}
+                    {selectedDeparture.seat_class}
+                  </p>
+                  <p>{selectedDeparture.departure_date}</p>
+                  <p>
+                    Route: {selectedDeparture.departure_city} -{" "}
+                    {selectedDeparture.arrival_city}
+                  </p>
+                  <div>
+                    <strong className="text-black">
+                      {selectedDeparture.departure_time.slice(0, -3)}
+                    </strong>
+                  </div>
+                  <div className="text-sm text-center">
+                    {calculateDuration(
+                      selectedReturn.departure_time,
+                      selectedReturn.arrival_time
+                    )}
+                  </div>
+                  <div>
+                    <strong className="text-black">
+                      {selectedDeparture.arrival_time.slice(0, -3)}
+                    </strong>
+                  </div>
+                  <button
+                    onClick={() => handleRemoveSelection("departure")}
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg mt-4"
+                  >
+                    Hapus
+                  </button>
+                </div>
+              )}
+              {selectedReturn && (
+                <div className="border rounded-md p-4">
+                  <h2 className="text-lg font-bold mb-2">
+                    Detail Tiket Pulang
+                  </h2>
+                  <p>Airlines: {selectedReturn.airline_name}</p>
+                  <p>Seat Class: {selectedReturn.seat_class}</p>
+                  <p>Departure Date: {selectedReturn.departure_date}</p>
+                  <p>
+                    Route: {selectedReturn.departure_city} -{" "}
+                    {selectedReturn.arrival_city}
+                  </p>
+                  <div>
+                    <strong className="text-black">
+                      {selectedReturn.departure_time.slice(0, -3)}
+                    </strong>
+                  </div>
+                  <div className="text-sm text-center">
+                    {calculateDuration(
+                      selectedReturn.departure_time,
+                      selectedReturn.arrival_time
+                    )}
+                  </div>
+                  <div>
+                    <strong className="text-black">
+                      {selectedReturn.arrival_time.slice(0, -3)}
+                    </strong>
+                  </div>
+                  <button
+                    onClick={() => handleRemoveSelection("return")}
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg mt-4"
+                  >
+                    Hapus
+                  </button>
+                </div>
+              )}
+            </div>
             <button
               className="flex justify-center items-center gap-2 px-3 py-1 border border-[#A06ECE] text-[#7126B5] rounded-full mx-4"
               onClick={handleOpenModal}
             >
-              <span>
-                <LuArrowUpDown className="text-lg" />
-              </span>
+              <LuArrowUpDown className="text-lg" />
               <span className="text-base">{getButtonText()}</span>
             </button>
           </motion.div>
@@ -344,6 +450,9 @@ const Search = () => {
           selectedFilter={temporaryFilter}
           onSelectFilter={handleSelectFilter}
           onApplyFilter={handleApplyFilter}
+          flights={filteredFlights}
+          isFiltered={setIsFilteredFlights}
+          setFlights={setDataFlight}
         />
 
         {!isSeatAvailable ? (
@@ -360,35 +469,6 @@ const Search = () => {
             >
               <h1 className="font-medium text-base">Filter</h1>
               <Filter />
-              {ticketSearch.return_date && (
-                <div className="my-4 mx-4">
-                  <h2 className="text-lg font-semibold mb-2">
-                    Pesawat yang Anda Pilih
-                  </h2>
-                  <div className="flex flex-col gap-4">
-                    <div className="bg-gray-100 p-4 rounded-lg">
-                      <h3 className="font-semibold">Perjalanan Berangkat</h3>
-                      <p className="text-sm">
-                        {ticketSearch.departure_city} -{" "}
-                        {ticketSearch.arrival_city}
-                      </p>
-                      <p className="text-sm">
-                        {formatDate(ticketSearch.departure_date)}
-                      </p>
-                    </div>
-                    <div className="bg-gray-100 p-4 rounded-lg">
-                      <h3 className="font-semibold">Perjalanan Kembali</h3>
-                      <p className="text-sm">
-                        {ticketSearch.arrival_city} -{" "}
-                        {ticketSearch.departure_city}
-                      </p>
-                      <p className="text-sm">
-                        {formatDate(ticketSearch.return_date)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
             </motion.div>
             <div className="flex-grow">
               {dataFlight.length !== 0 ? (
@@ -402,15 +482,18 @@ const Search = () => {
                       isOpen={openAccordion === index}
                       toggleAccordion={() => toggleAccordion(index)}
                       handleSelect={() => handleSelect(flight)}
+                      isLogin={isLogin}
                     />
                   ))}
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    handlePrevPage={handlePrevPage}
-                    handleNextPage={handleNextPage}
-                    handlePageClick={handlePageClick}
-                  />
+                  {isFilteredFlights && (
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      handlePrevPage={handlePrevPage}
+                      handleNextPage={handleNextPage}
+                      handlePageClick={handlePageClick}
+                    />
+                  )}
                 </>
               ) : (
                 <TicketEmpty />
