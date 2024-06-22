@@ -19,7 +19,7 @@ const OtpInput = ({ onChange }) => {
     <div className="flex justify-center">
       {otp.map((data, index) => (
         <input
-          className="m-2 border border-gray-500 rounded w-12 h-12 text-center text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="m-0.5 md:m-2 border border-gray-500 rounded w-12 h-12 text-center text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           type="text"
           name="otp"
           maxLength="1"

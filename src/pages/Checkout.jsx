@@ -10,10 +10,13 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import CheckoutPricing from "../components/CheckoutPricing";
 import { FormProvider, useForm } from "react-hook-form";
 import Topnav from "../components/Topnav";
-import { useNavigate } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
 import Cookies from "universal-cookie";
-import CheckoutSuccess from "../../public/Checkout_Success.svg";
-import { Link } from "react-router-dom";
 
 const Checkout = () => {
   const [isCustomerFamilyName, setIsCustomerFamilyName] = useState(false);
@@ -21,21 +24,29 @@ const Checkout = () => {
   const [isDataSaved, setIsDataSaved] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [passengerInfo, setPassengerInfo] = useState([]);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [totalHargaBerangkat, setTotalHargaBerangkat] = useState(0);
+  const [totalHargaPulang, setTotalHargaPulang] = useState(0);
   const methods = useForm();
   const [countdown, setCountdown] = useState(900);
-  const [timer, setTimer] = useState(null);
   const navigate = useNavigate();
   const cookies = new Cookies();
-
-  const FLIGHT_ID = "ee0bd130-7da9-4b0f-bd57-66efae5ab218";
-  const SEAT_CLASS = "economy";
-  const PASSENGER = ["Adult", "Adult", "Child", "Child"];
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    setPassengerInfo(PASSENGER.sort());
-    setIsPassengerFamilyName(new Array(PASSENGER.length).fill(false));
-  }, []);
+    const searchParams = new URLSearchParams(location.search);
+    const penumpang = searchParams.get("penumpang") || "0.0.0";
+    const [adults, children, infants] = penumpang.split(".").map(Number);
+
+    const passengers = [
+      ...Array(adults).fill("Dewasa"),
+      ...Array(children).fill("Anak-Anak"),
+      ...Array(infants).fill("Bayi"),
+    ];
+
+    setPassengerInfo(passengers);
+    setIsPassengerFamilyName(new Array(passengers.length).fill(false));
+  }, [location.search]);
 
   useEffect(() => {
     const checkToken = cookies.get("token");
@@ -80,20 +91,16 @@ const Checkout = () => {
       passengersData[index][key.split("_")[0]] = data[key];
     }
 
-    // Nanti di update
     const objectData = {
       customerData,
       passengersData: passengersData,
     };
     setIsDataSaved(true);
+    console.log(objectData);
   });
 
   function handleCustomerBtn() {
-    if (isCustomerFamilyName) {
-      setIsCustomerFamilyName(false);
-    } else {
-      setIsCustomerFamilyName(true);
-    }
+    setIsCustomerFamilyName(!isCustomerFamilyName);
   }
 
   function handlePassengerBtn(id) {
@@ -110,51 +117,10 @@ const Checkout = () => {
       .padStart(2, "0")}`;
   };
 
-  if (isSuccess) {
-    return (
-      <div className="h-[100dvh]">
-        <Topnav isLogin={isLogin} isSearch={false} />
-        <div className="shadow-md py-4">
-          <Breadcrumbs isPayment={true} isSuccess={isSuccess} />
-          <CheckoutAlert
-            type="Success"
-            message="Terimakasih atas pembayaran transaksi"
-          />
-        </div>
-        <div className="flex justify-center items-center text-center py-20">
-          <div className="flex flex-col gap-10 items-center">
-            <img
-              src={CheckoutSuccess}
-              alt="floating-people"
-              width={204}
-              height={208}
-            />
-            <div className="flex flex-col gap-1">
-              <p className="text-sm text-[#7126B5] font-semibold"> Selamat!</p>
-              <p className="text-sm font-semibold">
-                Transaksi Pembayaran Tiket Sukses!
-              </p>
-            </div>
-            <div className="flex flex-col gap-4">
-              <button className="w-80 px-4 py-3 bg-[#7126B5] rounded-xl text-white">
-                Terbitkan Tiket
-              </button>
-              <Link to="/">
-                <button className="w-80 px-4 py-3 bg-[#D0B7E6] rounded-xl text-white">
-                  Cari Penerbangan Lain
-                </button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div>
       <Topnav isLogin={isLogin} isSearch={false} />
-      <div className="shadow-md py-4 mt-24">
+      <div className="shadow-md py-4 mt-24 w-11/12 mx-auto md:w-full">
         <Breadcrumbs isPayment={isDataSaved} isSuccess={false} />
 
         {isDataSaved ? (
@@ -176,7 +142,7 @@ const Checkout = () => {
         )}
       </div>
 
-      <div className="my-5 flex flex-col lg:flex-row md:justify-center md:items-center lg:items-start lg:justify-center gap-10">
+      <div className="my-5 flex flex-col lg:flex-row md:justify-center md:items-center lg:items-start lg:justify-center gap-10 w-11/12 mx-auto md:w-full">
         <FormProvider {...methods}>
           <form onSubmit={(e) => e.preventDefault()} noValidate>
             <div className="flex flex-col gap-10">
@@ -397,10 +363,17 @@ const Checkout = () => {
               <div className="flex flex-col gap-5 px-2">
                 <CheckoutCards>
                   <Seats
-                    flightID={FLIGHT_ID}
-                    seatClass={SEAT_CLASS}
+                    flightID={searchParams.get("departure_id")}
                     maxSeatsSelected={passengerInfo.length}
+                    Text={"Berangkat"}
                   />
+                  {searchParams.get("return_id") && (
+                    <Seats
+                      flightID={searchParams.get("return_id")}
+                      maxSeatsSelected={passengerInfo.length}
+                      Text={"Pulang"}
+                    />
+                  )}
                 </CheckoutCards>
                 <button
                   className={`py-4 text-center w-full ${
@@ -415,16 +388,45 @@ const Checkout = () => {
             </div>
           </form>
         </FormProvider>
-        <div className="px-5 lg:px-0">
-          <FlightDetails flightID={FLIGHT_ID} />
-          <CheckoutPricing passengerInfo={passengerInfo} />
+        <div className="w-full md:w-auto px-5 flex flex-col gap-4 lg:px-0">
+          <div>
+            <FlightDetails
+              flightID={searchParams.get("departure_id")}
+              typeTicket={"Berangkat"}
+            />
+            <CheckoutPricing
+              passengerInfo={passengerInfo}
+              flightID={searchParams.get("departure_id")}
+              onTotalPriceChange={setTotalHargaBerangkat}
+            />
+          </div>
+          {searchParams.get("return_id") && (
+            <div>
+              <FlightDetails
+                flightID={searchParams.get("return_id")}
+                typeTicket={"Pulang"}
+              />
+              <CheckoutPricing
+                passengerInfo={passengerInfo}
+                flightID={searchParams.get("return_id")}
+                onTotalPriceChange={setTotalHargaPulang}
+              />
+            </div>
+          )}
+          <div className="flex justify-between mx-2">
+            <h3 className="font-bold"> Total </h3>
+            <h3 className="font-bold text-lg text-[#7126B5]">
+              IDR{" "}
+              {(totalHargaPulang + totalHargaBerangkat).toLocaleString("id-ID")}
+            </h3>
+          </div>
+
           {isDataSaved && (
-            <button
-              onClick={() => setIsSuccess(!isSuccess)}
-              className="bg-[#FF0000] font-medium py-4 w-full text-white rounded-xl mt-4"
-            >
-              Lanjut Bayar
-            </button>
+            <Link to="/payment">
+              <button className="bg-[#FF0000] font-medium py-4 w-full text-white rounded-xl mt-4">
+                Lanjut Bayar
+              </button>
+            </Link>
           )}
         </div>
       </div>

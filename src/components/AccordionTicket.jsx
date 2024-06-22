@@ -2,7 +2,6 @@ import React from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
-import useSend from "../hooks/useSend";
 import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
 
@@ -13,8 +12,8 @@ const AccordionTicket = ({
   isOpen,
   toggleAccordion,
   handleSelect,
+  isLogin,
 }) => {
-  const { loading, sendData } = useSend();
   const navigate = useNavigate();
   const cookies = new Cookies();
 
@@ -24,15 +23,12 @@ const AccordionTicket = ({
       const checkToken = cookies.get("token");
       if (checkToken && checkToken !== "undefined") {
         const decoded = jwtDecode(checkToken);
-        console.log(decoded);
         if (decoded.isVerified) {
           setIsVerified(true);
           handleSelect(flight);
         } else {
           setIsVerified(false);
         }
-      } else {
-        navigate("/account");
       }
     } catch (err) {
       console.log(err);
@@ -82,7 +78,7 @@ const AccordionTicket = ({
     return `${airlineCode} - ${flightNumber}`;
   };
 
-  const flightDetails = JSON.parse(flight.flight_description);
+  const flightDetails = flight.flight_description;
 
   return (
     <motion.div
@@ -159,6 +155,7 @@ const AccordionTicket = ({
               justifyContent: "center",
               transition: "background-color 0.3s ease",
             }}
+            disabled={!isLogin}
             onClick={handleSelectFlight}
           >
             Pilih
