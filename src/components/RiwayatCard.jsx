@@ -1,19 +1,33 @@
 import React from "react";
 
-const RiwayatCard = ({ ticket, selected, onClick }) => {
+const RiwayatCard = ({ booking, selected, onClick }) => {
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString("id-ID", options);
   };
 
+  const formatRupiah = (number) => {
+    return new Intl.NumberFormat("id-ID").format(number);
+  };
+  const formatTime = (timeString) => {
+    const options = { hour: "2-digit", minute: "2-digit" };
+    return new Date(`1970-01-01T${timeString}Z`).toLocaleTimeString(
+      "id-ID",
+      options
+    );
+  };
+
   const getStatusStyle = (status) => {
+    if (!status) return "bg-gray-200 text-gray-700";
     switch (status.toLowerCase()) {
-      case "issued":
+      case "booked":
         return "bg-[#73CA5C] text-white";
-      case "unpaid":
+      case "pending":
         return "bg-[#FF0000] text-white";
       case "cancelled":
         return "bg-[#8A8A8A] text-white";
+      case "confirmed":
+        return "bg-[#7126B5] text-white";
       default:
         return "bg-gray-200 text-gray-700";
     }
@@ -28,11 +42,12 @@ const RiwayatCard = ({ ticket, selected, onClick }) => {
     >
       <div
         className={`${getStatusStyle(
-          ticket.ticket_status
+          booking.status
         )} px-3 py-1 rounded-full inline-block mb-1`}
       >
-        {ticket.ticket_status.charAt(0).toUpperCase() +
-          ticket.ticket_status.slice(1)}
+        {booking.status
+          ? booking.status.charAt(0).toUpperCase() + booking.status.slice(1)
+          : "Status Tidak Tersedia"}
       </div>
       <div className="flex justify-between items-center mb-1">
         <div className="text-center">
@@ -40,17 +55,24 @@ const RiwayatCard = ({ ticket, selected, onClick }) => {
             <span className="inline-block">
               <img src="location.svg" alt="location" />
             </span>{" "}
-            Jakarta
+            {booking.Flight.departingAirport.city}
           </h3>
-          <p className="text-gray-700 text-sm">5 Maret 2023</p>
-          <p className="text-gray-700 text-sm">19:10</p>
+          <p className="text-gray-700 text-sm">
+            {formatDate(booking.Flight.departure_date)}
+          </p>
+          <p className="text-gray-700 text-sm">
+            {formatTime(booking.Flight.departure_time)}
+          </p>
         </div>
         <div className="text-center">
-          <p className="text-gray-700 text-sm">4h 0m</p>
+          <p className="text-gray-700 text-sm">
+            {Math.floor(booking.Flight.flight_duration / 60)}h{" "}
+            {booking.Flight.flight_duration % 60}m
+          </p>
           <p>
             <img
               src="arrow.svg"
-              className="w-[120px] md:w-[250px]"
+              className="w-[120px] md:w-[200px]"
               alt="ARROW ICON"
             />
           </p>
@@ -60,26 +82,32 @@ const RiwayatCard = ({ ticket, selected, onClick }) => {
             <span className="inline-block">
               <img src="location.svg" alt="location" />
             </span>{" "}
-            Melbourne
+            {booking.Flight.arrivingAirport.city}
           </h3>
-          <p className="text-gray-700 text-sm">5 Maret 2023</p>
-          <p className="text-gray-700 text-sm">21:10</p>
+          <p className="text-gray-700 text-sm">
+            {formatDate(booking.Flight.arrival_date)}
+          </p>
+          <p className="text-gray-700 text-sm">
+            {formatTime(booking.Flight.arrival_time)}
+          </p>
         </div>
       </div>
       <hr className="border-t-2 border-gray-200 mb-1" />
       <div className="flex justify-between items-center mb-1">
         <div>
-          <h3 className="text-md font-bold text-gray-900 text-md">
-            Booking Code:
-          </h3>
-          <p className="text-gray-700 text-sm">{ticket.booking_id}</p>
+          <h3 className="text-md font-bold text-gray-900">Kode Booking:</h3>
+          <p className="text-gray-700 text-sm">{booking.booking_code}</p>
         </div>
         <div>
-          <h3 className="text-md font-bold text-gray-900">Class:</h3>
-          <p className="text-gray-700 text-sm pe-3 md:pe-0">Economy</p>
+          <h3 className="text-md font-bold text-gray-900">Kelas:</h3>
+          <p className="text-gray-700 text-sm">
+            {booking.Tickets[0].Seat.seat_class}
+          </p>
         </div>
         <div className="text-right">
-          <h3 className="text-md font-bold text-[#A06ECE] ">IDR 9.850.000</h3>
+          <h3 className="text-md font-bold text-[#A06ECE] ">
+            IDR {formatRupiah(booking.total_price)}
+          </h3>
         </div>
       </div>
     </div>

@@ -1,19 +1,38 @@
 import React from "react";
 import StatusButton from "./StatusButton";
 
-const DetailHistory = ({ ticket }) => {
-  if (!ticket) {
-    return <div> Detail Pesanan : Kosong</div>;
+const DetailHistory = ({ booking }) => {
+  if (!booking) {
+    return <div>Detail Pesanan: Kosong</div>;
   }
+
+  const formatDate = (dateString) => {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString("id-ID", options);
+  };
+
+  const formatRupiah = (number) => {
+    return new Intl.NumberFormat("id-ID").format(number);
+  };
+
+  const formatTime = (timeString) => {
+    const options = { hour: "2-digit", minute: "2-digit" };
+    return new Date(`1970-01-01T${timeString}Z`).toLocaleTimeString(
+      "id-ID",
+      options
+    );
+  };
 
   const getStatusStyle = (status) => {
     switch (status.toLowerCase()) {
-      case "issued":
+      case "booked":
         return "bg-[#73CA5C] text-white";
-      case "unpaid":
+      case "pending":
         return "bg-[#FF0000] text-white";
       case "cancelled":
         return "bg-[#8A8A8A] text-white";
+      case "confirmed":
+        return "bg-[#7126B5] text-white";
       default:
         return "bg-gray-200 text-gray-700";
     }
@@ -26,21 +45,18 @@ const DetailHistory = ({ ticket }) => {
           <h3 className="text-gray-900 font-poppins text-lg font-bold">
             Detail Pesanan
           </h3>
-          <p className="flex items-center justify-center rounded-full p-1 px-4 text-center text-sm text-white">
-            <div
-              className={`${getStatusStyle(
-                ticket.ticket_status
-              )} px-3 py-1 rounded-full inline-block mb-1`}
-            >
-              {ticket.ticket_status.charAt(0).toUpperCase() +
-                ticket.ticket_status.slice(1)}
-            </div>
-          </p>
+          <div
+            className={`${getStatusStyle(
+              booking.status
+            )} px-3 py-1 rounded-full inline-block mb-1`}
+          >
+            {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+          </div>
         </div>
         <div className="flex">
-          <h4 className="text-gray-900 font-poppins text-lg font-bold">
-            <span className="font-normal text-gray-900">Booking Code:</span>
-            <span className="text-[#7126B5]">{ticket.booking_id}</span>
+          <h4 className="text-gray-900 font-poppins text-lg font-bold mb-2">
+            <span className="font-normal text-gray-900">Booking Code: </span>
+            <span className="text-[#7126B5]">{booking.booking_code}</span>
           </h4>
         </div>
       </div>
@@ -49,17 +65,17 @@ const DetailHistory = ({ ticket }) => {
         <div className="flex items-start">
           <div className="flex flex-1 flex-col items-start">
             <h5 className="text-gray-900 font-poppins w-33% text-sm font-bold leading-5 md:w-full">
-              <span className=" text-gray-900">
-                {/* {ticket.departure_time} */} Departur Time
+              <span className="text-gray-900">
+                {formatTime(booking.Flight.departure_time)}
               </span>
               <br />
-              <span className="font-normal text-gray-900">
-                {/* {new Date(ticket.departure_date).toLocaleDateString()} */}{" "}
-                Departur Date
+              <span className="font-poppins text-sm font-medium text-gray-900">
+                {formatDate(booking.Flight.departure_date)}
               </span>
             </h5>
             <p className="text-gray-900 font-poppins text-sm font-medium">
-              {/* {ticket.departure_location} */} departure location
+              {booking.Flight.departure_airport} (
+              {booking.Flight.departingAirport.city})
             </p>
           </div>
           <div className="relative ml-[-78px] flex">
@@ -68,7 +84,7 @@ const DetailHistory = ({ ticket }) => {
             </h6>
           </div>
         </div>
-        <hr className="border-t-2 border-gray-300 " />
+        <hr className="border-t-2 border-gray-300" />
       </div>
 
       <div className="flex flex-col gap-2 pt-2">
@@ -83,29 +99,30 @@ const DetailHistory = ({ ticket }) => {
           </div>
           <p className="text-gray-900 font-poppins w-93% text-xs font-medium leading-18px">
             <span className="text-sm font-bold text-gray-900">
-              {/* {ticket.airline} - {ticket.class} */} kelas ticket
+              {booking.Flight.Airline.airline_name} -{" "}
+              {booking.Tickets[0].Seat.seat_class}
               <br />
-              {/* {ticket.flight_number} */} kode flight
+              {booking.Flight.flight_code}
               <br />
             </span>
             <span className="text-sm font-bold text-gray-900">Informasi:</span>
             <br />
-            {/* {ticket.passengers.map((passenger, index) => (
+            {booking.Tickets.map((ticket, index) => (
               <div key={index}>
                 <span className="text-sm text-purple-900">
-                  Penumpang {index + 1}: {passenger.name}
+                  Penumpang {index + 1}: {ticket.Passenger.first_name}{" "}
+                  {ticket.Passenger.last_name}
                 </span>
                 <br />
                 <span className="text-sm font-normal text-gray-900">
-                  ID: {passenger.id}
+                  ID: {ticket.Passenger.passenger_id}
                 </span>
                 <br />
               </div>
-            ))} */}
-            Penumpang 1 2 3 4
+            ))}
           </p>
         </div>
-        <hr className="border-t-2 border-gray-300 " />
+        <hr className="border-t-2 border-gray-300" />
       </div>
 
       <div className="flex flex-col gap-3.5 pt-3">
@@ -113,18 +130,17 @@ const DetailHistory = ({ ticket }) => {
           <div className="flex items-start">
             <div className="flex flex-1 flex-col items-start gap-0.5">
               <p className="text-gray-900 font-poppins w-41% text-sm font-bold leading-5 md:w-full">
-                <span className="text-gray-900">
-                  {/* {ticket.arrival_time} */}
-                  arival time
+                <span className="text-gray-900 ">
+                  {formatTime(booking.Flight.arrival_time)}
                 </span>
                 <br />
-                <span className="font-normal text-gray-900">
-                  {/* {new Date(ticket.arrival_date).toLocaleDateString()} */}{" "}
-                  arival date
+                <span className=" font-poppins text-sm font-medium text-gray-900">
+                  {formatDate(booking.Flight.arrival_date)}
                 </span>
               </p>
               <p className="text-gray-900 font-poppins text-sm font-medium">
-                {/* {ticket.arrival_location} */} arival location
+                {booking.Flight.arrival_airport} (
+                {booking.Flight.arrivingAirport.city})
               </p>
             </div>
             <div className="relative ml-[-24px] flex">
@@ -134,7 +150,7 @@ const DetailHistory = ({ ticket }) => {
             </div>
           </div>
         </div>
-        <hr className="border-t-2 border-gray-300 " />
+        <hr className="border-t-2 border-gray-300" />
       </div>
 
       <div className="flex flex-col gap-0.5 py-2">
@@ -151,18 +167,18 @@ const DetailHistory = ({ ticket }) => {
           </div>
           <div className="flex">
             <p className="text-gray-900 font-poppins text-sm font-normal">
-              {/* IDR {ticket.price_adult} */} segini
+              IDR 0
             </p>
           </div>
         </div>
         <div className="flex gap-2">
           <div className="flex flex-1">
             <p className="text-gray-900 font-poppins text-sm font-normal">
-              1 Childern
+              1 Children
             </p>
           </div>
           <p className="text-gray-900 font-poppins text-sm font-normal">
-            {/* IDR {ticket.price_childern} */} segini
+            IDR 0
           </p>
         </div>
         <div className="flex gap-2">
@@ -172,7 +188,7 @@ const DetailHistory = ({ ticket }) => {
             </p>
           </div>
           <p className="text-gray-900 font-poppins text-sm font-normal">
-            {/* IDR {ticket.price_baby} */} segini
+            IDR 0
           </p>
         </div>
         <div className="flex gap-2">
@@ -182,10 +198,10 @@ const DetailHistory = ({ ticket }) => {
             </p>
           </div>
           <p className="text-gray-900 font-poppins text-sm font-normal">
-            {/* IDR {ticket.tax} */}
+            IDR 0
           </p>
         </div>
-        <hr className="border-t-2 border-gray-300 " />
+        <hr className="border-t-2 border-gray-300" />
         <div className="flex items-center gap-2 border-t border-solid border-blue-gray-100 py-2.5">
           <div className="flex flex-1">
             <h6 className="text-gray-900 font-poppins text-base font-bold">
@@ -193,15 +209,13 @@ const DetailHistory = ({ ticket }) => {
             </h6>
           </div>
           <h6 className="text-[#7126B5] font-poppins text-lg font-bold text-deep_purple-500">
-            {/* IDR {ticket.total_price} */} IDR 150.000.000
+            IDR {formatRupiah(booking.total_price)}
           </h6>
         </div>
         <div>
-          {" "}
           <StatusButton
             status={
-              ticket.ticket_status.charAt(0).toUpperCase() +
-              ticket.ticket_status.slice(1)
+              booking.status.charAt(0).toUpperCase() + booking.status.slice(1)
             }
           />
         </div>

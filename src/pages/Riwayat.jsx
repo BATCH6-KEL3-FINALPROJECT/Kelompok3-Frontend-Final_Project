@@ -20,7 +20,7 @@ const Riwayat = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [dataRiwayat, setDataRiwayat] = useState([]);
   const [accountId, setAccountId] = useState("");
-  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [selectedBooking, setSelectedBooking] = useState(null);
   const navigate = useNavigate();
   const cookies = new Cookies();
 
@@ -53,17 +53,22 @@ const Riwayat = () => {
       if (token) {
         const decoded = jwtDecode(token);
         setAccountId(decoded.id);
-        const response = await sendData(`/api/v1/ticket`, "GET", null, token);
-        if (response) {
-          const filteredTickets = response.data.data.tickets.filter(
-            (ticket) => ticket.passenger_id === decoded.id
-          );
-          // setDataRiwayat(filteredTickets);
-          setDataRiwayat(response.data.data.tickets);
-          if (filteredTickets.length > 0) {
-            setSelectedTicket(filteredTickets[0]);
-          }
+        const response = await sendData(
+          `/api/v1/booking/history`,
+          "GET",
+          null,
+          token
+        );
+        // if (response) {
+        // const filteredBookings = response.data.data.bookings.filter(
+        //   (booking) => booking.passenger_id === decoded.id
+        // );
+        // setDataRiwayat(filteredBookings);
+        setDataRiwayat(response.data.data);
+        if (response.length > 0) {
+          setSelectedBooking(response[0]);
         }
+        // }
       }
     } catch (err) {
       console.error(err);
@@ -77,37 +82,37 @@ const Riwayat = () => {
   }, [accountId]);
 
   useEffect(() => {
-    if (dataRiwayat.length > 0 && !selectedTicket) {
-      setSelectedTicket(dataRiwayat[0]);
+    if (dataRiwayat.length > 0 && !selectedBooking) {
+      setSelectedBooking(dataRiwayat[0]);
     }
-  }, [dataRiwayat, selectedTicket]);
+  }, [dataRiwayat, selectedBooking]);
 
-  const groupByMonthYear = (tickets) => {
-    return tickets.reduce((acc, ticket) => {
-      const date = new Date(ticket.createdAt);
+  const groupByMonthYear = (bookings) => {
+    return bookings.reduce((acc, booking) => {
+      const date = new Date(booking.booking_date);
       const monthYear = `${date.getFullYear()}-${(date.getMonth() + 1)
         .toString()
         .padStart(2, "0")}`;
       if (!acc[monthYear]) {
         acc[monthYear] = [];
       }
-      acc[monthYear].push(ticket);
+      acc[monthYear].push(booking);
       return acc;
     }, {});
   };
-  const groupedTickets = groupByMonthYear(dataRiwayat);
+  const groupedBookings = groupByMonthYear(dataRiwayat);
 
-  const [selectedTicketMobile, setSelectedTicketMobile] = useState(null);
+  const [selectedBookingMobile, setSelectedBookingMobile] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleCardClick = (ticket) => {
-    setSelectedTicketMobile(ticket);
+  const handleCardClick = (booking) => {
+    setSelectedBookingMobile(booking);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setSelectedTicketMobile(null);
+    setSelectedBookingMobile(null);
   };
 
   return (
@@ -158,9 +163,9 @@ const Riwayat = () => {
             <div className="flex justify-center items-center w-full h-64">
               <Loading />
             </div>
-          ) : Object.keys(groupedTickets).length > 0 ? (
+          ) : Object.keys(groupedBookings).length > 0 ? (
             <div className="flex-grow md:mx-10">
-              {Object.entries(groupedTickets).map(([monthYear, tickets]) => (
+              {Object.entries(groupedBookings).map(([monthYear, bookings]) => (
                 <div key={monthYear}>
                   <h2 className="text-lg font-semibold mb-2">
                     {new Date(`${monthYear}-01`).toLocaleString("default", {
@@ -168,12 +173,14 @@ const Riwayat = () => {
                       month: "long",
                     })}
                   </h2>
-                  {tickets.map((ticket) => (
+                  {bookings.map((booking) => (
                     <RiwayatCard
-                      key={ticket.ticket_id}
-                      ticket={ticket}
-                      selected={selectedTicket?.ticket_id === ticket.ticket_id}
-                      onClick={() => setSelectedTicket(ticket)}
+                      key={booking.booking_id}
+                      booking={booking}
+                      selected={
+                        selectedBooking?.booking_id === booking.booking_id
+                      }
+                      onClick={() => setSelectedBooking(booking)}
                     />
                   ))}
                 </div>
@@ -184,9 +191,9 @@ const Riwayat = () => {
               <HistoryEmpty />
             </div>
           )}
-          {Object.keys(groupedTickets).length > 0 ? (
+          {Object.keys(groupedBookings).length > 0 ? (
             <div className="md:w-1/3">
-              <DetailHistory ticket={selectedTicket} />
+              <DetailHistory booking={selectedBooking} />
             </div>
           ) : (
             <div className="hidden"></div>
@@ -199,9 +206,9 @@ const Riwayat = () => {
             <div className="flex justify-center items-center w-full h-64">
               <Loading />
             </div>
-          ) : Object.keys(groupedTickets).length > 0 ? (
+          ) : Object.keys(groupedBookings).length > 0 ? (
             <div className="flex-grow md:mx-10">
-              {Object.entries(groupedTickets).map(([monthYear, tickets]) => (
+              {Object.entries(groupedBookings).map(([monthYear, bookings]) => (
                 <div key={monthYear}>
                   <h2 className="text-lg font-semibold mb-2">
                     {new Date(`${monthYear}-01`).toLocaleString("default", {
@@ -209,21 +216,21 @@ const Riwayat = () => {
                       month: "long",
                     })}
                   </h2>
-                  {tickets.map((ticket) => (
+                  {bookings.map((booking) => (
                     <RiwayatCard
-                      key={ticket.ticket_id}
-                      ticket={ticket}
+                      key={booking.booking_id}
+                      booking={booking}
                       selected={
-                        selectedTicketMobile?.ticket_id === ticket.ticket_id
+                        selectedBookingMobile?.booking_id === booking.booking_id
                       }
-                      onClick={() => handleCardClick(ticket)}
+                      onClick={() => handleCardClick(booking)}
                     />
                   ))}
                 </div>
               ))}
-              {isModalOpen && selectedTicketMobile && (
+              {isModalOpen && selectedBookingMobile && (
                 <ModalDetailHistory
-                  ticket={selectedTicketMobile}
+                  booking={selectedBookingMobile}
                   onClose={handleCloseModal}
                 />
               )}
