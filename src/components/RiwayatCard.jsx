@@ -1,61 +1,113 @@
 import React from "react";
 
-const RiwayatCard = ({ ticket }) => {
+const RiwayatCard = ({ booking, selected, onClick }) => {
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
-    return new Date(dateString).toLocaleDateString("en-US", options);
+    return new Date(dateString).toLocaleDateString("id-ID", options);
+  };
+
+  const formatRupiah = (number) => {
+    return new Intl.NumberFormat("id-ID").format(number);
+  };
+  const formatTime = (timeString) => {
+    const options = { hour: "2-digit", minute: "2-digit" };
+    return new Date(`1970-01-01T${timeString}Z`).toLocaleTimeString(
+      "id-ID",
+      options
+    );
+  };
+
+  const getStatusStyle = (status) => {
+    if (!status) return "bg-gray-200 text-gray-700";
+    switch (status.toLowerCase()) {
+      case "booked":
+        return "bg-[#73CA5C] text-white";
+      case "pending":
+        return "bg-[#FF0000] text-white";
+      case "cancelled":
+        return "bg-[#8A8A8A] text-white";
+      case "confirmed":
+        return "bg-[#7126B5] text-white";
+      default:
+        return "bg-gray-200 text-gray-700";
+    }
   };
 
   return (
-    <div className="border-2 p-4 border-[#7126B5BF] rounded-xl shadow-md mb-4">
-      <p className="bg-[#73CA5C] text-white px-3 p-1 rounded-full">
-        {ticket.ticket_status.charAt(0).toUpperCase() +
-          ticket.ticket_status.slice(1)}
-      </p>
-      <div className="mt-4">
-        <div className="mb-4">
-          <h3 className="text-lg font-bold text-gray-900">Booking Code:</h3>
-          <p className="text-gray-700">{ticket.booking_id}</p>
+    <div
+      className={`p-4 rounded-xl shadow-md mb-4 cursor-pointer ${
+        selected ? "border-2 border-[#7126B5BF]" : "border-2 border-gray-300"
+      }`}
+      onClick={onClick}
+    >
+      <div
+        className={`${getStatusStyle(
+          booking.status
+        )} px-3 py-1 rounded-full inline-block mb-1`}
+      >
+        {booking.status
+          ? booking.status.charAt(0).toUpperCase() + booking.status.slice(1)
+          : "Status Tidak Tersedia"}
+      </div>
+      <div className="flex justify-between items-center mb-1">
+        <div className="text-center">
+          <h3 className="text-md font-bold text-gray-900">
+            <span className="inline-block">
+              <img src="location.svg" alt="location" />
+            </span>{" "}
+            {booking.Flight.departingAirport.city}
+          </h3>
+          <p className="text-gray-700 text-sm">
+            {formatDate(booking.Flight.departure_date)}
+          </p>
+          <p className="text-gray-700 text-sm">
+            {formatTime(booking.Flight.departure_time)}
+          </p>
         </div>
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h3 className="text-lg font-bold text-gray-900">Ticket Code:</h3>
-            <p className="text-gray-700">{ticket.ticket_code}</p>
-          </div>
-          <div>
-            <h3 className="text-lg font-bold text-gray-900">Passenger:</h3>
-            <p className="text-gray-700">{ticket.passenger_name}</p>
-          </div>
+        <div className="text-center">
+          <p className="text-gray-700 text-sm">
+            {Math.floor(booking.Flight.flight_duration / 60)}h{" "}
+            {booking.Flight.flight_duration % 60}m
+          </p>
+          <p>
+            <img
+              src="arrow.svg"
+              className="w-[120px] md:w-[200px]"
+              alt="ARROW ICON"
+            />
+          </p>
         </div>
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h3 className="text-lg font-bold text-gray-900">Flight:</h3>
-            <p className="text-gray-700">{ticket.flight_id}</p>
-          </div>
-          <div>
-            <h3 className="text-lg font-bold text-gray-900">Seat Number:</h3>
-            <p className="text-gray-700">{ticket.seat_number}</p>
-          </div>
+        <div className="text-center">
+          <h3 className="text-md font-bold text-gray-900">
+            <span className="inline-block">
+              <img src="location.svg" alt="location" />
+            </span>{" "}
+            {booking.Flight.arrivingAirport.city}
+          </h3>
+          <p className="text-gray-700 text-sm">
+            {formatDate(booking.Flight.arrival_date)}
+          </p>
+          <p className="text-gray-700 text-sm">
+            {formatTime(booking.Flight.arrival_time)}
+          </p>
         </div>
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h3 className="text-lg font-bold text-gray-900">Terminal:</h3>
-            <p className="text-gray-700">{ticket.TERMINAL}</p>
-          </div>
-          <div>
-            <h3 className="text-lg font-bold text-gray-900">Status:</h3>
-            <p className="text-gray-700">{ticket.ticket_status}</p>
-          </div>
+      </div>
+      <hr className="border-t-2 border-gray-200 mb-1" />
+      <div className="flex justify-between items-center mb-1">
+        <div>
+          <h3 className="text-md font-bold text-gray-900">Kode Booking:</h3>
+          <p className="text-gray-700 text-sm">{booking.booking_code}</p>
         </div>
-        <div className="flex justify-between items-center">
-          <div>
-            <h3 className="text-lg font-bold text-gray-900">Created At:</h3>
-            <p className="text-gray-700">{formatDate(ticket.createdAt)}</p>
-          </div>
-          <div>
-            <h3 className="text-lg font-bold text-gray-900">Updated At:</h3>
-            <p className="text-gray-700">{formatDate(ticket.updatedAt)}</p>
-          </div>
+        <div>
+          <h3 className="text-md font-bold text-gray-900">Kelas:</h3>
+          <p className="text-gray-700 text-sm">
+            {booking.Tickets[0].Seat.seat_class}
+          </p>
+        </div>
+        <div className="text-right">
+          <h3 className="text-md font-bold text-[#A06ECE] ">
+            IDR {formatRupiah(booking.total_price)}
+          </h3>
         </div>
       </div>
     </div>
