@@ -3,6 +3,7 @@ import Seats from "../components/Seats";
 import CheckoutCards from "../components/CheckoutCards";
 import CheckoutForm from "../components/CheckoutForm";
 import CheckoutInput from "../components/CheckoutInput";
+import CheckoutDropdown from "../components/CheckoutDropdown";
 import { AnimatePresence, motion } from "framer-motion";
 import FlightDetails from "../components/FlightDetails";
 import CheckoutAlert from "../components/CheckoutAlert";
@@ -10,12 +11,7 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import CheckoutPricing from "../components/CheckoutPricing";
 import { FormProvider, useForm } from "react-hook-form";
 import Topnav from "../components/Topnav";
-import {
-  Link,
-  useNavigate,
-  useLocation,
-  useSearchParams,
-} from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import Cookies from "universal-cookie";
 
 const Checkout = () => {
@@ -26,6 +22,8 @@ const Checkout = () => {
   const [passengerInfo, setPassengerInfo] = useState([]);
   const [totalHargaBerangkat, setTotalHargaBerangkat] = useState(0);
   const [totalHargaPulang, setTotalHargaPulang] = useState(0);
+  const [customerData, setCustomerData] = useState([]);
+  const [passengerData, setPassengerData] = useState([]);
   const methods = useForm();
   const [countdown, setCountdown] = useState(900);
   const navigate = useNavigate();
@@ -73,23 +71,41 @@ const Checkout = () => {
     }
   }, [countdown]);
 
+  function determinePassengerType(index) {
+    if (index < passengerInfo.length) {
+      const passengerType = passengerInfo[index];
+      if (passengerType === "Dewasa") {
+        return "adult";
+      } else if (passengerType === "Anak-Anak") {
+        return "child";
+      } else if (passengerType === "Bayi") {
+        return "infant";
+      }
+    }
+  }
+
   const onSubmit = methods.handleSubmit((data) => {
     const passengersData = [];
     let customerData = {};
 
     for (const key in data) {
       if (key.startsWith("customer")) {
-        customerData[key] = data[key];
+        const newKey = key.replace("customer", "").toLowerCase();
+        customerData[newKey] = data[key];
         continue;
       }
-      const index = key.split("_")[1];
+      const index = key.split("-")[1];
 
       if (!passengersData[index]) {
         passengersData[index] = {};
       }
 
-      passengersData[index][key.split("_")[0]] = data[key];
+      passengersData[index][key.split("-")[0]] = data[key];
+      passengersData[index].passenger_type = determinePassengerType(index);
     }
+
+    setCustomerData(customerData);
+    setPassengerData(passengersData);
 
     const objectData = {
       customerData,
@@ -107,6 +123,21 @@ const Checkout = () => {
     setIsPassengerFamilyName((prev) =>
       prev.map((item, index) => (index === id ? !item : item))
     );
+  }
+
+  function handleBayar() {
+    const data = {
+      totalAmount: searchParams.get("return_id")
+        ? totalHargaBerangkat + totalHargaPulang
+        : totalHargaBerangkat,
+      departureFlightId: searchParams.get("departure_id"),
+      returnFlightId: searchParams.get("return_id")
+        ? searchParams.get("return_id")
+        : "",
+      buyerData: customerData,
+      passengersData: passengerData,
+    };
+    console.log(data);
   }
 
   const formatTime = (seconds) => {
@@ -153,7 +184,7 @@ const Checkout = () => {
                     <CheckoutInput
                       label="Nama Lengkap"
                       placeholder="Harry"
-                      name="customerFullName"
+                      name="customerfullName"
                       type="text"
                       validation={{
                         required: {
@@ -188,7 +219,7 @@ const Checkout = () => {
                           <CheckoutInput
                             label="Nama Keluarga"
                             placeholder="Potter"
-                            name="customerFamilyName"
+                            name="customerfamilyName"
                             type="text"
                             isSaved={isDataSaved}
                           />
@@ -202,7 +233,7 @@ const Checkout = () => {
                         <CheckoutInput
                           label="Nomor Telepon"
                           placeholder="08521111111"
-                          name="customerPhoneNumber"
+                          name="customerphone"
                           type="number"
                           validation={{
                             required: {
@@ -215,7 +246,7 @@ const Checkout = () => {
                         <CheckoutInput
                           label="Email"
                           placeholder="johnd@mail.com"
-                          name="customerEmail"
+                          name="customeremail"
                           type="email"
                           validation={{
                             required: {
@@ -238,14 +269,30 @@ const Checkout = () => {
                     <div className="flex flex-col gap-7">
                       {passengerInfo.map((item, index) => (
                         <CheckoutForm
-                          key={`checkoutForm_${index}`}
+                          key={`checkoutForm-${index}`}
                           title={`Data Diri Penumpang ${index + 1} - ${item}`}
                           isSaved={isDataSaved}
                         >
+                          <CheckoutDropdown
+                            label="Title"
+                            name={`title-${index}`}
+                            placeholder="Pilih Title"
+                            options={[
+                              { value: "Mr", label: "Mr" },
+                              { value: "Mrs", label: "Mrs" },
+                            ]}
+                            validation={{
+                              required: {
+                                value: true,
+                                message: "Harap pilih title!",
+                              },
+                            }}
+                            isSaved={isDataSaved}
+                          />
                           <CheckoutInput
                             label="Nama Lengkap"
                             placeholder="Harry"
-                            name={`fullname_${index}`}
+                            name={`fullname-${index}`}
                             type="text"
                             validation={{
                               required: {
@@ -270,7 +317,7 @@ const Checkout = () => {
                           <AnimatePresence>
                             {isPassengerFamilyName[index] && (
                               <motion.div
-                                key={`passengerFamilyInput_${index}`}
+                                key={`passengerFamilyInput-${index}`}
                                 initial={{ translateY: -10 }}
                                 animate={{ translateY: 0 }}
                                 transition={{
@@ -281,7 +328,7 @@ const Checkout = () => {
                                   label="Nama Keluarga"
                                   placeholder="Potter"
                                   type="text"
-                                  name={`familyName_${index}`}
+                                  name={`familyName-${index}`}
                                   isSaved={isDataSaved}
                                 />
                               </motion.div>
@@ -291,7 +338,7 @@ const Checkout = () => {
                                 label="Nomor Telepon"
                                 placeholder="08521111111"
                                 type="number"
-                                name={`phoneNumber_${index}`}
+                                name={`phone_number-${index}`}
                                 validation={{
                                   required: {
                                     value: true,
@@ -304,7 +351,7 @@ const Checkout = () => {
                                 label="Email"
                                 placeholder="johnd@mail.com"
                                 type="email"
-                                name={`email_${index}`}
+                                name={`email-${index}`}
                                 validation={{
                                   required: {
                                     value: true,
@@ -317,7 +364,7 @@ const Checkout = () => {
                                 label="Tanggal Lahir"
                                 placeholder="dd/mm/yy"
                                 type="date"
-                                name={`birthDate_${index}`}
+                                name={`date_of_birth-${index}`}
                                 validation={{
                                   required: {
                                     value: true,
@@ -330,7 +377,20 @@ const Checkout = () => {
                                 label="Kewarnegaraan"
                                 placeholder="Indonesia"
                                 type="text"
-                                name={`citizenship_${index}`}
+                                name={`nationality-${index}`}
+                                validation={{
+                                  required: {
+                                    value: true,
+                                    message: "Harap isi input ini!",
+                                  },
+                                }}
+                                isSaved={isDataSaved}
+                              />
+                              <CheckoutInput
+                                label="KTP/Paspor"
+                                placeholder="XXXXXXXXXXXXXXXX"
+                                type="text"
+                                name={`passport_no-${index}`}
                                 validation={{
                                   required: {
                                     value: true,
@@ -343,7 +403,20 @@ const Checkout = () => {
                                 label="Negara Penertbit"
                                 placeholder="Indonesia"
                                 type="text"
-                                name={`issuingCountry_${index}`}
+                                name={`issuing_country-${index}`}
+                                validation={{
+                                  required: {
+                                    value: true,
+                                    message: "Harap isi input ini!",
+                                  },
+                                }}
+                                isSaved={isDataSaved}
+                              />
+                              <CheckoutInput
+                                label="Berlaku Sampai"
+                                placeholder="dd/mm/yy"
+                                type="date"
+                                name={`valid_until-${index}`}
                                 validation={{
                                   required: {
                                     value: true,
@@ -422,11 +495,12 @@ const Checkout = () => {
           </div>
 
           {isDataSaved && (
-            <Link to="/payment">
-              <button className="bg-[#FF0000] font-medium py-4 w-full text-white rounded-xl mt-4">
-                Lanjut Bayar
-              </button>
-            </Link>
+            <button
+              className="bg-[#FF0000] font-medium py-4 w-full text-white rounded-xl mt-4"
+              onClick={handleBayar}
+            >
+              Lanjut Bayar
+            </button>
           )}
         </div>
       </div>

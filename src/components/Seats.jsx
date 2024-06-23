@@ -110,23 +110,23 @@ const Seats = ({ maxSeatsSelected, flightID, Text }) => {
   }, [collumn, fetchedSeat]);
 
   const handleSeatClick = useCallback(
-    (seatNumber) => {
+    (seat) => {
       setSelectedSeats((prevSelectedSeats) => {
         const existingSeatIndex = prevSelectedSeats.findIndex(
-          (seat) => seat.seatNumber === seatNumber
+          (selectedSeat) => selectedSeat.seat_id === seat.seat_id
         );
         if (existingSeatIndex !== -1) {
           const updatedSeats = prevSelectedSeats.filter(
-            (seat) => seat.seatNumber !== seatNumber
+            (selectedSeat) => selectedSeat.seat_id !== seat.seat_id
           );
-          return updatedSeats.map((seat, index) => ({
-            ...seat,
+          return updatedSeats.map((selectedSeat, index) => ({
+            ...selectedSeat,
             passengerNumber: `P${index + 1}`,
           }));
         } else if (prevSelectedSeats.length < maxSeatsSelected) {
           return [
             ...prevSelectedSeats,
-            { seatNumber, passengerNumber: `P${prevSelectedSeats.length + 1}` },
+            { ...seat, passengerNumber: `P${prevSelectedSeats.length + 1}` },
           ];
         }
 
@@ -144,14 +144,14 @@ const Seats = ({ maxSeatsSelected, flightID, Text }) => {
     }
   }, [selectedSeats]);
 
-  const getPassengerNumber = (seatNumber) => {
-    const seat = selectedSeats.find((seat) => seat.seatNumber === seatNumber);
+  const getPassengerNumber = (seatId) => {
+    const seat = selectedSeats.find((seat) => seat.seat_id === seatId);
     return seat ? seat.passengerNumber : null;
   };
 
   return (
     <div>
-      <h2 className="text-2xl font-bold"> Pilih Kursi ({Text})</h2>
+      <h2 className="text-2xl font-bold">Pilih Kursi ({Text})</h2>
       {isLoading && <LoadingSkeleton />}
       {isError && isError.message === "Network Error" && (
         <p className="text-center mt-1 font-semibold">
@@ -194,11 +194,9 @@ const Seats = ({ maxSeatsSelected, flightID, Text }) => {
                         if (item !== null) {
                           return (
                             <SeatItem
-                              key={`${item.seat_number}-${rowIndex}`}
-                              seatNumber={item.seat_number}
-                              passengerNumber={getPassengerNumber(
-                                item.seat_number
-                              )}
+                              key={`${item.seat_id}-${rowIndex}`}
+                              seat={item}
+                              passengerNumber={getPassengerNumber(item.seat_id)}
                               sendData={handleSeatClick}
                               isAvailable={item.is_available === "A"}
                               isMax={isMaxSeats}
@@ -230,9 +228,9 @@ const Seats = ({ maxSeatsSelected, flightID, Text }) => {
                     if (item !== null) {
                       return (
                         <SeatItem
-                          key={`${item.seat_number}-${rowIndex}`}
-                          seatNumber={item.seat_number}
-                          passengerNumber={getPassengerNumber(item.seat_number)}
+                          key={`${item.seat_id}-${rowIndex}`}
+                          seat={item}
+                          passengerNumber={getPassengerNumber(item.seat_id)}
                           sendData={handleSeatClick}
                           isAvailable={item.is_available === "A"}
                           isMax={isMaxSeats}
