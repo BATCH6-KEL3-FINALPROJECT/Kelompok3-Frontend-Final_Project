@@ -37,6 +37,10 @@ const ModalDetailHistory = ({ booking, onClose }) => {
     );
   };
 
+  const capitalizeFirst = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-2">
       <div className="bg-white rounded-lg shadow-lg p-4 max-w-lg w-full py-4">
@@ -117,7 +121,7 @@ const ModalDetailHistory = ({ booking, onClose }) => {
               <p className="text-gray-900 font-poppins w-93% text-xs font-medium leading-18px">
                 <span className="text-sm font-bold text-gray-900">
                   {booking.Flight.Airline.airline_name} -{" "}
-                  {booking.Tickets[0].Seat.seat_class}
+                  {capitalizeFirst(booking.Tickets[0].Seat.seat_class)}
                   <br />
                   {booking.Flight.flight_code}
                   <br />

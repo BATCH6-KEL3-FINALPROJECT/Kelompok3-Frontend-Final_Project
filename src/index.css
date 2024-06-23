@@ -46,3 +46,16 @@ html {
   background-color: #7126b580 !important;
   border-radius: 10px;
 }
+
+/* DatePickerCustom.css */
+.react-datepicker__day--selected,
+.react-datepicker__day--in-range,
+.react-datepicker__day--range-start {
+  background-color: #6b46c1; /* Purple color */
+  color: white;
+}
+
+.react-datepicker__day:hover {
+  background-color: #6b46c1; /* Purple color */
+  color: white;
+}

@@ -13,6 +13,7 @@ import HistoryEmpty from "../components/HistoryEmpty";
 import Loading from "../components/Loading";
 import DetailHistory from "../components/DetailHistory";
 import ModalDetailHistory from "../components/ModalDetailHistory";
+import DatePickerModal from "../components/DatepickerHistory";
 
 const Riwayat = () => {
   const { loading, sendData } = useSend();
@@ -23,6 +24,31 @@ const Riwayat = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const navigate = useNavigate();
   const cookies = new Cookies();
+
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      const token = cookies.get("token");
+      if (token) {
+        const decoded = jwtDecode(token);
+        setAccountId(decoded.id);
+        const response = await sendData(
+          `/api/v1/booking/history`,
+          "GET",
+          null,
+          token
+        );
+        setDataRiwayat(response.data.data);
+        if (response.data.data.length > 0) {
+          setSelectedBooking(response.data.data[0]);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     const token = cookies.get("token");
@@ -45,37 +71,6 @@ const Riwayat = () => {
 
     return () => clearTimeout(timer);
   }, [navigate, cookies]);
-
-  const fetchData = async () => {
-    try {
-      setIsLoading(true);
-      const token = cookies.get("token");
-      if (token) {
-        const decoded = jwtDecode(token);
-        setAccountId(decoded.id);
-        const response = await sendData(
-          `/api/v1/booking/history`,
-          "GET",
-          null,
-          token
-        );
-        // if (response) {
-        // const filteredBookings = response.data.data.bookings.filter(
-        //   (booking) => booking.passenger_id === decoded.id
-        // );
-        // setDataRiwayat(filteredBookings);
-        setDataRiwayat(response.data.data);
-        if (response.length > 0) {
-          setSelectedBooking(response[0]);
-        }
-        // }
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   useEffect(() => {
     fetchData();
@@ -100,7 +95,23 @@ const Riwayat = () => {
       return acc;
     }, {});
   };
-  const groupedBookings = groupByMonthYear(dataRiwayat);
+
+  const [filteredBookings, setFilteredBookings] = useState([]);
+
+  useEffect(() => {
+    setFilteredBookings(dataRiwayat);
+  }, [dataRiwayat]);
+
+  const applyDateFilter = () => {
+    const filtered = dataRiwayat.filter((booking) => {
+      const bookingDate = new Date(booking.booking_date);
+      return bookingDate >= startDate && bookingDate <= endDate;
+    });
+    setFilteredBookings(filtered);
+    toggleModal();
+  };
+
+  const groupedBookings = groupByMonthYear(filteredBookings);
 
   const [selectedBookingMobile, setSelectedBookingMobile] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -113,6 +124,20 @@ const Riwayat = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedBookingMobile(null);
+  };
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+
+  const toggleModal = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleDateChange = (dates) => {
+    const [start, end] = dates;
+    setStartDate(start);
+    setEndDate(end);
   };
 
   return (
@@ -148,9 +173,22 @@ const Riwayat = () => {
             viewport={{ once: true }}
             className="flex gap-2 items-center"
           >
-            <button className="flex items-center text-base gap-2 border border-[#7126B5] p-1 px-2 rounded-full">
-              <BiFilterAlt className="text-[#8A8A8A] text-xl" /> <p>Filter</p>
-            </button>
+            <div
+              className="flex items-center space-x-2 cursor-pointer"
+              onClick={toggleModal}
+            >
+              <BiFilterAlt className="text-[#8A8A8A] text-xl" />
+              <p>Filter</p>
+            </div>
+            <DatePickerModal
+              isOpen={isOpen}
+              toggleModal={toggleModal}
+              startDate={startDate}
+              endDate={endDate}
+              handleDateChange={handleDateChange}
+              applyDateFilter={applyDateFilter}
+            />
+
             <button>
               <IoMdSearch className="text-[#7126B5] text-4xl" />
             </button>
@@ -226,14 +264,14 @@ const Riwayat = () => {
                       onClick={() => handleCardClick(booking)}
                     />
                   ))}
+                  {isModalOpen && selectedBookingMobile && (
+                    <ModalDetailHistory
+                      booking={selectedBookingMobile}
+                      onClose={handleCloseModal}
+                    />
+                  )}
                 </div>
               ))}
-              {isModalOpen && selectedBookingMobile && (
-                <ModalDetailHistory
-                  booking={selectedBookingMobile}
-                  onClose={handleCloseModal}
-                />
-              )}
             </div>
           ) : (
             <div className="flex-grow">

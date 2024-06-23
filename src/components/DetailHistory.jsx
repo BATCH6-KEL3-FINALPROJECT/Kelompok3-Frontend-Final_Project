@@ -23,6 +23,10 @@ const DetailHistory = ({ booking }) => {
     );
   };
 
+  const capitalizeFirst = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   const getStatusStyle = (status) => {
     switch (status.toLowerCase()) {
       case "booked":
@@ -100,7 +104,7 @@ const DetailHistory = ({ booking }) => {
           <p className="text-gray-900 font-poppins w-93% text-xs font-medium leading-18px">
             <span className="text-sm font-bold text-gray-900">
               {booking.Flight.Airline.airline_name} -{" "}
-              {booking.Tickets[0].Seat.seat_class}
+              {capitalizeFirst(booking.Tickets[0].Seat.seat_class)}
               <br />
               {booking.Flight.flight_code}
               <br />
