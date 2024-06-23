@@ -9,6 +9,12 @@ import Topnav from "../components/Topnav";
 import useSend from "../hooks/useSend";
 import { jwtDecode } from "jwt-decode";
 import RiwayatCard from "../components/RiwayatCard";
+import HistoryEmpty from "../components/HistoryEmpty";
+import Loading from "../components/Loading";
+import DetailHistory from "../components/DetailHistory";
+import ModalDetailHistory from "../components/ModalDetailHistory";
+import DatePickerModal from "../components/DatepickerHistory";
+import BookingModal from "../components/ModalBookingCode";
 
 const Riwayat = () => {
   const { loading, sendData } = useSend();
@@ -16,13 +22,39 @@ const Riwayat = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [dataRiwayat, setDataRiwayat] = useState([]);
   const [accountId, setAccountId] = useState("");
+  const [selectedBooking, setSelectedBooking] = useState(null);
   const navigate = useNavigate();
   const cookies = new Cookies();
 
+  const fetchData = async () => {
+    try {
+      const token = cookies.get("token");
+      if (token) {
+        const decoded = jwtDecode(token);
+        setAccountId(decoded.id);
+        const response = await sendData(
+          `/api/v1/booking/history`,
+          "GET",
+          null,
+          token
+        );
+        setDataRiwayat(response.data.data);
+        if (response.data.data.length > 0) {
+          setSelectedBooking(response.data.data[0]);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const checkToken = cookies.get("token");
-    if (checkToken) {
-      if (checkToken === "undefined") {
+    const token = cookies.get("token");
+    if (token) {
+      const decoded = jwtDecode(token);
+      if (Date.now() >= decoded.exp * 1000) {
         setIsLogin(false);
         navigate("/");
       } else {
@@ -40,49 +72,90 @@ const Riwayat = () => {
     return () => clearTimeout(timer);
   }, [navigate, cookies]);
 
-  const fetchData = async () => {
-    try {
-      const token = cookies.get("token");
-      if (token) {
-        const decoded = jwtDecode(token);
-        setAccountId(decoded.id);
-        const response = await sendData(`/api/v1/ticket`, "GET", null, token);
-        if (response) {
-          const filteredTickets = response.data.data.tickets.filter(
-            (ticket) => ticket.passenger_id === decoded.id
-          );
-          // setDataRiwayat(filteredTickets);
-          setDataRiwayat(response.data.data.tickets);
-        }
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   useEffect(() => {
     fetchData();
   }, [accountId]);
 
   useEffect(() => {
-    console.log(dataRiwayat);
-  }, [dataRiwayat]);
+    if (dataRiwayat.length > 0 && !selectedBooking) {
+      setSelectedBooking(dataRiwayat[0]);
+    }
+  }, [dataRiwayat, selectedBooking]);
 
-  const groupByMonthYear = (tickets) => {
-    return tickets.reduce((acc, ticket) => {
-      const date = new Date(ticket.createdAt);
+  const groupByMonthYear = (bookings) => {
+    return bookings.reduce((acc, booking) => {
+      const date = new Date(booking.booking_date);
       const monthYear = `${date.getFullYear()}-${(date.getMonth() + 1)
         .toString()
         .padStart(2, "0")}`;
       if (!acc[monthYear]) {
         acc[monthYear] = [];
       }
-      acc[monthYear].push(ticket);
+      acc[monthYear].push(booking);
       return acc;
     }, {});
   };
 
-  const groupedTickets = groupByMonthYear(dataRiwayat);
+  const [filteredBookings, setFilteredBookings] = useState([]);
+
+  useEffect(() => {
+    setFilteredBookings(dataRiwayat);
+  }, [dataRiwayat]);
+
+  const applyDateFilter = () => {
+    const filtered = dataRiwayat.filter((booking) => {
+      const bookingDate = new Date(booking.booking_date);
+      return bookingDate >= startDate && bookingDate <= endDate;
+    });
+    setFilteredBookings(filtered);
+    toggleModal();
+  };
+
+  const groupedBookings = groupByMonthYear(filteredBookings);
+
+  const [selectedBookingMobile, setSelectedBookingMobile] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleCardClick = (booking) => {
+    setSelectedBookingMobile(booking);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedBookingMobile(null);
+  };
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+
+  const toggleModal = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleDateChange = (dates) => {
+    const [start, end] = dates;
+    setStartDate(start);
+    setEndDate(end);
+  };
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [searchHistory, setSearchHistory] = useState(["1234ABC", "7UY71912"]);
+
+  const bookingCodes = dataRiwayat.map((booking) => booking.booking_code);
+
+  const toggleModalFilter = () => {
+    setModalOpen(!modalOpen);
+  };
+
+  const handleSelectBookingCode = (code) => {
+    const filtered = dataRiwayat.filter(
+      (booking) => booking.booking_code === code
+    );
+    setFilteredBookings(filtered);
+    setModalOpen(false);
+  };
 
   return (
     <>
@@ -117,208 +190,120 @@ const Riwayat = () => {
             viewport={{ once: true }}
             className="flex gap-2 items-center"
           >
-            <button className="flex items-center text-base gap-2 border border-[#7126B5] p-1 px-2 rounded-full">
-              <BiFilterAlt className="text-[#8A8A8A] text-xl" /> <p>Filter</p>
-            </button>
-            <button>
+            <div
+              className="flex items-center space-x-2 cursor-pointer gap-2 border border-[#7126B5] p-1 px-2 rounded-full"
+              onClick={toggleModal}
+            >
+              <BiFilterAlt className="text-[#8A8A8A] text-xl" />
+              <p>Filter</p>
+            </div>
+            <DatePickerModal
+              isOpen={isOpen}
+              toggleModal={toggleModal}
+              startDate={startDate}
+              endDate={endDate}
+              handleDateChange={handleDateChange}
+              applyDateFilter={applyDateFilter}
+            />
+
+            <button onClick={toggleModalFilter}>
               <IoMdSearch className="text-[#7126B5] text-4xl" />
             </button>
+
+            <BookingModal
+              isOpen={modalOpen}
+              onClose={toggleModalFilter}
+              searchHistory={searchHistory}
+              setSearchHistory={setSearchHistory}
+              bookingCodes={bookingCodes}
+              onSelectBookingCode={handleSelectBookingCode}
+            />
           </motion.div>
         </div>
-        <div className="flex gap-16">
-          {Object.keys(groupedTickets).length > 0 ? (
-            Object.entries(groupedTickets).map(([monthYear, tickets]) => (
-              <div key={monthYear} className="flex-grow mx-10">
-                <h2 className="text-lg font-semibold mb-2">
-                  {new Date(`${monthYear}-01`).toLocaleString("default", {
-                    year: "numeric",
-                    month: "long",
-                  })}
-                </h2>
-                {tickets.map((ticket) => (
-                  <RiwayatCard key={ticket.ticket_id} ticket={ticket} />
-                ))}
-              </div>
-            ))
+
+        {/* DESKTOP VERSION */}
+        <div className="hidden md:flex gap-3 flex-col md:flex-row">
+          {isLoading ? (
+            <div className="flex justify-center items-center w-full h-64">
+              <Loading loading={loading} />
+            </div>
+          ) : Object.keys(groupedBookings).length > 0 ? (
+            <div className="flex-grow md:mx-10">
+              {Object.entries(groupedBookings).map(([monthYear, bookings]) => (
+                <div key={monthYear}>
+                  <h2 className="text-lg font-semibold mb-2">
+                    {new Date(`${monthYear}-01`).toLocaleString("default", {
+                      year: "numeric",
+                      month: "long",
+                    })}
+                  </h2>
+                  {bookings.map((booking) => (
+                    <RiwayatCard
+                      key={booking.booking_id}
+                      booking={booking}
+                      selected={
+                        selectedBooking?.booking_id === booking.booking_id
+                      }
+                      onClick={() => setSelectedBooking(booking)}
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
           ) : (
             <div className="flex-grow">
-              <p>No booking history found.</p>
+              <HistoryEmpty />
             </div>
           )}
-          <div>
-            <div className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between gap-5">
-                <h3 className="text-gray-900 font-poppins text-lg font-bold">
-                  Detail Pesanan
-                </h3>
-                <p className="flex items-center justify-center rounded-full p-1 bg-[#73CA5C] px-4 text-center text-sm text-white">
-                  Issued
-                </p>
-              </div>
-              <div className="flex">
-                <h4 className="text-gray-900 font-poppins text-lg font-bold">
-                  <span className="font-normal text-gray-900">
-                    Booking Code:
-                  </span>
-                  <span className="text-[#7126B5]">6723y2GHK</span>
-                </h4>
-              </div>
+          {Object.keys(groupedBookings).length > 0 ? (
+            <div className="md:w-1/3">
+              <DetailHistory booking={selectedBooking} />
             </div>
+          ) : (
+            <div className="hidden"></div>
+          )}
+        </div>
 
-            <div className="flex flex-col gap-15px">
-              <div className="flex items-start">
-                <div className="flex flex-1 flex-col items-start">
-                  <h5 className="text-gray-900 font-poppins w-33% text-sm font-bold leading-5 md:w-full">
-                    <span className="text-base text-gray-900">19:10</span>
-                    <br />
-                    <span className="font-normal text-gray-900">
-                      5 Maret 2023
-                    </span>
-                  </h5>
-                  <p className="text-gray-900 font-poppins text-sm font-medium">
-                    Soekarno Hatta - Terminal 1A Domestik
-                  </p>
-                </div>
-                <div className="relative ml-[-78px] flex">
-                  <h6 className="text-gray-900 font-poppins text-xs font-bold text-deep_purple-300">
-                    Keberangkatan
-                  </h6>
-                </div>
-              </div>
-              <img
-                className="h-px"
-                src="images/img_divider.svg"
-                alt="divider"
-                loading="lazy"
-              />
+        {/* MOBILE VERSION */}
+        <div className="flex gap-3 flex-col md:flex-row md:hidden">
+          {isLoading ? (
+            <div className="flex justify-center items-center w-full h-64">
+              <Loading loading={loading} />
             </div>
-
-            <div className="flex flex-col gap-2 pt-2">
-              <div className="flex">
-                <div className="flex flex-col justify-center py-16 md:py-5">
-                  <img
-                    className="h-24px object-cover"
-                    src="logoplane.svg"
-                    alt="Logo"
-                    loading="lazy"
-                  />
+          ) : Object.keys(groupedBookings).length > 0 ? (
+            <div className="flex-grow md:mx-10">
+              {Object.entries(groupedBookings).map(([monthYear, bookings]) => (
+                <div key={monthYear}>
+                  <h2 className="text-lg font-semibold mb-2">
+                    {new Date(`${monthYear}-01`).toLocaleString("default", {
+                      year: "numeric",
+                      month: "long",
+                    })}
+                  </h2>
+                  {bookings.map((booking) => (
+                    <RiwayatCard
+                      key={booking.booking_id}
+                      booking={booking}
+                      selected={
+                        selectedBookingMobile?.booking_id === booking.booking_id
+                      }
+                      onClick={() => handleCardClick(booking)}
+                    />
+                  ))}
+                  {isModalOpen && selectedBookingMobile && (
+                    <ModalDetailHistory
+                      booking={selectedBookingMobile}
+                      onClose={handleCloseModal}
+                    />
+                  )}
                 </div>
-                <p className="text-gray-900 font-poppins w-93% text-xs font-medium leading-18px">
-                  <span className="text-sm font-bold text-gray-900">
-                    Jet Air - Economy
-                    <br />
-                    JT - 203
-                    <br />
-                  </span>
-                  <span className="text-sm font-bold text-gray-900">
-                    Informasi:
-                  </span>
-                  <br />
-                  <span className="text-sm text-purple-900">
-                    Penumpang 1: Mr. Harry Potter
-                  </span>
-                  <br />
-                  <span className="text-sm font-normal text-gray-900">
-                    ID: 1234567
-                  </span>
-                  <br />
-                  <span className="text-sm text-purple-900">
-                    Penumpang 2: Miss Hermione
-                  </span>
-                  <br />
-                  <span className="text-sm font-normal text-gray-900">
-                    ID: 789658
-                  </span>
-                </p>
-              </div>
-              <img
-                className="h-px"
-                src="images/img_divider.svg"
-                alt="divider"
-                loading="lazy"
-              />
+              ))}
             </div>
-
-            <div className="flex flex-col gap-3.5 pt-3">
-              <div>
-                <div className="flex items-start">
-                  <div className="flex flex-1 flex-col items-start gap-0.5">
-                    <p className="text-gray-900 font-poppins w-41% text-sm font-bold leading-5 md:w-full">
-                      <span className="text-gray-900">21:10</span>
-                      <br />
-                      <span className="font-normal text-gray-900">
-                        5 Maret 2023
-                      </span>
-                    </p>
-                    <p className="text-gray-900 font-poppins text-sm font-medium">
-                      Melbourne International Airport
-                    </p>
-                  </div>
-                  <div className="relative ml-[-24px] flex">
-                    <p className="text-gray-900 font-poppins text-xs font-bold text-deep_purple-300">
-                      Kedatangan
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <img
-                className="h-px"
-                src="images/img_divider.svg"
-                alt="divider"
-                loading="lazy"
-              />
+          ) : (
+            <div className="flex-grow">
+              <HistoryEmpty />
             </div>
-
-            <div className="flex flex-col gap-0.5 py-2">
-              <div className="flex">
-                <p className="text-gray-900 font-poppins text-sm font-bold">
-                  Rincian Harga
-                </p>
-              </div>
-              <div className="flex justify-between gap-5">
-                <div className="flex flex-1">
-                  <p className="text-gray-900 font-poppins text-sm font-normal">
-                    2 Adults
-                  </p>
-                </div>
-                <div className="flex">
-                  <p className="text-gray-900 font-poppins text-sm font-normal">
-                    IDR 9.550.000
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <div className="flex flex-1">
-                  <p className="text-gray-900 font-poppins text-sm font-normal">
-                    1 Baby
-                  </p>
-                </div>
-                <p className="text-gray-900 font-poppins text-sm font-normal">
-                  IDR 0
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <div className="flex flex-1">
-                  <p className="text-gray-900 font-poppins text-sm font-normal">
-                    Tax
-                  </p>
-                </div>
-                <p className="text-gray-900 font-poppins text-sm font-normal">
-                  IDR 300.000
-                </p>
-              </div>
-              <div className="flex items-center gap-2 border-t border-solid border-blue-gray-100 py-2.5">
-                <div className="flex flex-1">
-                  <h6 className="text-gray-900 font-poppins text-base font-bold">
-                    Total
-                  </h6>
-                </div>
-                <h6 className="text-gray-900 font-poppins text-lg font-bold text-deep_purple-500">
-                  IDR 9.850.000
-                </h6>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </>
