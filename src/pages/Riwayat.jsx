@@ -14,6 +14,7 @@ import Loading from "../components/Loading";
 import DetailHistory from "../components/DetailHistory";
 import ModalDetailHistory from "../components/ModalDetailHistory";
 import DatePickerModal from "../components/DatepickerHistory";
+import BookingModal from "../components/ModalBookingCode";
 
 const Riwayat = () => {
   const { loading, sendData } = useSend();
@@ -27,7 +28,6 @@ const Riwayat = () => {
 
   const fetchData = async () => {
     try {
-      setIsLoading(true);
       const token = cookies.get("token");
       if (token) {
         const decoded = jwtDecode(token);
@@ -140,6 +140,23 @@ const Riwayat = () => {
     setEndDate(end);
   };
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [searchHistory, setSearchHistory] = useState(["1234ABC", "7UY71912"]);
+
+  const bookingCodes = dataRiwayat.map((booking) => booking.booking_code);
+
+  const toggleModalFilter = () => {
+    setModalOpen(!modalOpen);
+  };
+
+  const handleSelectBookingCode = (code) => {
+    const filtered = dataRiwayat.filter(
+      (booking) => booking.booking_code === code
+    );
+    setFilteredBookings(filtered);
+    setModalOpen(false);
+  };
+
   return (
     <>
       <Topnav isLogin={isLogin} isSearch={false} />
@@ -174,7 +191,7 @@ const Riwayat = () => {
             className="flex gap-2 items-center"
           >
             <div
-              className="flex items-center space-x-2 cursor-pointer"
+              className="flex items-center space-x-2 cursor-pointer gap-2 border border-[#7126B5] p-1 px-2 rounded-full"
               onClick={toggleModal}
             >
               <BiFilterAlt className="text-[#8A8A8A] text-xl" />
@@ -189,9 +206,18 @@ const Riwayat = () => {
               applyDateFilter={applyDateFilter}
             />
 
-            <button>
+            <button onClick={toggleModalFilter}>
               <IoMdSearch className="text-[#7126B5] text-4xl" />
             </button>
+
+            <BookingModal
+              isOpen={modalOpen}
+              onClose={toggleModalFilter}
+              searchHistory={searchHistory}
+              setSearchHistory={setSearchHistory}
+              bookingCodes={bookingCodes}
+              onSelectBookingCode={handleSelectBookingCode}
+            />
           </motion.div>
         </div>
 
@@ -199,7 +225,7 @@ const Riwayat = () => {
         <div className="hidden md:flex gap-3 flex-col md:flex-row">
           {isLoading ? (
             <div className="flex justify-center items-center w-full h-64">
-              <Loading />
+              <Loading loading={loading} />
             </div>
           ) : Object.keys(groupedBookings).length > 0 ? (
             <div className="flex-grow md:mx-10">
@@ -242,7 +268,7 @@ const Riwayat = () => {
         <div className="flex gap-3 flex-col md:flex-row md:hidden">
           {isLoading ? (
             <div className="flex justify-center items-center w-full h-64">
-              <Loading />
+              <Loading loading={loading} />
             </div>
           ) : Object.keys(groupedBookings).length > 0 ? (
             <div className="flex-grow md:mx-10">
