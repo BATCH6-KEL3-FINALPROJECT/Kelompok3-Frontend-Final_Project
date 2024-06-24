@@ -20,6 +20,7 @@ const ModalDetailHistory = ({ booking, onClose }) => {
         return "bg-gray-200 text-gray-700";
     }
   };
+
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString("id-ID", options);
@@ -136,11 +137,6 @@ const ModalDetailHistory = ({ booking, onClose }) => {
                       Penumpang {index + 1}: {ticket.Passenger.first_name}{" "}
                       {ticket.Passenger.last_name}
                     </span>
-                    {/* <br />
-                    <span className="text-sm font-normal text-gray-900">
-                      ID: {ticket.Passenger.passenger_id}
-                    </span>
-                    <br /> */}
                   </div>
                 ))}
               </p>
@@ -187,33 +183,33 @@ const ModalDetailHistory = ({ booking, onClose }) => {
             <div className="flex justify-between gap-5">
               <div className="flex flex-1">
                 <p className="text-gray-900 font-poppins text-sm font-normal">
-                  2 Adults
+                  {booking.totalAdult} Adults
                 </p>
               </div>
               <div className="flex">
                 <p className="text-gray-900 font-poppins text-sm font-normal">
-                  IDR 0
+                  IDR {formatRupiah(booking.totalAdult * booking.adultPrice)}
                 </p>
               </div>
             </div>
             <div className="flex gap-2">
               <div className="flex flex-1">
                 <p className="text-gray-900 font-poppins text-sm font-normal">
-                  1 Children
+                  {booking.totalChild} Children
                 </p>
               </div>
               <p className="text-gray-900 font-poppins text-sm font-normal">
-                IDR 0
+                IDR {formatRupiah(booking.totalChild * booking.childPrice || 0)}
               </p>
             </div>
             <div className="flex gap-2">
               <div className="flex flex-1">
                 <p className="text-gray-900 font-poppins text-sm font-normal">
-                  1 Baby
+                  {booking.totalBaby} Baby
                 </p>
               </div>
               <p className="text-gray-900 font-poppins text-sm font-normal">
-                IDR 0
+                IDR {formatRupiah(booking.totalBaby * booking.babyPrice || 0)}
               </p>
             </div>
             <div className="flex gap-2">
@@ -223,7 +219,7 @@ const ModalDetailHistory = ({ booking, onClose }) => {
                 </p>
               </div>
               <p className="text-gray-900 font-poppins text-sm font-normal">
-                IDR 0
+                IDR {formatRupiah(booking.tax || 0)}
               </p>
             </div>
             <hr className="border-t-2 border-gray-300 " />
