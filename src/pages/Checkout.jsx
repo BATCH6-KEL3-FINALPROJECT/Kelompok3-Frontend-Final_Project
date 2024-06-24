@@ -13,8 +13,10 @@ import { FormProvider, useForm } from "react-hook-form";
 import Topnav from "../components/Topnav";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import Cookies from "universal-cookie";
+import useSend from "../hooks/useSend";
 
 const Checkout = () => {
+  const { loading, sendData } = useSend();
   const [isCustomerFamilyName, setIsCustomerFamilyName] = useState(false);
   const [isPassengerFamilyName, setIsPassengerFamilyName] = useState([]);
   const [isDataSaved, setIsDataSaved] = useState(false);
@@ -24,6 +26,8 @@ const Checkout = () => {
   const [totalHargaPulang, setTotalHargaPulang] = useState(0);
   const [customerData, setCustomerData] = useState([]);
   const [passengerData, setPassengerData] = useState([]);
+  const [goSelectedSeats, setGoSelectedSeats] = useState([]);
+  const [returnSelectedSeats, setReturnSelectedSeats] = useState([]);
   const methods = useForm();
   const [countdown, setCountdown] = useState(900);
   const navigate = useNavigate();
@@ -85,34 +89,45 @@ const Checkout = () => {
   }
 
   const onSubmit = methods.handleSubmit((data) => {
-    const passengersData = [];
-    let customerData = {};
+    const passengersData = passengerInfo.map((item, index) => {
+      const passengerType = determinePassengerType(index);
+      const passengerData = {
+        title: data[`title-${index}`],
+        first_name: data[`first_name-${index}`],
+        last_name: data[`last_name-${index}`] || "",
+        date_of_birth: data[`date_of_birth-${index}`],
+        email: data[`email-${index}`],
+        phone_number: data[`phone_number-${index}`],
+        nationality: data[`nationality-${index}`],
+        passport_no: data[`passport_no-${index}`],
+        passenger_type: passengerType,
+        issuing_country: data[`issuing_country-${index}`],
+        valid_until: data[`valid_until-${index}`],
+      };
 
-    for (const key in data) {
-      if (key.startsWith("customer")) {
-        const newKey = key.replace("customer", "").toLowerCase();
-        customerData[newKey] = data[key];
-        continue;
+      if (goSelectedSeats.length > 0) {
+        passengerData.departureSeats = goSelectedSeats[index].seat_id;
+      } else {
+        passengerData.departureSeats = "";
       }
-      const index = key.split("-")[1];
 
-      if (!passengersData[index]) {
-        passengersData[index] = {};
+      if (returnSelectedSeats.length > 0) {
+        passengerData.returnSeats = returnSelectedSeats[index].seat_id;
+      } else {
+        passengerData.returnSeats = "";
       }
 
-      passengersData[index][key.split("-")[0]] = data[key];
-      passengersData[index].passenger_type = determinePassengerType(index);
-    }
+      return passengerData;
+    });
 
-    setCustomerData(customerData);
     setPassengerData(passengersData);
-
-    const objectData = {
-      customerData,
-      passengersData: passengersData,
-    };
+    setCustomerData({
+      fullName: data.customerfullName,
+      familyName: data.customerfamilyName || "",
+      email: data.customeremail,
+      phone: data.customerphone,
+    });
     setIsDataSaved(true);
-    console.log(objectData);
   });
 
   function handleCustomerBtn() {
@@ -125,7 +140,7 @@ const Checkout = () => {
     );
   }
 
-  function handleBayar() {
+  const handleBayar = async () => {
     const data = {
       totalAmount: searchParams.get("return_id")
         ? totalHargaBerangkat + totalHargaPulang
@@ -136,9 +151,19 @@ const Checkout = () => {
         : "",
       buyerData: customerData,
       passengersData: passengerData,
+      noOfPassenger: passengerData.length,
     };
     console.log(data);
-  }
+    // try {
+    //   const response = await sendData(
+    //     `/api/v1/transaction/booking`,
+    //     "POST",
+    //     data
+    //   );
+    // } catch (err) {
+    //   console.log(err);
+    // }
+  };
 
   const formatTime = (seconds) => {
     const min = Math.floor(seconds / 60);
@@ -292,7 +317,7 @@ const Checkout = () => {
                           <CheckoutInput
                             label="Nama Lengkap"
                             placeholder="Harry"
-                            name={`fullname-${index}`}
+                            name={`first_name-${index}`}
                             type="text"
                             validation={{
                               required: {
@@ -328,7 +353,7 @@ const Checkout = () => {
                                   label="Nama Keluarga"
                                   placeholder="Potter"
                                   type="text"
-                                  name={`familyName-${index}`}
+                                  name={`last_name-${index}`}
                                   isSaved={isDataSaved}
                                 />
                               </motion.div>
@@ -439,12 +464,16 @@ const Checkout = () => {
                     flightID={searchParams.get("departure_id")}
                     maxSeatsSelected={passengerInfo.length}
                     Text={"Berangkat"}
+                    selectedSeats={goSelectedSeats}
+                    setSelectedSeats={setGoSelectedSeats}
                   />
                   {searchParams.get("return_id") && (
                     <Seats
                       flightID={searchParams.get("return_id")}
                       maxSeatsSelected={passengerInfo.length}
                       Text={"Pulang"}
+                      selectedSeats={returnSelectedSeats}
+                      setSelectedSeats={setReturnSelectedSeats}
                     />
                   )}
                 </CheckoutCards>

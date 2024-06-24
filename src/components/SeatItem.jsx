@@ -18,11 +18,11 @@ const SeatItem = ({ seat, sendData, isAvailable, isMax, passengerNumber }) => {
       {isAvailable ? (
         <button
           type="button"
-          className={`w-9 h-9 rounded-md p-1 transition-all duration-200 ease-in-out ${
+          className={`w-9 h-9 rounded-md p-1 transition-all text-white duration-200 ease-in-out ${
             isSelected
               ? "bg-[#7126B5] text-white"
               : "bg-[#73CA5C] text-[#73CA5C]"
-          }`}
+          }}`}
           onClick={() => handleClick(seat)}
         >
           {isSelected ? `${passengerNumber}` : ""}

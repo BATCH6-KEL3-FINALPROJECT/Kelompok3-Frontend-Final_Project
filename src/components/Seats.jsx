@@ -3,10 +3,15 @@ import { useSearchParams } from "react-router-dom";
 import SeatItem from "./SeatItem";
 import useSend from "../hooks/useSend";
 
-const Seats = ({ maxSeatsSelected, flightID, Text }) => {
+const Seats = ({
+  maxSeatsSelected,
+  flightID,
+  Text,
+  selectedSeats,
+  setSelectedSeats,
+}) => {
   const { loading, sendData } = useSend();
   const [collumn, setCollumn] = useState([]);
-  const [selectedSeats, setSelectedSeats] = useState([]);
   const [rowItems, setRowItems] = useState([]);
   const [seatRows, setSeatRows] = useState([]);
   const [isMaxSeats, setIsMaxSeats] = useState(false);
@@ -133,7 +138,7 @@ const Seats = ({ maxSeatsSelected, flightID, Text }) => {
         return prevSelectedSeats;
       });
     },
-    [maxSeatsSelected]
+    [maxSeatsSelected, setSelectedSeats]
   );
 
   useEffect(() => {
@@ -142,7 +147,7 @@ const Seats = ({ maxSeatsSelected, flightID, Text }) => {
     } else {
       setIsMaxSeats(false);
     }
-  }, [selectedSeats]);
+  }, [selectedSeats, maxSeatsSelected]);
 
   const getPassengerNumber = (seatId) => {
     const seat = selectedSeats.find((seat) => seat.seat_id === seatId);
