@@ -19,7 +19,7 @@ import BookingModal from "../components/ModalBookingCode";
 const Riwayat = () => {
   const { loading, sendData } = useSend();
   const [isLogin, setIsLogin] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
   const [dataRiwayat, setDataRiwayat] = useState([]);
   const [accountId, setAccountId] = useState("");
   const [selectedBooking, setSelectedBooking] = useState(null);
@@ -45,8 +45,6 @@ const Riwayat = () => {
       }
     } catch (err) {
       console.error(err);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -64,12 +62,6 @@ const Riwayat = () => {
       setIsLogin(false);
       navigate("/");
     }
-
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-
-    return () => clearTimeout(timer);
   }, [navigate, cookies]);
 
   useEffect(() => {
@@ -223,7 +215,7 @@ const Riwayat = () => {
 
         {/* DESKTOP VERSION */}
         <div className="hidden md:flex gap-3 flex-col md:flex-row">
-          {isLoading ? (
+          {loading ? (
             <div className="flex justify-center items-center w-full h-64">
               <Loading loading={loading} />
             </div>
@@ -266,7 +258,7 @@ const Riwayat = () => {
 
         {/* MOBILE VERSION */}
         <div className="flex gap-3 flex-col md:flex-row md:hidden">
-          {isLoading ? (
+          {loading ? (
             <div className="flex justify-center items-center w-full h-64">
               <Loading loading={loading} />
             </div>

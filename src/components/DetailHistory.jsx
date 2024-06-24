@@ -166,33 +166,33 @@ const DetailHistory = ({ booking }) => {
         <div className="flex justify-between gap-5">
           <div className="flex flex-1">
             <p className="text-gray-900 font-poppins text-sm font-normal">
-              2 Adults
+              {booking.totalAdult} Adults
             </p>
           </div>
           <div className="flex">
             <p className="text-gray-900 font-poppins text-sm font-normal">
-              IDR 0
+              IDR {formatRupiah(booking.adultPrice)}
             </p>
           </div>
         </div>
         <div className="flex gap-2">
           <div className="flex flex-1">
             <p className="text-gray-900 font-poppins text-sm font-normal">
-              1 Children
+              {booking.totalChild} Children
             </p>
           </div>
           <p className="text-gray-900 font-poppins text-sm font-normal">
-            IDR 0
+            IDR {formatRupiah(booking.childPrice || 0)}
           </p>
         </div>
         <div className="flex gap-2">
           <div className="flex flex-1">
             <p className="text-gray-900 font-poppins text-sm font-normal">
-              1 Baby
+              {booking.totalBaby} Baby
             </p>
           </div>
           <p className="text-gray-900 font-poppins text-sm font-normal">
-            IDR 0
+            IDR {formatRupiah(booking.babyPrice || 0)}
           </p>
         </div>
         <div className="flex gap-2">
@@ -202,7 +202,7 @@ const DetailHistory = ({ booking }) => {
             </p>
           </div>
           <p className="text-gray-900 font-poppins text-sm font-normal">
-            IDR 0
+            IDR {formatRupiah(booking.tax || 0)}
           </p>
         </div>
         <hr className="border-t-2 border-gray-300" />
@@ -212,18 +212,16 @@ const DetailHistory = ({ booking }) => {
               Total
             </h6>
           </div>
-          <h6 className="text-[#7126B5] font-poppins text-lg font-bold text-deep_purple-500">
+          <h6 className="text-[#7126B5] font-poppins text-lg font-bold">
             IDR {formatRupiah(booking.total_price)}
           </h6>
         </div>
-        <div>
-          <StatusButton
-            status={
-              booking.status.charAt(0).toUpperCase() + booking.status.slice(1)
-            }
-          />
-        </div>
       </div>
+      <StatusButton
+        status={
+          booking.status.charAt(0).toUpperCase() + booking.status.slice(1)
+        }
+      />
     </div>
   );
 };
