@@ -171,7 +171,7 @@ const DetailHistory = ({ booking }) => {
           </div>
           <div className="flex">
             <p className="text-gray-900 font-poppins text-sm font-normal">
-              IDR {formatRupiah(booking.adultPrice)}
+              IDR {formatRupiah(booking.totalAdult * booking.adultPrice)}
             </p>
           </div>
         </div>
@@ -182,7 +182,7 @@ const DetailHistory = ({ booking }) => {
             </p>
           </div>
           <p className="text-gray-900 font-poppins text-sm font-normal">
-            IDR {formatRupiah(booking.childPrice || 0)}
+            IDR {formatRupiah(booking.totalChild * booking.childPrice || 0)}
           </p>
         </div>
         <div className="flex gap-2">
@@ -192,7 +192,7 @@ const DetailHistory = ({ booking }) => {
             </p>
           </div>
           <p className="text-gray-900 font-poppins text-sm font-normal">
-            IDR {formatRupiah(booking.babyPrice || 0)}
+            IDR {formatRupiah(booking.totalBaby * booking.babyPrice || 0)}
           </p>
         </div>
         <div className="flex gap-2">
