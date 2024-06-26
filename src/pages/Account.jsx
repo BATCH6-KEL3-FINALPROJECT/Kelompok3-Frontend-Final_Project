@@ -83,7 +83,7 @@ const Account = () => {
       });
       setIsVerify(response.data.data.user.is_verified);
     } catch (e) {
-      console.log(e);
+      navigate("/error");
     }
   };
 

@@ -80,7 +80,7 @@ const Otp = () => {
         setMessage(`${response.message}`);
       }
     } catch (err) {
-      console.log(err);
+      navigate("/error")
     }
   };
 
@@ -91,7 +91,7 @@ const Otp = () => {
       });
       setCountdown(60);
     } catch (err) {
-      console.log(err);
+      navigate("/error")
     }
   };
 

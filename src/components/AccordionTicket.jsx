@@ -31,7 +31,7 @@ const AccordionTicket = ({
         }
       }
     } catch (err) {
-      console.log(err);
+      navigate("/error");
     }
   };
 

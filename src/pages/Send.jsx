@@ -88,7 +88,6 @@ const Send = () => {
           }
         }
       } catch (err) {
-        console.log(err);
         setIsSuccess(false);
         setMessage("Something went wrong. Please try again.");
       }

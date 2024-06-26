@@ -6,7 +6,7 @@ import PaymentSucces from "../components/PaymentSucces";
 import Breadcrumbs from "../components/Breadcrumbs";
 import CheckoutAlert from "../components/CheckoutAlert";
 
-const Success = () => {
+const Psuccess = () => {
   const [isLogin, setIsLogin] = useState(true);
   const navigate = useNavigate();
   const cookies = new Cookies();
@@ -39,4 +39,4 @@ const Success = () => {
   );
 };
 
-export default Success;
+export default Psuccess;

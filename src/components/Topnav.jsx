@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoMdSearch, IoMdPerson, IoIosList } from "react-icons/io";
 import { FiBell } from "react-icons/fi";
 import NavbarItems from "./NavbarItems";
@@ -16,6 +16,7 @@ const Topnav = ({ isLogin = false, isSearch, isOTP = false }) => {
   const [notifications, setNotifications] = useState([]);
   const dialogRef = useRef();
   const searchRef = useRef();
+  const navigate = useNavigate();
   const cookies = new Cookies();
 
   const handleResize = () => {
@@ -53,7 +54,7 @@ const Topnav = ({ isLogin = false, isSearch, isOTP = false }) => {
         );
         setNotifications(notifications.length);
       } catch (err) {
-        console.log(err);
+        navigate("/error");
       }
     };
     if (isLogin) {
