@@ -1,13 +1,54 @@
 import React, { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import useSend from "../hooks/useSend";
+import Cookies from "universal-cookie";
 
 const PaymentMethod = () => {
+  const { loading, sendData } = useSend();
   const [selected, setSelected] = useState(null);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const cookies = new Cookies();
 
   const toggle = (i) => {
     if (selected === i) {
       return setSelected(null);
     }
     setSelected(i);
+  };
+
+  const handlePay = async () => {
+    try {
+      const response = await sendData(
+        `https://airline.azkazk11.my.id/api/v1/transaction/payment/${searchParams.get(
+          "payment_id"
+        )}`,
+        "POST",
+        cookies.get("token")
+      );
+      console.log(response);
+    } catch (err) {
+      navigate("/error");
+    }
+
+    // const transactionToken = "TRANSACTION_TOKEN_HERE";
+    // window.snap.pay(transactionToken, {
+    //   onSuccess: function (result) {
+    //     console.log(result);
+    //     alert("Payment successful!");
+    //   },
+    //   onPending: function (result) {
+    //     console.log(result);
+    //     alert("Waiting for your payment!");
+    //   },
+    //   onError: function (result) {
+    //     console.log(result);
+    //     alert("Payment failed!");
+    //   },
+    //   onClose: function () {
+    //     alert("You closed the popup without finishing the payment");
+    //   },
+    // });
   };
 
   return (
@@ -51,7 +92,11 @@ const PaymentMethod = () => {
             </div>
           </div>
         ))}
-        <button className="w-full h-[42px] bg-[#7126B5] hover:bg-[#7126B580] text-white py-2 rounded-md mt-4">
+        <button
+          id="pay-button"
+          className="w-full h-[42px] bg-[#7126B5] hover:bg-[#7126B580] text-white py-2 rounded-md mt-4"
+          onClick={handlePay}
+        >
           Bayar
         </button>
       </div>

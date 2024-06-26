@@ -185,7 +185,11 @@ const Checkout = () => {
       );
       const paymentId = response.data.data.bookingResult.payment_id;
       if (!loading && response.statusCode === 201) {
-        navigate(`/payment?payment_id=${paymentId}`);
+        navigate(
+          `/payment?payment_id=${paymentId}&seat_class=${searchParams.get(
+            "seat_class"
+          )}`
+        );
       }
     } catch (err) {
       navigate("/error");
@@ -510,10 +514,10 @@ const Checkout = () => {
                   className={`py-4 text-center w-full ${
                     isDataSaved ? "bg-[#D0D0D0]" : "bg-[#7126B5]"
                   }  rounded-xl text-white shadow-xl text-xl font-semibold transition-all`}
-                  disabled={isDataSaved}
+                  disabled={isDataSaved || loading}
                   onClick={onSubmit}
                 >
-                  Simpan
+                  {!loading ? "Simpan" : "Loading..."}
                 </button>
               </div>
             </div>
