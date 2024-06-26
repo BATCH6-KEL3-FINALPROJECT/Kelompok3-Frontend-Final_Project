@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Search from "./pages/Search";
 import Checkout from "./pages/Checkout";
@@ -11,9 +11,9 @@ import Reset from "./pages/Reset";
 import Riwayat from "./pages/Riwayat";
 import Notification from "./pages/Notification";
 import Account from "./pages/Account";
-import Test from "./pages/Test";
-import Success from "./pages/Success";
 import Payment from "./pages/Payment";
+import Psuccess from "./pages/Psuccess";
+import Perror from "./pages/Perror";
 
 function App() {
   return (
@@ -31,12 +31,24 @@ function App() {
         <Route path="/notification" element={<Notification />}></Route>
         <Route path="/account" element={<Account />}></Route>
         <Route path="/payment" element={<Payment />}></Route>
-        <Route path="/payment-success" element={<Success />}></Route>
-        <Route path="/test" element={<Test />}></Route>
+        <Route path="/payment-success" element={<Psuccess />}></Route>
+        <Route path="/payment-error" element={<Perror />}></Route>
         <Route
           path="*"
           element={
-            <div className="grid place-items-center">For 404 Not Found</div>
+            <div className="h-screen flex flex-col justify-center items-center">
+              <img
+                src="/404_page.jpg"
+                alt="404 Not Found"
+                className="w-4/5 md:w-3/5 h-auto"
+              />
+              <Link
+                to="/"
+                className="px-16 md:px-40 py-1 md:py-2 font-bold bg-violet-400 border-4 text-white rounded-xl shadow-md hover:bg-violet-600"
+              >
+                Go to Home
+              </Link>
+            </div>
           }
         />
       </Routes>
