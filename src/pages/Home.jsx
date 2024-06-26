@@ -41,7 +41,7 @@ const Home = () => {
       } = await sendData(`/api/v1/airport/?limit=${totalData}`, "GET");
       setAirport(airport);
     } catch (err) {
-      console.error(err);
+      navigate("/error");
     }
   };
 

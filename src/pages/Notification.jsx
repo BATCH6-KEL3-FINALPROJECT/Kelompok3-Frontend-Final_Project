@@ -61,7 +61,7 @@ const Notification = () => {
       console.log(notifications);
       setNotifications(notifications);
     } catch (err) {
-      console.log(err);
+      navigate("/error")
     }
   };
 

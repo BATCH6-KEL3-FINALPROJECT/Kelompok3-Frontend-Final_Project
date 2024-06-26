@@ -142,7 +142,7 @@ const Search = () => {
       setSelectedFilter("Others");
       setIsFilteredFlights(true);
     } else {
-      console.error(response.message);
+      navigate("/error");
     }
   };
 

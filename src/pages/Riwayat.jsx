@@ -44,7 +44,7 @@ const Riwayat = () => {
         }
       }
     } catch (err) {
-      console.error(err);
+      navigate("/error")
     }
   };
 

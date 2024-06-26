@@ -90,6 +90,27 @@ const Checkout = () => {
   }
 
   const onSubmit = methods.handleSubmit((data) => {
+    const isPassengerDataValid = passengerInfo.every((item, index) => {
+      const passengerType = determinePassengerType(index);
+      return (
+        data[`title-${index}`] &&
+        data[`first_name-${index}`] &&
+        data[`date_of_birth-${index}`] &&
+        data[`email-${index}`] &&
+        data[`phone_number-${index}`] &&
+        data[`nationality-${index}`] &&
+        data[`passport_no-${index}`] &&
+        data[`issuing_country-${index}`] &&
+        data[`valid_until-${index}`] &&
+        (goSelectedSeats.length > 0 || returnSelectedSeats.length > 0)
+      );
+    });
+
+    if (!isPassengerDataValid) {
+      alert("Mohon lengkapi data semua penumpang sebelum menyimpan!");
+      return;
+    }
+
     const passengersData = passengerInfo.map((item, index) => {
       const passengerType = determinePassengerType(index);
       const passengerData = {
@@ -162,13 +183,12 @@ const Checkout = () => {
         data,
         cookies.get("token")
       );
-      console.log(response);
-      console.log(response.data.data);
+      const paymentId = response.data.data.bookingResult.payment_id;
       if (!loading && response.statusCode === 201) {
-        console.log("Success");
+        navigate(`/payment?payment_id=${paymentId}`);
       }
     } catch (err) {
-      console.log(err);
+      navigate("/error");
     }
   };
 
@@ -534,10 +554,13 @@ const Checkout = () => {
 
           {isDataSaved && (
             <button
-              className="bg-[#FF0000] font-medium py-4 w-full text-white rounded-xl mt-4"
+              className={`bg-[#FF0000] font-medium py-4 w-full text-white rounded-xl mt-4 ${
+                !loading ? "cursor-pointer" : "cursor-not-allowed"
+              }`}
               onClick={handleBayar}
+              disabled={loading}
             >
-              Lanjut Bayar
+              {!loading ? "Lanjut Bayar" : "Loading..."}
             </button>
           )}
         </div>

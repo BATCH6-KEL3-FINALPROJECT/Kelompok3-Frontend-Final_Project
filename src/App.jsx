@@ -14,6 +14,7 @@ import Account from "./pages/Account";
 import Payment from "./pages/Payment";
 import Psuccess from "./pages/Psuccess";
 import Perror from "./pages/Perror";
+import Error from "./pages/Error";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         <Route path="/payment" element={<Payment />}></Route>
         <Route path="/payment-success" element={<Psuccess />}></Route>
         <Route path="/payment-error" element={<Perror />}></Route>
+        <Route path="/error" element={<Error />}></Route>
         <Route
           path="*"
           element={
