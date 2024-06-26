@@ -23,7 +23,7 @@ const BookingModal = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-      <div className="bg-white p-6 rounded shadow-lg w-[300px] md:w-[400px] max-h-[300px] overflow-hidden">
+      <div className="bg-white p-6 rounded shadow-lg w-[300px] md:w-[400px] ">
         <div className="flex items-center mb-4">
           <IoMdSearch className="text-gray-400 text-2xl mr-2" />
           <input
@@ -38,13 +38,13 @@ const BookingModal = ({
           </button>
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4 max-h-[200px] overflow-y-auto">
           {filteredBookingCodes.length > 0 ? (
             <ul>
               {filteredBookingCodes.map((code) => (
                 <li
                   key={code}
-                  className="my-2 cursor-pointer hover:bg-[#4B1979] hover:text-white"
+                  className="my-2 cursor-pointer hover:bg-[#4B1979] hover:text-white "
                   onClick={() => onSelectBookingCode(code)}
                 >
                   {code}
