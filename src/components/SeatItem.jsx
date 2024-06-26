@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 
-const SeatItem = ({ seat, sendData, isAvailable, isMax, passengerNumber }) => {
+const SeatItem = ({
+  seat,
+  sendData,
+  isAvailable,
+  isMax,
+  passengerNumber,
+  isSaved,
+}) => {
   const [isSelected, setIsSelected] = useState(false);
 
   function handleClick(seat) {
@@ -23,6 +30,7 @@ const SeatItem = ({ seat, sendData, isAvailable, isMax, passengerNumber }) => {
               ? "bg-[#7126B5] text-white"
               : "bg-[#73CA5C] text-[#73CA5C]"
           }}`}
+          disabled={isSaved}
           onClick={() => handleClick(seat)}
         >
           {isSelected ? `${passengerNumber}` : ""}

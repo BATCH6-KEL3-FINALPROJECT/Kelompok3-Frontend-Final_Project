@@ -14,7 +14,7 @@ const CheckoutDropdown = ({
     fieldState: { invalid, error },
   } = useController({
     name,
-    ...validation,
+    rules: { ...validation, required: true }, // Tambahkan required di sini untuk validasi
   });
 
   const formatOptionLabel = (label) => {
@@ -33,9 +33,7 @@ const CheckoutDropdown = ({
         name={name}
         defaultValue=""
         disabled={isSaved}
-        className={`py-2 px-3 border rounded-md ${
-          invalid ? "border-red-500" : "border-gray-300"
-        } focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all`}
+        className={`py-2 px-3 border rounded-md border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all`}
       >
         <option value="" disabled>
           {placeholder}
@@ -46,7 +44,11 @@ const CheckoutDropdown = ({
           </option>
         ))}
       </select>
-      {invalid && <p className="text-sm text-red-500 mt-1">{error?.message}</p>}
+      {invalid && (
+        <p className="px-2 font-semibold text-red-500 text-xs">
+          * Harap isi input ini!
+        </p>
+      )}
     </div>
   );
 };

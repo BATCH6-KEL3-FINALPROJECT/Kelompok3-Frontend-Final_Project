@@ -9,6 +9,7 @@ const Seats = ({
   Text,
   selectedSeats,
   setSelectedSeats,
+  isSaved,
 }) => {
   const { loading, sendData } = useSend();
   const [collumn, setCollumn] = useState([]);
@@ -161,7 +162,7 @@ const Seats = ({
       {isError && isError.message === "Network Error" && (
         <p className="text-center mt-1 font-semibold">
           Terjadi kesalahan ketika memuat data. Periksa jaringan anda terlebih
-          dahulu
+          dahulu dengan Refresh
         </p>
       )}
       {!isLoading && fetchedSeat.length > 0 && (
@@ -205,6 +206,7 @@ const Seats = ({
                               sendData={handleSeatClick}
                               isAvailable={item.is_available === "A"}
                               isMax={isMaxSeats}
+                              isSaved={isSaved}
                             />
                           );
                         } else {
@@ -213,6 +215,7 @@ const Seats = ({
                               key={`nullSeat-${rowIndex}`}
                               isAvailable={false}
                               isMax={isMaxSeats}
+                              isSaved={isSaved}
                             />
                           );
                         }
@@ -239,6 +242,7 @@ const Seats = ({
                           sendData={handleSeatClick}
                           isAvailable={item.is_available === "A"}
                           isMax={isMaxSeats}
+                          isSaved={isSaved}
                         />
                       );
                     } else {
@@ -247,6 +251,7 @@ const Seats = ({
                           key={`nullSeat-${rowIndex}`}
                           isAvailable={false}
                           isMax={isMaxSeats}
+                          isSaved={isSaved}
                         />
                       );
                     }

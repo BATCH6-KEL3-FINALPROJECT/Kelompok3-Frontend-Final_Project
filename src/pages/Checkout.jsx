@@ -20,6 +20,7 @@ const Checkout = () => {
   const [isCustomerFamilyName, setIsCustomerFamilyName] = useState(false);
   const [isPassengerFamilyName, setIsPassengerFamilyName] = useState([]);
   const [isDataSaved, setIsDataSaved] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [passengerInfo, setPassengerInfo] = useState([]);
   const [totalHargaBerangkat, setTotalHargaBerangkat] = useState(0);
@@ -128,6 +129,7 @@ const Checkout = () => {
       phone: data.customerphone,
     });
     setIsDataSaved(true);
+    setIsFinished(true);
   });
 
   function handleCustomerBtn() {
@@ -153,16 +155,21 @@ const Checkout = () => {
       passengersData: passengerData,
       noOfPassenger: passengerData.length,
     };
-    console.log(data);
-    // try {
-    //   const response = await sendData(
-    //     `/api/v1/transaction/booking`,
-    //     "POST",
-    //     data
-    //   );
-    // } catch (err) {
-    //   console.log(err);
-    // }
+    try {
+      const response = await sendData(
+        `/api/v1/transaction/booking`,
+        "POST",
+        data,
+        cookies.get("token")
+      );
+      console.log(response);
+      console.log(response.data.data);
+      if (!loading && response.statusCode === 201) {
+        console.log("Success");
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const formatTime = (seconds) => {
@@ -309,7 +316,7 @@ const Checkout = () => {
                             validation={{
                               required: {
                                 value: true,
-                                message: "Harap pilih title!",
+                                message: "Harap pilih title!!",
                               },
                             }}
                             isSaved={isDataSaved}
@@ -466,6 +473,7 @@ const Checkout = () => {
                     Text={"Berangkat"}
                     selectedSeats={goSelectedSeats}
                     setSelectedSeats={setGoSelectedSeats}
+                    isSaved={isFinished}
                   />
                   {searchParams.get("return_id") && (
                     <Seats
@@ -474,6 +482,7 @@ const Checkout = () => {
                       Text={"Pulang"}
                       selectedSeats={returnSelectedSeats}
                       setSelectedSeats={setReturnSelectedSeats}
+                      isSaved={isFinished}
                     />
                   )}
                 </CheckoutCards>
