@@ -9,7 +9,7 @@ import Passenger from "./Passenger";
 import SeatClass from "./SeatClass";
 import Destinasi from "./Destinasi";
 
-function Beranda({ airport }) {
+function Beranda({ airport, favorite }) {
   const [fromCity, setFromCity] = useState("");
   const [toCity, setToCity] = useState("");
   const [activeInput, setActiveInput] = useState(null);
@@ -324,7 +324,7 @@ function Beranda({ airport }) {
         </div>
         <div className="mt-4">
           {" "}
-          <Destinasi />
+          <Destinasi favorite={favorite} />
         </div>
       </div>
       <ToastContainer />
