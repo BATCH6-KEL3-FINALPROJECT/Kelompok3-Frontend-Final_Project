@@ -10,7 +10,7 @@ const CheckoutPricing = ({ passengerInfo, flightID, onTotalPriceChange }) => {
   const [searchParams] = useSearchParams();
 
   const URL = "https://airline.azkazk11.my.id/api/v1";
-  const TAX_AMOUNT = 300000;
+  const TAX_AMOUNT = 0;
 
   const calculateTotalPrice = () => {
     let totalPrice = 0;
