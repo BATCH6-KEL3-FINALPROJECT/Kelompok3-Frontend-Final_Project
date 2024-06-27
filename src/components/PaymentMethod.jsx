@@ -43,6 +43,7 @@ const PaymentMethod = () => {
           onSuccess: function (result) {
             console.log(result);
             alert("Payment successful!");
+            navigate("/payment-success");
           },
           onPending: function (result) {
             console.log(result);
@@ -51,6 +52,7 @@ const PaymentMethod = () => {
           onError: function (result) {
             console.log(result);
             alert("Payment failed!");
+            navigate("/payment-error");
           },
           onClose: function () {
             alert("You closed the popup without finishing the payment");
