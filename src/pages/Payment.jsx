@@ -12,9 +12,11 @@ import useSend from "../hooks/useSend";
 const Payment = () => {
   const { loading, sendData } = useSend();
   const [isLogin, setIsLogin] = useState(true);
+  const [isBayar, setIsBayar] = useState(false);
   const [flightData, setFlightData] = useState([]);
   const [totalHargaBerangkat, setTotalHargaBerangkat] = useState(0);
   const [totalHargaPulang, setTotalHargaPulang] = useState(0);
+  const [date, setDate] = useState("");
   const navigate = useNavigate();
   const cookies = new Cookies();
   const [searchParams] = useSearchParams();
@@ -82,14 +84,18 @@ const Payment = () => {
       <Topnav isLogin={isLogin} isSearch={true}></Topnav>
       <div className="shadow-md py-4 mt-24 w-11/12 mx-auto md:w-full">
         <Breadcrumbs isPayment={true} isSuccess={false} />
-        <CheckoutAlert
-          type="Danger"
-          message="Selesaikan Pembayaran sampai [10 Maret 2023 12:00]"
-        />
+        {isBayar ? (
+          <CheckoutAlert
+            type="Danger"
+            message={`Selesaikan Pembayaran sampai [${date}]`}
+          />
+        ) : (
+          <CheckoutAlert message="Pembayaran Ticket Skypass" />
+        )}
       </div>
       <div className="my-5 flex flex-col lg:flex-row md:justify-center md:items-center lg:items-start lg:justify-center gap-10 w-11/12 mx-auto md:w-full">
         <div className="flex flex-col gap-10">
-          <PaymentMethod />
+          <PaymentMethod setIsBayar={setIsBayar} setDate={setDate} />
         </div>
         <div className="px-5 lg:px-0">
           {flightData.goFlightPassengers !== "undefined" &&

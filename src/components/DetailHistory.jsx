@@ -6,7 +6,7 @@ const DetailHistory = ({ booking }) => {
     return <div>Detail Pesanan: Kosong</div>;
   }
 
-  // console.log(booking);
+  console.log(booking.Tickets[0].Seat.seat_class);
 
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
@@ -223,6 +223,9 @@ const DetailHistory = ({ booking }) => {
         status={
           booking.status.charAt(0).toUpperCase() + booking.status.slice(1)
         }
+        bookingId={booking.booking_id}
+        paymentId={booking.payment_id}
+        seatClass={booking.Tickets[0].Seat.seat_class}
       />
     </div>
   );

@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import useSend from "../hooks/useSend";
 import Cookies from "universal-cookie";
 
-const PaymentMethod = () => {
+const PaymentMethod = ({ setIsBayar, setDate }) => {
   const { loading, sendData } = useSend();
   const [selected, setSelected] = useState(null);
   const navigate = useNavigate();
@@ -37,7 +37,20 @@ const PaymentMethod = () => {
         "POST",
         cookies.get("token")
       );
+      console.log(response);
       if (response.statusCode === 200) {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const formattedDate = `${tomorrow.getDate()} ${tomorrow.toLocaleString(
+          "en-us",
+          { month: "long" }
+        )} ${tomorrow.getFullYear()} 12:00`;
+
+        setDate(formattedDate);
+        setIsBayar(true);
+
         const transactionToken = response.data.data.token;
         window.snap.pay(transactionToken, {
           onSuccess: function (result) {
@@ -60,7 +73,7 @@ const PaymentMethod = () => {
         });
       }
     } catch (err) {
-      navigate("/error");
+      // navigate("/error");
     }
   };
 
