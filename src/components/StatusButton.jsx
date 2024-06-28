@@ -47,7 +47,7 @@ const StatusButton = ({ status, bookingId, paymentId, seatClass }) => {
       setIsLoading(true);
       try {
         const response = await sendData(
-          `api/v1/ticket/generate/${bookingId}`,
+          `/api/v1/ticket/generate/${bookingId}`,
           "POST",
           null,
           cookies.get("token")

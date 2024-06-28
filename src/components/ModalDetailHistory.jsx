@@ -239,6 +239,9 @@ const ModalDetailHistory = ({ booking, onClose }) => {
                   booking.status.charAt(0).toUpperCase() +
                   booking.status.slice(1)
                 }
+                bookingId={booking.booking_id}
+                paymentId={booking.payment_id}
+                seatClass={booking.Tickets[0].Seat.seat_class}
               />
             </div>
           </div>

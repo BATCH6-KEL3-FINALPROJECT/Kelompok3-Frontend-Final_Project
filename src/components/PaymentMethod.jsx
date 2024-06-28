@@ -37,7 +37,6 @@ const PaymentMethod = ({ setIsBayar, setDate }) => {
         "POST",
         cookies.get("token")
       );
-      console.log(response);
       if (response.statusCode === 200) {
         const today = new Date();
         const tomorrow = new Date(today);

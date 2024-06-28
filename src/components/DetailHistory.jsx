@@ -6,8 +6,6 @@ const DetailHistory = ({ booking }) => {
     return <div>Detail Pesanan: Kosong</div>;
   }
 
-  console.log(booking.Tickets[0].Seat.seat_class);
-
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString("id-ID", options);
