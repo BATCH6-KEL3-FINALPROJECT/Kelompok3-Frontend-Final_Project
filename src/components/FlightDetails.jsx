@@ -22,7 +22,12 @@ const FlightDetails = ({ flightID, typeTicket }) => {
         const res = await axios.get(`${URL}/flight/${flightID}`);
         setFlightData(res.data.data.flight);
       } catch (error) {
-        setIsError(error);
+        if (error.statusCode === 500) {
+          navigate("/error");
+        } else {
+          setIsError(error);
+          console.log(error);
+        }
       } finally {
         setIsLoading(false);
       }

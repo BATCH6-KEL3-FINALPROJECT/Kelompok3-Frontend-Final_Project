@@ -202,6 +202,20 @@ const Search = () => {
     }
   };
 
+  const handleLanjutkan = () => {
+    if (selectedDeparture && selectedReturn) {
+      navigate(
+        `/checkout?departure_id=${
+          selectedDeparture.flight_id
+        }&penumpang=${searchParams.get(
+          "penumpang"
+        )}&seat_class=${searchParams.get("seat_class")}&return_id=${
+          selectedReturn.flight_id
+        }`
+      );
+    }
+  };
+
   const handleRemoveSelection = (type) => {
     if (type === "departure") {
       setSelectedDeparture(null);
@@ -360,79 +374,159 @@ const Search = () => {
             transition={{ duration: 0.75, delay: 0.75 }}
             className="flex justify-between md:justify-end items-center gap-2"
           >
-            <div className="flex">
-              {selectedDeparture && (
-                <div className="border rounded-md p-4">
-                  <h2 className="text-lg font-bold mb-2">Berangkat</h2>
-                  <p>
-                    {selectedDeparture.airline_name} -{" "}
-                    {selectedDeparture.seat_class}
-                  </p>
-                  <p>{selectedDeparture.departure_date}</p>
-                  <p>
-                    Route: {selectedDeparture.departure_city} -{" "}
-                    {selectedDeparture.arrival_city}
-                  </p>
-                  <div>
-                    <strong className="text-black">
-                      {selectedDeparture.departure_time.slice(0, -3)}
-                    </strong>
-                  </div>
-                  <div className="text-sm text-center">
-                    {calculateDuration(
-                      selectedReturn.departure_time,
-                      selectedReturn.arrival_time
-                    )}
-                  </div>
-                  <div>
-                    <strong className="text-black">
-                      {selectedDeparture.arrival_time.slice(0, -3)}
-                    </strong>
-                  </div>
-                  <button
-                    onClick={() => handleRemoveSelection("departure")}
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg mt-4"
+            <div
+              className={`${
+                selectedDeparture || selectedReturn
+                  ? "flex flex-col border-[#7126B5] border-2 rounded-lg mx-4"
+                  : ""
+              }`}
+            >
+              <div
+                className={`${
+                  selectedDeparture || selectedReturn
+                    ? "flex flex-grow md:gap-10"
+                    : ""
+                }`}
+              >
+                {selectedDeparture && (
+                  <div
+                    className={`border rounded-md p-2 pr-10 ${
+                      selectedDeparture && selectedReturn ? "flex-1" : ""
+                    } relative`}
                   >
-                    Hapus
-                  </button>
-                </div>
-              )}
-              {selectedReturn && (
-                <div className="border rounded-md p-4">
-                  <h2 className="text-lg font-bold mb-2">
-                    Detail Tiket Pulang
-                  </h2>
-                  <p>Airlines: {selectedReturn.airline_name}</p>
-                  <p>Seat Class: {selectedReturn.seat_class}</p>
-                  <p>Departure Date: {selectedReturn.departure_date}</p>
-                  <p>
-                    Route: {selectedReturn.departure_city} -{" "}
-                    {selectedReturn.arrival_city}
-                  </p>
-                  <div>
-                    <strong className="text-black">
-                      {selectedReturn.departure_time.slice(0, -3)}
-                    </strong>
+                    <h2 className="text-base font-bold mb-1">Berangkat</h2>
+                    <p className="text-sm font-semibold">
+                      {selectedDeparture.departure_city} -{"> "}
+                      {selectedDeparture.arrival_city}
+                    </p>
+                    <p className="text-sm font-semibold">
+                      {selectedDeparture.airline_name} (
+                      {selectedDeparture.seat_class})
+                    </p>
+                    <p className="text-sm font-semibold">
+                      {selectedDeparture.departure_date}
+                    </p>
+                    <div
+                      className="grid grid-cols-3"
+                      style={{
+                        gridTemplateColumns: "1fr 5fr 2fr",
+                        gridTemplateRows: "repeat(3, auto)",
+                        alignItems: "center",
+                      }}
+                    >
+                      <div className="text-sm font-bold">
+                        {selectedDeparture.departure_time.slice(0, -3)}
+                      </div>
+                      <div className="text-sm text-center text-gray-500 font-medium">
+                        {calculateDuration(
+                          selectedDeparture.departure_time,
+                          selectedDeparture.arrival_time
+                        )}
+                      </div>
+                      <div className="text-sm font-bold">
+                        {selectedDeparture.arrival_time.slice(0, -3)}
+                      </div>
+                      <div></div>
+                      <div className="text-center">
+                        <img src="arrow.svg" alt="arrowicon" />
+                      </div>
+                      <div></div>
+                      <div className="text-black font-semibold">
+                        {selectedDeparture.departure_iata_code}
+                      </div>
+                      <div className="text-sm text-center text-gray-500 font-medium">
+                        Direct
+                      </div>
+                      <div className="text-black font-semibold">
+                        {selectedDeparture.arrival_iata_code}
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => handleRemoveSelection("departure")}
+                      className="bg-red-500 text-white w-8 h-8 rounded-full absolute top-0 right-0 flex items-center justify-center"
+                    >
+                      X
+                    </button>
                   </div>
-                  <div className="text-sm text-center">
-                    {calculateDuration(
-                      selectedReturn.departure_time,
-                      selectedReturn.arrival_time
-                    )}
-                  </div>
-                  <div>
-                    <strong className="text-black">
-                      {selectedReturn.arrival_time.slice(0, -3)}
-                    </strong>
-                  </div>
-                  <button
-                    onClick={() => handleRemoveSelection("return")}
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg mt-4"
+                )}
+                {selectedReturn && (
+                  <div
+                    className={`border rounded-md p-2 pr-10 ${
+                      selectedDeparture && selectedReturn ? "flex-1" : ""
+                    } relative`}
                   >
-                    Hapus
+                    <h2 className="text-base font-bold mb-1">Pulang</h2>
+                    <p className="text-sm font-semibold">
+                      {selectedReturn.departure_city} -{"> "}
+                      {selectedReturn.arrival_city}
+                    </p>
+                    <p className="text-sm font-semibold">
+                      {selectedReturn.airline_name} ({selectedReturn.seat_class}
+                      )
+                    </p>
+                    <p className="text-sm font-semibold">
+                      {selectedReturn.departure_date}
+                    </p>
+                    <div
+                      className="grid grid-cols-3"
+                      style={{
+                        gridTemplateColumns: "1fr 5fr 2fr",
+                        gridTemplateRows: "repeat(3, auto)",
+                        alignItems: "center",
+                      }}
+                    >
+                      <div className="text-sm font-bold">
+                        {selectedReturn.departure_time.slice(0, -3)}
+                      </div>
+                      <div className="text-sm text-center text-gray-500 font-medium">
+                        {calculateDuration(
+                          selectedReturn.departure_time,
+                          selectedReturn.arrival_time
+                        )}
+                      </div>
+                      <div className="text-sm font-bold">
+                        {selectedReturn.arrival_time.slice(0, -3)}
+                      </div>
+                      <div></div>
+                      <div className="text-center">
+                        <img src="arrow.svg" alt="arrowicon" />
+                      </div>
+                      <div></div>
+                      <div className="text-black font-semibold">
+                        {selectedReturn.departure_iata_code}
+                      </div>
+                      <div className="text-sm text-center text-gray-500 font-medium">
+                        Direct
+                      </div>
+                      <div className="text-black font-semibold">
+                        {selectedReturn.arrival_iata_code}
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => handleRemoveSelection("return")}
+                      className="bg-red-500 text-white w-8 h-8 rounded-full absolute top-0 right-0 flex items-center justify-center"
+                    >
+                      X
+                    </button>
+                  </div>
+                )}
+              </div>
+              {selectedDeparture ||
+                (selectedReturn && (
+                  <button
+                    className={`${
+                      selectedDeparture && selectedReturn
+                        ? "bg-[#7126B5] cursor-pointer"
+                        : "bg-gray-500 cursor-not-allowed"
+                    } text-white p-1`}
+                    onClick={handleLanjutkan}
+                    disabled={!selectedDeparture && !selectedReturn}
+                  >
+                    Lanjutkan
                   </button>
-                </div>
-              )}
+                ))}
             </div>
             <button
               className="flex justify-center items-center gap-2 px-3 py-1 border border-[#A06ECE] text-[#7126B5] rounded-full mx-4"

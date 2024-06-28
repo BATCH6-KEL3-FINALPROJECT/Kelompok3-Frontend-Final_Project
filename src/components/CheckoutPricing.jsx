@@ -45,7 +45,12 @@ const CheckoutPricing = ({ passengerInfo, flightID, onTotalPriceChange }) => {
         const res = await axios.get(`${URL}/flight/${flightID}`);
         setPriceData(res.data.data.flight.Prices);
       } catch (error) {
-        setIsError(true);
+        if (error.statusCode === 500) {
+          navigate("/error");
+        } else {
+          console.log(error);
+          setIsError(true);
+        }
       } finally {
         setIsLoading(false);
       }

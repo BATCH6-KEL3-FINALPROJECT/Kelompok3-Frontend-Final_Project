@@ -73,7 +73,11 @@ const PaymentMethod = ({ setIsBayar, setDate }) => {
         });
       }
     } catch (err) {
-      // navigate("/error");
+      if (err.statusCode === 500) {
+        navigate("/error");
+      } else {
+        console.log(err);
+      }
     }
   };
 

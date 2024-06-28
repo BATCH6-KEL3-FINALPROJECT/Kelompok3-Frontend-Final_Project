@@ -56,7 +56,8 @@ const Otp = () => {
   useEffect(() => {
     if (isSuccess) {
       const timer = setTimeout(() => {
-        navigate(`/account`);
+        cookies.remove("token");
+        navigate(`/login`);
       }, 3000);
       return () => clearTimeout(timer);
     }
@@ -80,7 +81,11 @@ const Otp = () => {
         setMessage(`${response.message}`);
       }
     } catch (err) {
-      navigate("/error")
+      if (err.statusCode === 500) {
+        navigate("/error");
+      } else {
+        console.error(err);
+      }
     }
   };
 
@@ -91,7 +96,11 @@ const Otp = () => {
       });
       setCountdown(60);
     } catch (err) {
-      navigate("/error")
+      if (err.statusCode === 500) {
+        navigate("/error");
+      } else {
+        console.error(err);
+      }
     }
   };
 

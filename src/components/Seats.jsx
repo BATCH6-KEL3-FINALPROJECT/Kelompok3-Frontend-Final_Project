@@ -49,7 +49,12 @@ const Seats = ({
         );
         setFetchedSeat(seats);
       } catch (error) {
-        setIsError(error);
+        if (error.statusCode === 500) {
+          navigate("/error");
+        } else {
+          setIsError(error);
+          console.log(error);
+        }
       } finally {
         setIsLoading(false);
       }

@@ -46,7 +46,11 @@ const Home = () => {
       setAirport(airport);
       setFavorite(favorite);
     } catch (err) {
-      navigate("/error");
+      if (err.statusCode === 500) {
+        navigate("/error");
+      } else {
+        console.error(err);
+      }
     }
   };
 

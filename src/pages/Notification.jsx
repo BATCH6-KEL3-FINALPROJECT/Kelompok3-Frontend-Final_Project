@@ -60,7 +60,11 @@ const Notification = () => {
       );
       setNotifications(notifications);
     } catch (err) {
-      navigate("/error");
+      if (err.statusCode === 500) {
+        navigate("/error");
+      } else {
+        console.error(err);
+      }
     }
   };
 
@@ -112,7 +116,11 @@ const Notification = () => {
       );
       setNotifications(updatedNotifications);
     } catch (err) {
-      navigate("/error");
+      if (err.statusCode === 500) {
+        navigate("/error");
+      } else {
+        console.error(err);
+      }
     }
   };
 

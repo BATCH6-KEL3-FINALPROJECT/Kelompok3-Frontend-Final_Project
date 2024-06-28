@@ -88,8 +88,13 @@ const Send = () => {
           }
         }
       } catch (err) {
-        setIsSuccess(false);
-        setMessage("Something went wrong. Please try again.");
+        if (err.statusCode === 500) {
+          navigate("/error");
+        } else {
+          console.error(err);
+          setIsSuccess(false);
+          setMessage("Something went wrong. Please try again.");
+        }
       }
     } else {
       setIsSuccess(false);

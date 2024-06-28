@@ -71,8 +71,11 @@ const Payment = () => {
 
         setFlightData(flightData);
       } catch (err) {
-        console.error("Error fetching data:", err);
-        // navigate("/error");
+        if (err.statusCode === 500) {
+          navigate("/error");
+        } else {
+          console.error(err);
+        }
       }
     };
 

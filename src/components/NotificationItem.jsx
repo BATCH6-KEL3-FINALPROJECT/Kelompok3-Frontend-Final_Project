@@ -50,7 +50,11 @@ const NotificationItem = ({
       await sendData(`/api/v1/notification/${id}`, "PATCH");
       onUpdateReadStatus();
     } catch (err) {
-      navigate("/error");
+      if (err.statusCode === 500) {
+        navigate("/error");
+      } else {
+        console.log(err);
+      }
     }
   };
 

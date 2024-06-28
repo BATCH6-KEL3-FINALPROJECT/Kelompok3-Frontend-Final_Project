@@ -84,7 +84,7 @@ const Checkout = () => {
       } else if (passengerType === "Anak-Anak") {
         return "child";
       } else if (passengerType === "Bayi") {
-        return "infant";
+        return "baby";
       }
     }
   }
@@ -192,7 +192,11 @@ const Checkout = () => {
         );
       }
     } catch (err) {
-      navigate("/error");
+      if (err.statusCode === 500) {
+        navigate("/error");
+      } else {
+        console.error(err);
+      }
     }
   };
 
