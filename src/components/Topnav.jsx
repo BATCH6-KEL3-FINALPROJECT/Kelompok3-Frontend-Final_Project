@@ -50,7 +50,7 @@ const Topnav = ({ isLogin = false, isSearch, isOTP = false }) => {
           cookies.get("token")
         );
         const notifications = response.data.data.notification.filter(
-          (notif) => notif.user_id !== null
+          (notif) => notif.user_id !== null && notif.is_read === false
         );
         setNotifications(notifications.length);
       } catch (err) {
