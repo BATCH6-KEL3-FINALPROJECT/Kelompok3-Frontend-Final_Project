@@ -60,7 +60,7 @@ const Topnav = ({ isLogin = false, isSearch, isOTP = false }) => {
     if (isLogin) {
       fetchData();
     }
-  }, []);
+  }, [isLogin]);
 
   const clickOutsideModal = (e) => {
     if (e.target.id !== "dialog") {

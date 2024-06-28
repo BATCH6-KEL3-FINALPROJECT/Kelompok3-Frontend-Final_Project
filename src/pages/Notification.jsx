@@ -58,10 +58,9 @@ const Notification = () => {
       const notifications = response.data.data.notification.filter(
         (notif) => notif.user_id !== null
       );
-      console.log(notifications);
       setNotifications(notifications);
     } catch (err) {
-      navigate("/error")
+      navigate("/error");
     }
   };
 
@@ -102,6 +101,20 @@ const Notification = () => {
     label: type,
     value: type,
   }));
+
+  const updateNotificationReadStatus = async (notificationId) => {
+    try {
+      await sendData(`/api/v1/notification/${notificationId}`, "PATCH");
+      const updatedNotifications = notifications.map((notif) =>
+        notif.notification_id === notificationId
+          ? { ...notif, is_read: true }
+          : notif
+      );
+      setNotifications(updatedNotifications);
+    } catch (err) {
+      navigate("/error");
+    }
+  };
 
   return (
     <>
@@ -218,11 +231,15 @@ const Notification = () => {
             : filteredNotifications.map((notification, index) => (
                 <NotificationItem
                   key={index}
+                  id={notification.notification_id}
                   title={formatNotificationType(notification.notification_type)}
                   date={notification.updatedAt}
                   message={notification.message}
                   extraMessage={notification.extraMessage}
                   is_read={notification.is_read}
+                  onUpdateReadStatus={() =>
+                    updateNotificationReadStatus(notification.notification_id)
+                  }
                 />
               ))}
         </div>

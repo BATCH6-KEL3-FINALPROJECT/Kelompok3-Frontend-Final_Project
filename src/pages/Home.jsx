@@ -7,8 +7,9 @@ import useSend from "../hooks/useSend";
 
 const Home = () => {
   const { loading, sendData } = useSend();
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
   const [airport, setAirport] = useState([]);
+  const [favorite, setFavorite] = useState([]);
   const navigate = useNavigate();
   const cookies = new Cookies();
 
@@ -39,7 +40,11 @@ const Home = () => {
           data: { airport },
         },
       } = await sendData(`/api/v1/airport/?limit=${totalData}`, "GET");
+      const {
+        data: { data: favorite },
+      } = await sendData("/api/v1/flight/favorites", "GET");
       setAirport(airport);
+      setFavorite(favorite);
     } catch (err) {
       navigate("/error");
     }
@@ -52,7 +57,7 @@ const Home = () => {
   return (
     <>
       <Topnav isLogin={isLogin} isSearch={true} />
-      <Beranda airport={airport} />
+      <Beranda airport={airport} favorite={favorite} />
     </>
   );
 };

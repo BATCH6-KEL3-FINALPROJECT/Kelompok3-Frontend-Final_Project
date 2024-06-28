@@ -6,6 +6,8 @@ const DetailHistory = ({ booking }) => {
     return <div>Detail Pesanan: Kosong</div>;
   }
 
+  console.log(booking.Tickets[0].Seat.seat_class);
+
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString("id-ID", options);
@@ -101,7 +103,7 @@ const DetailHistory = ({ booking }) => {
               loading="lazy"
             />
           </div>
-          <p className="text-gray-900 font-poppins w-93% text-xs font-medium leading-18px">
+          <div className="text-gray-900 font-poppins w-93% text-xs font-medium leading-18px">
             <span className="text-sm font-bold text-gray-900">
               {booking.Flight.Airline.airline_name} -{" "}
               {capitalizeFirst(booking.Tickets[0].Seat.seat_class)}
@@ -124,7 +126,7 @@ const DetailHistory = ({ booking }) => {
                 <br />
               </div>
             ))}
-          </p>
+          </div>
         </div>
         <hr className="border-t-2 border-gray-300" />
       </div>
@@ -221,6 +223,9 @@ const DetailHistory = ({ booking }) => {
         status={
           booking.status.charAt(0).toUpperCase() + booking.status.slice(1)
         }
+        bookingId={booking.booking_id}
+        paymentId={booking.payment_id}
+        seatClass={booking.Tickets[0].Seat.seat_class}
       />
     </div>
   );
