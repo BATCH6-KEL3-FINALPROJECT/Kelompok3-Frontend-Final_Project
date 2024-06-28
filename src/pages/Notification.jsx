@@ -55,9 +55,9 @@ const Notification = () => {
         null,
         cookies.get("token")
       );
-      const notifications = response.data.data.notification.filter(
-        (notif) => notif.user_id !== null
-      );
+      const notifications = response.data.data.notification
+        .filter((notif) => notif.user_id !== null)
+        .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
       setNotifications(notifications);
     } catch (err) {
       if (err.statusCode === 500) {
