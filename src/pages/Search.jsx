@@ -376,14 +376,14 @@ const Search = () => {
           >
             <div
               className={`${
-                selectedDeparture || selectedReturn
+                selectedDeparture !== null || selectedReturn !== null
                   ? "flex flex-col border-[#7126B5] border-2 rounded-lg mx-4"
                   : ""
               }`}
             >
               <div
                 className={`${
-                  selectedDeparture || selectedReturn
+                  selectedDeparture !== null || selectedReturn !== null
                     ? "flex flex-grow md:gap-10"
                     : ""
                 }`}
@@ -513,20 +513,19 @@ const Search = () => {
                   </div>
                 )}
               </div>
-              {selectedDeparture ||
-                (selectedReturn && (
-                  <button
-                    className={`${
-                      selectedDeparture && selectedReturn
-                        ? "bg-[#7126B5] cursor-pointer"
-                        : "bg-gray-500 cursor-not-allowed"
-                    } text-white p-1`}
-                    onClick={handleLanjutkan}
-                    disabled={!selectedDeparture && !selectedReturn}
-                  >
-                    Lanjutkan
-                  </button>
-                ))}
+              {selectedDeparture !== null && selectedReturn !== null && (
+                <button
+                  className={`${
+                    selectedDeparture && selectedReturn
+                      ? "bg-[#7126B5] cursor-pointer"
+                      : "bg-gray-500 cursor-not-allowed"
+                  } text-white p-1`}
+                  onClick={handleLanjutkan}
+                  disabled={!selectedDeparture && !selectedReturn}
+                >
+                  Lanjutkan
+                </button>
+              )}
             </div>
             <button
               className="flex justify-center items-center gap-2 px-3 py-1 border border-[#A06ECE] text-[#7126B5] rounded-full mx-4"
