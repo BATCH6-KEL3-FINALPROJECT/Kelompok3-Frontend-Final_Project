@@ -130,7 +130,7 @@ const Register = () => {
         if (err.statusCode === 500) {
           navigate("/error");
         } else {
-          console.error(err);
+          console.log(err);
           setIsSuccess(false);
           setMessage("Something went wrong. Please try again.");
         }

@@ -19,7 +19,7 @@ const PaymentMethod = ({ setIsBayar, setDate }) => {
         setCopySuccess(false);
       }, 3000);
     } catch (err) {
-      console.error("Failed to copy:", err);
+      console.log("Failed to copy:", err);
     }
   };
 

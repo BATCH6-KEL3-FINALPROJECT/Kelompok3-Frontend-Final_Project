@@ -49,7 +49,7 @@ const Home = () => {
       if (err.statusCode === 500) {
         navigate("/error");
       } else {
-        console.error(err);
+        console.log(err);
       }
     }
   };

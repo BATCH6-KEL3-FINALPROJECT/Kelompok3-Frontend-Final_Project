@@ -56,7 +56,7 @@ const StatusButton = ({ status, bookingId, paymentId, seatClass }) => {
         if (error.statusCode === 500) {
           navigate("/error");
         } else {
-          console.error("Error fetching ticket:", error);
+          console.log("Error fetching ticket:", error);
         }
       } finally {
         setIsLoading(false);

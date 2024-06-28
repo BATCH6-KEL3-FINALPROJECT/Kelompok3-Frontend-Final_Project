@@ -33,7 +33,7 @@ const Otp = () => {
           setEmail(decoded.email);
         }
       } catch (err) {
-        console.error(err);
+        console.log(err);
         navigate("/");
       }
     };
@@ -84,7 +84,7 @@ const Otp = () => {
       if (err.statusCode === 500) {
         navigate("/error");
       } else {
-        console.error(err);
+        console.log(err);
       }
     }
   };
@@ -99,7 +99,7 @@ const Otp = () => {
       if (err.statusCode === 500) {
         navigate("/error");
       } else {
-        console.error(err);
+        console.log(err);
       }
     }
   };

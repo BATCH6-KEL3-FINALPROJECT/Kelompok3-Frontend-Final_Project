@@ -86,7 +86,7 @@ const Account = () => {
       if (e.statusCode === 500) {
         navigate("/error");
       } else {
-        console.error(e);
+        console.log(e);
       }
     }
   };
