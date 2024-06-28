@@ -43,7 +43,8 @@ const Riwayat = () => {
         }
       }
     } catch (err) {
-      navigate("/error")
+      console.error("Error fetching data:", err);
+      // navigate("/error")
     }
   };
 
