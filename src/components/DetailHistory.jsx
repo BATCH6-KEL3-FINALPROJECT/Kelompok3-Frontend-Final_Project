@@ -1,7 +1,18 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import StatusButton from "./StatusButton";
+import { motion } from "framer-motion";
 
 const DetailHistory = ({ booking }) => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (booking) {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
+    }
+  }, [booking]);
+
   if (!booking) {
     return <div>Detail Pesanan: Kosong</div>;
   }
@@ -42,6 +53,10 @@ const DetailHistory = ({ booking }) => {
     }
   };
 
+  if (isLoading) {
+    return <LoadingSkeleton />;
+  }
+
   return (
     <div>
       <div className="flex flex-col gap-1.5">
@@ -54,7 +69,7 @@ const DetailHistory = ({ booking }) => {
               booking.status
             )} px-3 py-1 rounded-full inline-block mb-1`}
           >
-            {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+            {capitalizeFirst(booking.status)}
           </div>
         </div>
         <div className="flex">
@@ -138,7 +153,7 @@ const DetailHistory = ({ booking }) => {
                   {formatTime(booking.Flight.arrival_time)}
                 </span>
                 <br />
-                <span className=" font-poppins text-sm font-medium text-gray-900">
+                <span className="font-poppins text-sm font-medium text-gray-900">
                   {formatDate(booking.Flight.arrival_date)}
                 </span>
               </p>
@@ -218,9 +233,7 @@ const DetailHistory = ({ booking }) => {
         </div>
       </div>
       <StatusButton
-        status={
-          booking.status.charAt(0).toUpperCase() + booking.status.slice(1)
-        }
+        status={capitalizeFirst(booking.status)}
         bookingId={booking.booking_id}
         paymentId={booking.payment_id}
         seatClass={booking.Tickets[0].Seat.seat_class}
@@ -230,3 +243,42 @@ const DetailHistory = ({ booking }) => {
 };
 
 export default DetailHistory;
+
+const LoadingSkeleton = () => {
+  return (
+    <div className="animate-pulse duration-700 w-full md:w-auto">
+      <div className="h-4 bg-slate-300 w-[200px] rounded-lg mb-2"></div>
+      <div className="flex flex-col gap-1">
+        <div className="flex justify-between gap-5">
+          <div className="bg-slate-300 w-[130px] rounded-lg h-4"></div>
+          <div className="bg-slate-300 rounded-lg w-[80px] h-4"></div>
+        </div>
+        <div className="bg-slate-300 w-[100px] h-4 rounded-lg"></div>
+        <div className="bg-slate-300 w-[160px] h-4 rounded-lg"></div>
+      </div>
+      <div className="my-2 border-0 border-y-2 border-y-gray-300 py-2 mx-2">
+        <div className="px-8 mb-3 flex flex-col gap-1">
+          <div className="bg-slate-300 rounded-lg w-[80px] h-4"></div>
+          <div className="bg-slate-300 rounded-lg w-[50px] h-4"></div>
+        </div>
+        <div className="flex gap-2">
+          <div className="w-6 h-6 bg-slate-300 rounded-lg"></div>
+          <div className="flex flex-col gap-0.5">
+            <div className="bg-slate-300 rounded-lg w-[70px] h-4"></div>
+            <div className="bg-slate-300 rounded-lg w-[55px] h-4"></div>
+            <div className="bg-slate-300 rounded-lg w-[65px] h-4"></div>
+            <div className="bg-slate-300 rounded-lg w-[80px] h-4"></div>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col gap-1">
+        <div className="flex justify-between gap-5">
+          <div className="bg-slate-300 w-[130px] rounded-lg h-4"></div>
+          <div className="bg-slate-300 rounded-lg w-[80px] h-4"></div>
+        </div>
+        <div className="bg-slate-300 w-[100px] h-4 rounded-lg"></div>
+        <div className="bg-slate-300 w-[160px] h-4 rounded-lg"></div>
+      </div>
+    </div>
+  );
+};

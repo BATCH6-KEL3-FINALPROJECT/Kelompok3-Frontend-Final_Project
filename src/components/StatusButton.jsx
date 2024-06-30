@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useSend from "../hooks/useSend";
 import Cookies from "universal-cookie";
+import AlertModal from "../components/AlertModal";
 
 const StatusButton = ({ status, bookingId, paymentId, seatClass }) => {
   const { loading, sendData } = useSend();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const cookies = new Cookies();
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   let buttonStyle = "";
   let buttonText = "";
@@ -52,6 +54,9 @@ const StatusButton = ({ status, bookingId, paymentId, seatClass }) => {
           null,
           cookies.get("token")
         );
+        if (response && response.data && response.data.code === 200) {
+          setIsModalVisible(true);
+        }
       } catch (error) {
         if (error.statusCode === 500) {
           navigate("/error");
@@ -66,13 +71,19 @@ const StatusButton = ({ status, bookingId, paymentId, seatClass }) => {
   };
 
   return (
-    <button
-      onClick={handleClick}
-      className={`btn btn-active w-full h-[48px] rounded-lg text-white ${buttonStyle}`}
-      disabled={isLoading}
-    >
-      {loading && isLoading ? "Loading..." : buttonText}
-    </button>
+    <>
+      <button
+        onClick={handleClick}
+        className={`btn btn-active w-full h-[48px] rounded-lg text-white ${buttonStyle}`}
+        disabled={isLoading}
+      >
+        {loading && isLoading ? "Loading..." : buttonText}
+      </button>
+      <AlertModal
+        isVisible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+      />{" "}
+    </>
   );
 };
 
