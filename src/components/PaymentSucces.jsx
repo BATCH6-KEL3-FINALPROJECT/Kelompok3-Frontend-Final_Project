@@ -23,13 +23,13 @@ const PaymentSucces = () => {
       </h1>
       <button
         onClick={handleTicket}
-        className="btn btn-active bg-[#D0B7E6] md:w-96 h-[48px] rounded-lg text-white hover:bg-[#7126B5] w-3/4 mx-auto"
+        className="btn btn-active bg-[#7126B5] md:w-96 h-[48px] rounded-lg text-white hover:bg-[#5b2092] w-3/4 mx-auto"
       >
-        Terbitkan Tiket
+        Lihat Pesanan
       </button>
       <button
         onClick={handleSearchAgain}
-        className="btn btn-active bg-[#D0B7E6] md:w-96 h-[48px] rounded-lg text-white hover:bg-[#7126B5] w-3/4 mx-auto"
+        className="btn btn-active bg-[#7126B5] md:w-96 h-[48px] rounded-lg text-white hover:bg-[#5b2092] w-3/4 mx-auto"
       >
         Cari Penerbangan Lain
       </button>
