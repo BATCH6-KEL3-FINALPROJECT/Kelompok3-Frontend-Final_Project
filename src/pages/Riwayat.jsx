@@ -22,6 +22,14 @@ const Riwayat = () => {
   const [dataRiwayat, setDataRiwayat] = useState([]);
   const [accountId, setAccountId] = useState("");
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [searchHistory, setSearchHistory] = useState("");
+  const [filteredBookings, setFilteredBookings] = useState([]);
+  const [selectedBookingMobile, setSelectedBookingMobile] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
   const navigate = useNavigate();
   const cookies = new Cookies();
 
@@ -91,8 +99,6 @@ const Riwayat = () => {
     }, {});
   };
 
-  const [filteredBookings, setFilteredBookings] = useState([]);
-
   useEffect(() => {
     setFilteredBookings(dataRiwayat);
   }, [dataRiwayat]);
@@ -108,9 +114,6 @@ const Riwayat = () => {
 
   const groupedBookings = groupByMonthYear(filteredBookings);
 
-  const [selectedBookingMobile, setSelectedBookingMobile] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   const handleCardClick = (booking) => {
     setSelectedBookingMobile(booking);
     setIsModalOpen(true);
@@ -121,10 +124,6 @@ const Riwayat = () => {
     setSelectedBookingMobile(null);
   };
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
-
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };
@@ -134,9 +133,6 @@ const Riwayat = () => {
     setStartDate(start);
     setEndDate(end);
   };
-
-  const [modalOpen, setModalOpen] = useState(false);
-  const [searchHistory, setSearchHistory] = useState(["1234ABC", "7UY71912"]);
 
   const bookingCodes = dataRiwayat.map((booking) => booking.booking_code);
 
