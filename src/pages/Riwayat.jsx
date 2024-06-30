@@ -217,6 +217,7 @@ const Riwayat = () => {
         </div>
 
         {/* DESKTOP VERSION */}
+
         <div className="hidden md:flex gap-3 flex-col md:flex-row">
           {loading ? (
             <div className="flex justify-center items-center w-full h-64">

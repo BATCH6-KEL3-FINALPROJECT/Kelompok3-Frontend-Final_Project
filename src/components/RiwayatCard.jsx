@@ -1,6 +1,7 @@
 import React from "react";
+import { motion } from "framer-motion";
 
-const RiwayatCard = ({ booking, selected, onClick }) => {
+const RiwayatCard = ({ key, booking, selected, onClick }) => {
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString("id-ID", options);
@@ -34,83 +35,94 @@ const RiwayatCard = ({ booking, selected, onClick }) => {
   };
 
   return (
-    <div
-      className={`p-4 rounded-xl shadow-md mb-4 cursor-pointer ${
-        selected ? "border-2 border-[#7126B5BF]" : "border-2 border-gray-300"
-      }`}
-      onClick={onClick}
+    <motion.div
+      initial={{ opacity: 0, x: -75 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{
+        duration: 0.25,
+        delay: selected * 0.25,
+      }}
+      viewport={{ once: true }}
     >
+      {" "}
       <div
-        className={`${getStatusStyle(
-          booking.status
-        )} px-3 py-1 rounded-full inline-block mb-1`}
+        className={`p-4 rounded-xl shadow-md mb-4 cursor-pointer ${
+          selected ? "border-2 border-[#7126B5BF]" : "border-2 border-gray-300"
+        }`}
+        onClick={onClick}
       >
-        {booking.status
-          ? booking.status.charAt(0).toUpperCase() + booking.status.slice(1)
-          : "Status Tidak Tersedia"}
+        <div
+          className={`${getStatusStyle(
+            booking.status
+          )} px-3 py-1 rounded-full inline-block mb-1`}
+        >
+          {booking.status
+            ? booking.status.charAt(0).toUpperCase() + booking.status.slice(1)
+            : "Status Tidak Tersedia"}
+        </div>
+        <div className="flex justify-between items-center mb-1">
+          <div className="text-center">
+            <h3 className="text-md font-bold text-gray-900">
+              <span className="inline-block">
+                <img src="location.svg" alt="location" />
+              </span>{" "}
+              {booking.Flight.departingAirport.city}
+            </h3>
+            <p className="text-gray-700 text-sm">
+              {formatDate(booking.Flight.departure_date)}
+            </p>
+            <p className="text-gray-700 text-sm">
+              {formatTime(booking.Flight.departure_time)}
+            </p>
+          </div>
+          <div className="text-center">
+            <p className="text-gray-700 text-sm">
+              {Math.floor(booking.Flight.flight_duration / 60)}h{" "}
+              {booking.Flight.flight_duration % 60}m
+            </p>
+            <p>
+              <img
+                src="arrow.svg"
+                className="w-[120px] md:w-[200px]"
+                alt="ARROW ICON"
+              />
+            </p>
+          </div>
+          <div className="text-center">
+            <h3 className="text-md font-bold text-gray-900">
+              <span className="inline-block">
+                <img src="location.svg" alt="location" />
+              </span>{" "}
+              {booking.Flight.arrivingAirport.city}
+            </h3>
+            <p className="text-gray-700 text-sm">
+              {formatDate(booking.Flight.arrival_date)}
+            </p>
+            <p className="text-gray-700 text-sm">
+              {formatTime(booking.Flight.arrival_time)}
+            </p>
+          </div>
+        </div>
+        <hr className="border-t-2 border-gray-200 mb-1" />
+        <div className="flex justify-between items-center mb-1">
+          <div>
+            <h3 className="text-md font-bold text-gray-900">Kode Booking:</h3>
+            <p className="text-gray-700 text-sm">{booking.booking_code}</p>
+          </div>
+          <div>
+            <h3 className="text-md font-bold text-gray-900">Kelas:</h3>
+            <p className="text-gray-700 text-sm">
+              {booking.Tickets[0].Seat.seat_class}
+            </p>
+          </div>
+          <div className="text-right">
+            <h3 className="text-md font-bold text-[#A06ECE] ">
+              IDR {formatRupiah(booking.total_price)}
+            </h3>
+          </div>
+        </div>
       </div>
-      <div className="flex justify-between items-center mb-1">
-        <div className="text-center">
-          <h3 className="text-md font-bold text-gray-900">
-            <span className="inline-block">
-              <img src="location.svg" alt="location" />
-            </span>{" "}
-            {booking.Flight.departingAirport.city}
-          </h3>
-          <p className="text-gray-700 text-sm">
-            {formatDate(booking.Flight.departure_date)}
-          </p>
-          <p className="text-gray-700 text-sm">
-            {formatTime(booking.Flight.departure_time)}
-          </p>
-        </div>
-        <div className="text-center">
-          <p className="text-gray-700 text-sm">
-            {Math.floor(booking.Flight.flight_duration / 60)}h{" "}
-            {booking.Flight.flight_duration % 60}m
-          </p>
-          <p>
-            <img
-              src="arrow.svg"
-              className="w-[120px] md:w-[200px]"
-              alt="ARROW ICON"
-            />
-          </p>
-        </div>
-        <div className="text-center">
-          <h3 className="text-md font-bold text-gray-900">
-            <span className="inline-block">
-              <img src="location.svg" alt="location" />
-            </span>{" "}
-            {booking.Flight.arrivingAirport.city}
-          </h3>
-          <p className="text-gray-700 text-sm">
-            {formatDate(booking.Flight.arrival_date)}
-          </p>
-          <p className="text-gray-700 text-sm">
-            {formatTime(booking.Flight.arrival_time)}
-          </p>
-        </div>
-      </div>
-      <hr className="border-t-2 border-gray-200 mb-1" />
-      <div className="flex justify-between items-center mb-1">
-        <div>
-          <h3 className="text-md font-bold text-gray-900">Kode Booking:</h3>
-          <p className="text-gray-700 text-sm">{booking.booking_code}</p>
-        </div>
-        <div>
-          <h3 className="text-md font-bold text-gray-900">Kelas:</h3>
-          <p className="text-gray-700 text-sm">
-            {booking.Tickets[0].Seat.seat_class}
-          </p>
-        </div>
-        <div className="text-right">
-          <h3 className="text-md font-bold text-[#A06ECE] ">
-            IDR {formatRupiah(booking.total_price)}
-          </h3>
-        </div>
-      </div>
-    </div>
+    </motion.div>
   );
 };
 
