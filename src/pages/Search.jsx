@@ -95,8 +95,16 @@ const Search = () => {
   const handleClick = (date) => {
     setSelectedDate(date);
     const params = new URLSearchParams(searchParams);
-    params.set("departure_date", date);
-    navigate(`?${params.toString()}`);
+    if (!selectedDeparture) {
+      params.set("departure_date", date);
+      navigate(`?${params.toString()}`);
+    } else if (!selectedReturn) {
+      params.set("return_date", date);
+      navigate(`?${params.toString()}`);
+    } else if (selectedDeparture && selectedReturn) {
+      params.set("departure_date", date);
+      navigate(`?${params.toString()}`);
+    }
   };
 
   const fetchData = async () => {
@@ -249,6 +257,11 @@ const Search = () => {
         fetchData();
         setSelectedDate(searchParams.get("departure_date"));
         setCurrentPage(1);
+      } else if (selectedDeparture && selectedReturn) {
+        setSelectedReturn(flight);
+        fetchData();
+        setSelectedDate(searchParams.get("departure_date"));
+        setCurrentPage(1);
       }
     } else {
       setIsSeatAvailable(false);
@@ -329,10 +342,17 @@ const Search = () => {
   }, [navigate, searchParams, cookies]);
 
   useEffect(() => {
-    const departureDate =
-      searchParams.get("departure_date") ||
-      new Date().toISOString().split("T")[0];
-    setDays(generateDays(departureDate));
+    if (!selectedDeparture) {
+      const departureDate =
+        searchParams.get("departure_date") ||
+        new Date().toISOString().split("T")[0];
+      setDays(generateDays(departureDate));
+    } else if (!selectedReturn) {
+      const returnDate =
+        searchParams.get("return_date") ||
+        new Date().toISOString().split("T")[0];
+      setDays(generateDays(returnDate));
+    }
   }, [selectedDate]);
 
   useEffect(() => {
