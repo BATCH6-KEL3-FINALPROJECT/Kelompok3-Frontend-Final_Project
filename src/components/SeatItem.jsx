@@ -33,7 +33,7 @@ const SeatItem = ({
           disabled={isSaved}
           onClick={() => handleClick(seat)}
         >
-          {isSelected ? `${passengerNumber}` : ""}
+          {isSelected ? `${passengerNumber}` : `${seat.row + seat.column}`}
         </button>
       ) : (
         <button

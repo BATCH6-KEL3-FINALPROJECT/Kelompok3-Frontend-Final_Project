@@ -146,6 +146,53 @@ const Search = () => {
     }
   };
 
+  const fetchReversedData = async () => {
+    setDataFlight([]);
+    const response = await sendData(
+      `/api/v1/flight?seat_class=${searchParams.get(
+        "seat_class"
+      )}&departure_city=${searchParams.get(
+        "arrival_city"
+      )}&arrival_city=${searchParams.get(
+        "departure_city"
+      )}&departure_date=${searchParams.get(
+        "return_date"
+      )}&limit=5&page=${currentPage}`,
+      "GET",
+      null,
+      null,
+      true
+    );
+    const {
+      data: {
+        data: { flights },
+      },
+    } = await sendData(
+      `/api/v1/flight?seat_class=${searchParams.get(
+        "seat_class"
+      )}&departure_city=${searchParams.get(
+        "arrival_city"
+      )}&arrival_city=${searchParams.get(
+        "departure_city"
+      )}&departure_date=${searchParams.get("departure_date")}&limit=${
+        response.data.data.pagination.totalData
+      }`,
+      "GET",
+      null,
+      null,
+      true
+    );
+    if (response.statusCode === 200) {
+      setDataFlight(response.data.data.flights);
+      setPagination(response.data.data.pagination);
+      setFilteredFlights(flights);
+      setSelectedFilter("Others");
+      setIsFilteredFlights(true);
+    } else {
+      navigate("/error");
+    }
+  };
+
   const handleNextPage = () => {
     setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
   };
@@ -194,8 +241,14 @@ const Search = () => {
 
       if (!selectedDeparture) {
         setSelectedDeparture(flight);
+        fetchReversedData();
+        setSelectedDate(searchParams.get("return_date"));
+        setCurrentPage(1);
       } else if (!selectedReturn) {
         setSelectedReturn(flight);
+        fetchData();
+        setSelectedDate(searchParams.get("departure_date"));
+        setCurrentPage(1);
       }
     } else {
       setIsSeatAvailable(false);
@@ -219,8 +272,16 @@ const Search = () => {
   const handleRemoveSelection = (type) => {
     if (type === "departure") {
       setSelectedDeparture(null);
+      setSelectedFilter("Others");
+      fetchData();
+      setSelectedDate(searchParams.get("departure_date"));
+      setCurrentPage(1);
     } else if (type === "return") {
       setSelectedReturn(null);
+      setSelectedFilter("Others");
+      fetchReversedData();
+      setSelectedDate(searchParams.get("return_date"));
+      setCurrentPage(1);
     }
   };
 
@@ -275,7 +336,11 @@ const Search = () => {
   }, [selectedDate]);
 
   useEffect(() => {
-    fetchData();
+    if (!selectedDeparture) {
+      fetchData();
+    } else if (!selectedReturn) {
+      fetchReversedData();
+    }
   }, [searchParams, currentPage, selectedDate]);
 
   useEffect(() => {
