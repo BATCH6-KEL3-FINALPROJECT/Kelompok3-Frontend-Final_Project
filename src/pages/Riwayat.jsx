@@ -15,6 +15,7 @@ import DetailHistory from "../components/DetailHistory";
 import ModalDetailHistory from "../components/ModalDetailHistory";
 import DatePickerModal from "../components/DatepickerHistory";
 import BookingModal from "../components/ModalBookingCode";
+import Pagination from "../components/Pagination"; // Import the Pagination component
 
 const Riwayat = () => {
   const { loading, sendData } = useSend();
@@ -30,22 +31,28 @@ const Riwayat = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalData, setTotalData] = useState(0);
   const navigate = useNavigate();
   const cookies = new Cookies();
 
-  const fetchData = async () => {
+  const fetchData = async (page = 1) => {
     try {
       const token = cookies.get("token");
       if (token) {
         const decoded = jwtDecode(token);
         setAccountId(decoded.id);
         const response = await sendData(
-          `/api/v1/booking/history`,
+          `/api/v1/booking/history?limit=5&page=${page}`,
           "GET",
           null,
           token
         );
         setDataRiwayat(response.data.data);
+        setTotalPages(response.data.pagination.totalPages);
+        setTotalData(response.data.pagination.totalData);
+        console.log(response.data.pagination.totalData);
         if (response.data.data.length > 0) {
           setSelectedBooking(response.data.data[0]);
         }
@@ -76,8 +83,8 @@ const Riwayat = () => {
   }, [navigate, cookies]);
 
   useEffect(() => {
-    fetchData();
-  }, [accountId]);
+    fetchData(currentPage);
+  }, [accountId, currentPage]);
 
   useEffect(() => {
     if (dataRiwayat.length > 0 && !selectedBooking) {
@@ -146,6 +153,18 @@ const Riwayat = () => {
     );
     setFilteredBookings(filtered);
     setModalOpen(false);
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+  };
+
+  const handlePageClick = (page) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -295,6 +314,18 @@ const Riwayat = () => {
             <div className="flex-grow">
               <HistoryEmpty />
             </div>
+          )}
+        </div>
+        <div className="mb-4">
+          {" "}
+          {totalData > 5 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              handlePrevPage={handlePrevPage}
+              handleNextPage={handleNextPage}
+              handlePageClick={handlePageClick}
+            />
           )}
         </div>
       </div>
