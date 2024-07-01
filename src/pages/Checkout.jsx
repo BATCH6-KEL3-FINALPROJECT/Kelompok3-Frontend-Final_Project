@@ -37,6 +37,21 @@ const Checkout = () => {
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
+    const checkToken = cookies.get("token");
+    if (checkToken) {
+      if (checkToken === "undefined") {
+        setIsLogin(false);
+        navigate("/");
+      } else {
+        setIsLogin(true);
+      }
+    } else {
+      setIsLogin(false);
+      navigate("/");
+    }
+  }, [navigate]);
+
+  useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const penumpang = searchParams.get("penumpang") || "0.0.0";
     const [adults, children, infants] = penumpang.split(".").map(Number);
@@ -50,19 +65,6 @@ const Checkout = () => {
     setPassengerInfo(passengers);
     setIsPassengerFamilyName(new Array(passengers.length).fill(false));
   }, [location.search]);
-
-  useEffect(() => {
-    const checkToken = cookies.get("token");
-    if (checkToken) {
-      if (checkToken === "undefined") {
-        setIsLogin(false);
-      } else {
-        setIsLogin(true);
-      }
-    } else {
-      setIsLogin(false);
-    }
-  }, [navigate]);
 
   useEffect(() => {
     if (countdown > 0) {

@@ -26,11 +26,13 @@ const Payment = () => {
     if (checkToken) {
       if (checkToken === "undefined") {
         setIsLogin(false);
+        navigate("/");
       } else {
         setIsLogin(true);
       }
     } else {
       setIsLogin(false);
+      navigate("/");
     }
   }, [navigate]);
 
