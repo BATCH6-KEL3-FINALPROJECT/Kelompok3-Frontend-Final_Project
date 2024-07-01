@@ -267,20 +267,16 @@ const PaymentMethod = ({ setIsBayar, setDate }) => {
     <div className="md:w-[518px] flex justify-start">
       <div className=" w-full md:w-[486px] max-w-md my-auto mx-auto px-3 md:px-0 lg:mx-0 ">
         <p className="font-bold text-lg text-black pb-4">
-          Pilih Pembayaran <span className="text-red-500">(Petunjuk)</span>
+          Metode Pembayaran yang <span className="text-red-500">Tersedia</span>
         </p>
         {accordionData.map((item, i) => (
           <div key={i} className="mb-2">
             <div
-              className={`flex justify-between items-center rounded-lg p-4 cursor-pointer ${
-                selected === i
-                  ? "bg-[#7126B5]"
-                  : "bg-gray-800 hover:bg-[#7126B5]"
-              } text-white`}
+              className={`flex justify-between items-center rounded-lg p-4 bg-gray-800  text-white`}
               onClick={() => toggle(i)}
             >
               <span>{item.title}</span>
-              <span
+              {/* <span
                 className={`transform transition-transform duration-300 ${
                   selected === i ? "rotate-180" : "rotate-0"
                 }`}
@@ -297,13 +293,13 @@ const PaymentMethod = ({ setIsBayar, setDate }) => {
                     clipRule="evenodd"
                   />
                 </svg>
-              </span>
+              </span> */}
             </div>
-            <div
+            {/* <div
               className={`${selected === i ? "block" : "hidden"} bg-white p-4`}
             >
               {item.content}
-            </div>
+            </div> */}
           </div>
         ))}
         <button

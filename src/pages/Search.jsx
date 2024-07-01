@@ -40,6 +40,7 @@ const Search = () => {
   const [temporaryFilter, setTemporaryFilter] = useState("");
   const [selectedDeparture, setSelectedDeparture] = useState(null);
   const [selectedReturn, setSelectedReturn] = useState(null);
+  const [isBothSelected, setIsBothSelected] = useState(false);
 
   const dewasa = searchParams.get("penumpang")
     ? searchParams.get("penumpang").split(".")[0]
@@ -289,12 +290,14 @@ const Search = () => {
       fetchData();
       setSelectedDate(searchParams.get("departure_date"));
       setCurrentPage(1);
+      setIsBothSelected(false);
     } else if (type === "return") {
       setSelectedReturn(null);
       setSelectedFilter("Others");
       fetchReversedData();
       setSelectedDate(searchParams.get("return_date"));
       setCurrentPage(1);
+      setIsBothSelected(false);
     }
   };
 
@@ -356,6 +359,10 @@ const Search = () => {
   }, [selectedDate]);
 
   useEffect(() => {
+    if (selectedDeparture && selectedReturn) {
+      setIsBothSelected(true);
+    }
+
     if (!selectedDeparture) {
       fetchData();
     } else if (!selectedReturn) {
@@ -372,6 +379,10 @@ const Search = () => {
   return (
     <>
       <Topnav isLogin={isLogin} isSearch={true} />
+      {isBothSelected && (
+        <div className="fixed inset-0 bg-black opacity-50 z-10"></div>
+      )}
+
       {!isVerified && (
         <div className="bg-red-500 opacity-90 w-[100vw] fixed z-40 top-24 p-2 flex justify-between">
           <div className="w-4/5 mx-auto flex justify-between items-center">
@@ -457,19 +468,19 @@ const Search = () => {
             initial={{ opacity: 0, x: 75 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.75, delay: 0.75 }}
-            className="flex justify-between md:justify-end items-center gap-2"
+            className="flex flex-col lg:flex-row justify-between md:justify-end items-center gap-2"
           >
             <div
               className={`${
                 selectedDeparture !== null || selectedReturn !== null
-                  ? "flex flex-col border-[#7126B5] border-2 rounded-lg mx-4"
+                  ? "flex flex-col border-[#7126B5] bg-white border-2 rounded-lg mx-4"
                   : ""
-              }`}
+              } ${isBothSelected ? "z-10 relative" : ""}`}
             >
               <div
                 className={`${
                   selectedDeparture !== null || selectedReturn !== null
-                    ? "flex flex-grow md:gap-10"
+                    ? "flex flex-grow md:gap-10 flex-col md:flex-row"
                     : ""
                 }`}
               >
@@ -613,7 +624,7 @@ const Search = () => {
               )}
             </div>
             <button
-              className="flex justify-center items-center gap-2 px-3 py-1 border border-[#A06ECE] text-[#7126B5] rounded-full mx-4"
+              className="flex justify-center items-center ml-auto gap-2 px-3 py-1 border border-[#A06ECE] text-[#7126B5] rounded-full mx-4"
               onClick={handleOpenModal}
             >
               <LuArrowUpDown className="text-lg" />
