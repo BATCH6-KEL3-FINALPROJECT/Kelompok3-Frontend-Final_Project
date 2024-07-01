@@ -371,6 +371,10 @@ const Search = () => {
   }, [searchParams, currentPage, selectedDate]);
 
   useEffect(() => {
+    if (selectedDeparture && selectedReturn) {
+      setIsBothSelected(true);
+    }
+
     if (dataFlight && pagination) {
       setTotalPages(pagination.totalPages);
     }
