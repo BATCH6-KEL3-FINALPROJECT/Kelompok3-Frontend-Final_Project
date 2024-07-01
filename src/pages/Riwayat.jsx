@@ -15,7 +15,7 @@ import DetailHistory from "../components/DetailHistory";
 import ModalDetailHistory from "../components/ModalDetailHistory";
 import DatePickerModal from "../components/DatepickerHistory";
 import BookingModal from "../components/ModalBookingCode";
-import Pagination from "../components/Pagination"; // Import the Pagination component
+import Pagination from "../components/Pagination";
 
 const Riwayat = () => {
   const { loading, sendData } = useSend();
