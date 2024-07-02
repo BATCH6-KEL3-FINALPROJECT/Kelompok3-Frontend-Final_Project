@@ -29,7 +29,7 @@ const Send = () => {
   useEffect(() => {
     if (isSuccess) {
       const timer = setTimeout(() => {
-        navigate(`/reset-password?rpkey=${resetToken}`);
+        navigate(`/send-email`);
       }, 3000);
       return () => clearTimeout(timer);
     }
